@@ -2,6 +2,7 @@ package com.monstrous.pixels;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.monstrous.pixels.filters.PostProcessor;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -24,6 +26,9 @@ public class Main extends ApplicationAdapter {
     public ModelInstance instance;
     public FrameBuffer fbo;
     public SpriteBatch batch;
+    public PostProcessor postProcessor;
+    public BitmapFont font;
+    public Color background;
     private int savedWidth, savedHeight;
 
     @Override
@@ -40,7 +45,7 @@ public class Main extends ApplicationAdapter {
 
         ModelBuilder modelBuilder = new ModelBuilder();
 
-        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
             VertexAttributes.Usage.Position );
         instance = new ModelInstance(model);
 
@@ -49,6 +54,14 @@ public class Main extends ApplicationAdapter {
 
         fbo = new FrameBuffer(Pixmap.Format.RGBA4444, LOWRES_WIDTH, LOWRES_HEIGHT, true);
         batch = new SpriteBatch();
+        postProcessor = new PostProcessor();
+
+        background = new Color(0.0f, 0.2f, 0.1f, 1.0f);
+
+        font = new BitmapFont(Gdx.files.internal("font/zx-spectrum.fnt"));
+        font.setColor(Color.GREEN);
+
+
     }
 
     @Override
@@ -70,16 +83,22 @@ public class Main extends ApplicationAdapter {
         instance.transform.rotate(Vector3.Y, 20f*delta);
 
         fbo.begin();
-        ScreenUtils.clear(Color.BLACK, true);
+        ScreenUtils.clear(background, true);
 
         modelBatch.begin(cam);
         modelBatch.render(instance);
         modelBatch.end();
+        batch.begin();
+        font.draw(batch, "3D CUBE", 50, 160);
+        batch.end();
         fbo.end();
 
-        batch.begin();
-        batch.draw(fbo.getColorBufferTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
-        batch.end();
+
+        postProcessor.render(fbo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());    // bloom & vignette
+
+//        batch.begin();
+//        batch.draw(fbo.getColorBufferTexture(), 0, 0); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
+//        batch.end();
     }
 
     @Override
@@ -91,6 +110,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         batch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
+        postProcessor.resize(width, height);
     }
 
 
