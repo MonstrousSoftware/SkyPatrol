@@ -3,6 +3,7 @@ package com.monstrous.pixels;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -12,24 +13,28 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.monstrous.pixels.filters.PostProcessor;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     public final int LOWRES_WIDTH = 320;
-    public final int LOWRES_HEIGHT = 320;
+    public final int LOWRES_HEIGHT = 240;
 
     public PerspectiveCamera cam;
     public CameraInputController inputController;
     public ModelBatch modelBatch;
     public Model model;
     public ModelInstance instance;
+    public PixelPerfectViewport viewport;
     public FrameBuffer fbo;
     public SpriteBatch batch;
+    public SpriteBatch batch2;
     public PostProcessor postProcessor;
     public BitmapFont font;
     public Color background;
     private int savedWidth, savedHeight;
+    private int mulW, mulH;
 
     @Override
     public void create() {
@@ -52,14 +57,20 @@ public class Main extends ApplicationAdapter {
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
 
-        fbo = new FrameBuffer(Pixmap.Format.RGBA4444, LOWRES_WIDTH, LOWRES_HEIGHT, true);
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, LOWRES_WIDTH, LOWRES_HEIGHT, true);
         batch = new SpriteBatch();
+        batch2 = new SpriteBatch();
         postProcessor = new PostProcessor();
 
         background = new Color(0.0f, 0.2f, 0.1f, 1.0f);
 
         font = new BitmapFont(Gdx.files.internal("font/zx-spectrum.fnt"));
         font.setColor(Color.GREEN);
+
+        viewport = new PixelPerfectViewport(LOWRES_WIDTH, LOWRES_HEIGHT);
+
+        mulW = 3;
+        mulH = 2;
 
 
     }
@@ -89,16 +100,22 @@ public class Main extends ApplicationAdapter {
         modelBatch.render(instance);
         modelBatch.end();
         batch.begin();
-        font.draw(batch, "3D CUBE", 50, 160);
+        font.draw(batch, "3D CUBE", 0, 32);
         batch.end();
         fbo.end();
 
 
-        postProcessor.render(fbo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());    // bloom & vignette
+        postProcessor.render(fbo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());    // retro effect
 
-//        batch.begin();
-//        batch.draw(fbo.getColorBufferTexture(), 0, 0); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
-//        batch.end();
+
+//        viewport.apply();
+//        batch2.begin();
+//        Sprite s = new Sprite(fbo.getColorBufferTexture());
+//        s.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+//        s.flip(false, true); // coordinate system in buffer differs from screen
+//        batch2.draw(s, 0, 0, 4*s.getWidth(), 4*s.getHeight()); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        //font.draw(batch2, "3D CUBE", 200, 32);
+//        batch2.end();
     }
 
     @Override
@@ -109,8 +126,8 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        batch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
         postProcessor.resize(width, height);
+        viewport.update(width, height);
     }
 
 
