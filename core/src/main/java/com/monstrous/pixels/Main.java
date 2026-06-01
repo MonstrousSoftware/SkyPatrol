@@ -13,8 +13,12 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.monstrous.pixels.filters.PostProcessor;
+import net.mgsx.gltf.loaders.glb.GLBLoader;
+import net.mgsx.gltf.loaders.gltf.GLTFLoader;
+import net.mgsx.gltf.scene3d.scene.Scene;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
+import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -35,6 +39,7 @@ public class Main extends ApplicationAdapter {
     public Color background;
     private int savedWidth, savedHeight;
     private int mulW, mulH;
+    private SceneManager sceneManager;
 
     @Override
     public void create() {
@@ -48,11 +53,17 @@ public class Main extends ApplicationAdapter {
         cam.far = 150f;
         cam.update();
 
-        ModelBuilder modelBuilder = new ModelBuilder();
+        sceneManager = new SceneManager();
+        SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/jet.gltf"));
+        Scene scene = new Scene(sceneAsset.scene);
+        instance = scene.modelInstance;
 
-        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
-            VertexAttributes.Usage.Position );
-        instance = new ModelInstance(model);
+
+//        ModelBuilder modelBuilder = new ModelBuilder();
+//
+//        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
+//            VertexAttributes.Usage.Position );
+//        instance = new ModelInstance(model);
 
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
@@ -100,7 +111,7 @@ public class Main extends ApplicationAdapter {
         modelBatch.render(instance);
         modelBatch.end();
         batch.begin();
-        font.draw(batch, "3D CUBE", 0, 32);
+        font.draw(batch, "SKY PATROL", 32, 32);
         batch.end();
         fbo.end();
 
