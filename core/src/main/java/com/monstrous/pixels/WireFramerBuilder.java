@@ -1,0 +1,49 @@
+package com.monstrous.pixels;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+
+public class WireFramerBuilder {
+
+
+    public static Model makeWireFrame( Model model ){
+
+
+        Mesh mesh = model.meshes.get(0);
+        short[] indices = new short[mesh.getNumIndices()];
+        mesh.getIndices(indices);
+        float[] vertices = new float[mesh.getMaxVertices() * mesh.getVertexSize()];
+        mesh.getVertices(vertices);
+        int posOffset = mesh.getVertexAttribute(VertexAttributes.Usage.Position).offset / Float.BYTES;
+
+
+        Material mat = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        int vattr = VertexAttributes.Usage.Position;
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+
+        MeshPartBuilder meshBuilder;
+        meshBuilder = modelBuilder.part("part1", GL20.GL_LINES, vattr, mat);
+        //meshBuilder.cone(5, 5, 5, 10);
+
+        int stride = mesh.getVertexSize()/Float.BYTES;
+        for(int i = 0; i < vertices.length; i += stride)
+            meshBuilder.vertex(vertices[i+posOffset],vertices[i+posOffset+1],vertices[i+posOffset+2]);
+
+        for(int i = 0; i < indices.length; i += 3)
+            meshBuilder.triangle(indices[i], indices[i+1], indices[i+2]);
+
+
+        model = modelBuilder.end();
+        return model;
+    }
+}

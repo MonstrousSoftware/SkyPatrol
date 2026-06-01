@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.filters.PostProcessor;
+import com.monstrous.pixels.sound.Beep;
 import net.mgsx.gltf.loaders.glb.GLBLoader;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.Scene;
@@ -40,6 +41,7 @@ public class Main extends ApplicationAdapter {
     private int savedWidth, savedHeight;
     private int mulW, mulH;
     private SceneManager sceneManager;
+    private Beep beep;
 
     @Override
     public void create() {
@@ -53,17 +55,20 @@ public class Main extends ApplicationAdapter {
         cam.far = 150f;
         cam.update();
 
-        sceneManager = new SceneManager();
+//       sceneManager = new SceneManager();
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/jet.gltf"));
-        Scene scene = new Scene(sceneAsset.scene);
-        instance = scene.modelInstance;
+//        Scene scene = new Scene(sceneAsset.scene);
+//        instance = scene.modelInstance;
+
+
+        Model model = WireFramerBuilder.makeWireFrame(sceneAsset.scene.model);
 
 
 //        ModelBuilder modelBuilder = new ModelBuilder();
 //
 //        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
 //            VertexAttributes.Usage.Position );
-//        instance = new ModelInstance(model);
+        instance = new ModelInstance(model);
 
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
@@ -83,6 +88,8 @@ public class Main extends ApplicationAdapter {
         mulW = 3;
         mulH = 2;
 
+        beep = new Beep();
+        beep.beep();
 
     }
 
@@ -105,14 +112,15 @@ public class Main extends ApplicationAdapter {
         instance.transform.rotate(Vector3.Y, 20f*delta);
 
         fbo.begin();
-        ScreenUtils.clear(background, true);
+            ScreenUtils.clear(background, true);
 
-        modelBatch.begin(cam);
-        modelBatch.render(instance);
-        modelBatch.end();
-        batch.begin();
-        font.draw(batch, "SKY PATROL", 32, 32);
-        batch.end();
+            modelBatch.begin(cam);
+            modelBatch.render(instance);
+            modelBatch.end();
+
+            batch.begin();
+            font.draw(batch, "SKY PATROL", 32, 32);
+            batch.end();
         fbo.end();
 
 
