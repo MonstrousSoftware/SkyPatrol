@@ -1,4 +1,4 @@
-package com.monstrous.pixels;
+package com.monstrous.pixels.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,14 +8,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class StartScreen extends ScreenAdapter {
+public class InitScreen extends ScreenAdapter {
 
     private Main game;
     private BitmapFont font;
     private SpriteBatch batch;
 
 
-    public StartScreen(Main game) {
+    public InitScreen(Main game) {
         this.game = game;
 
     }
@@ -33,7 +33,7 @@ public class StartScreen extends ScreenAdapter {
     public void render(float deltaTime) {
         ScreenUtils.clear(Color.BLACK);
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
-            game.setScreen( new GameScreen(game) );
+            game.setScreen( new StartScreen(game) );
 
         batch.begin();
         font.draw(batch, "PRESS [SPACE]", 200, 32);

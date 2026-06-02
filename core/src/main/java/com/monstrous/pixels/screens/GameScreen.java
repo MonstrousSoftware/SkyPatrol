@@ -1,4 +1,4 @@
-package com.monstrous.pixels;
+package com.monstrous.pixels.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.filters.PostProcessor;
 import com.monstrous.pixels.sound.Beep;
@@ -28,15 +29,15 @@ public class GameScreen extends ScreenAdapter {
     public FrameBuffer fbo;
     public SpriteBatch batch;
     public SpriteBatch batch2;
+    public ShapeRenderer shapeRenderer;
     public PostProcessor postProcessor;
     public BitmapFont font;
     public Color background;
     private int savedWidth, savedHeight;
-    //private int mulW, mulH;
-    private SceneManager sceneManager;
     private Beep beep;
-    private Main game;
+    private final Main game;
     private World world;
+    private float time;
     private boolean noCRT = false;
     private boolean enableMusic = false;
 
@@ -51,7 +52,7 @@ public class GameScreen extends ScreenAdapter {
         modelBatch = new ModelBatch();
 
 
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT); //Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(10f, 10f, 10f);
         cam.lookAt(0, 0, 0);
         cam.near = 0.1f;
@@ -60,18 +61,7 @@ public class GameScreen extends ScreenAdapter {
 
         world = new World();
 
-        // load a gltf file
-//        SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/jet.gltf"));
-//
-//        // turn model into a wireframe model
-//        Model model = WireFramerBuilder.makeWireFrame(sceneAsset.scene.model);
 
-
-//        ModelBuilder modelBuilder = new ModelBuilder();
-//
-//        model = modelBuilder.createBox(5f, 5f, 5f, GL20.GL_LINES, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
-//            VertexAttributes.Usage.Position );
-//        instance = new ModelInstance(model);
 
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
@@ -86,8 +76,8 @@ public class GameScreen extends ScreenAdapter {
         font = new BitmapFont(Gdx.files.internal("font/zx-spectrum.fnt"));
         font.setColor(Color.GREEN);
 
-        //viewport = new PixelPerfectViewport(LOWRES_WIDTH, LOWRES_HEIGHT);
-
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
 
         beep = new Beep();
         beep.beep();
@@ -99,6 +89,8 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        time += deltaTime;
+
         // F11 to toggle full screen
         if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
             boolean fullScreen = Gdx.graphics.isFullscreen();
@@ -115,6 +107,8 @@ public class GameScreen extends ScreenAdapter {
 //        float delta = Gdx.graphics.getDeltaTime();
 //        instance.transform.rotate(Vector3.Y, 20f*delta);
 
+        world.update(0.1f);
+
         fbo.begin();
             ScreenUtils.clear(background, true);
 
@@ -123,6 +117,9 @@ public class GameScreen extends ScreenAdapter {
             modelBatch.render(world.getInstances());
             modelBatch.end();
 
+            drawReticule(time > 2);
+
+            batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
             batch.begin();
             font.draw(batch, "SKY PATROL", 32, 32);
             batch.end();
@@ -130,6 +127,7 @@ public class GameScreen extends ScreenAdapter {
 
 
         if(noCRT) {
+            batch.getProjectionMatrix().setToOrtho2D(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             batch.begin();
             Sprite s = new Sprite(fbo.getColorBufferTexture());
             s.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -150,6 +148,27 @@ public class GameScreen extends ScreenAdapter {
 //        batch2.draw(s, 0, 0, 4*s.getWidth(), 4*s.getHeight()); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 //        //font.draw(batch2, "3D CUBE", 200, 32);
 //        batch2.end();
+    }
+
+    private void drawReticule(boolean locked){
+        int dx = 30;
+        int sdx = 15;
+        int adx = locked ? 15 : 30;
+        int dy = 10;
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.line(LOWRES_WIDTH/2-adx, LOWRES_HEIGHT/2-dy, LOWRES_WIDTH/2-dx, LOWRES_HEIGHT/2-2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2+adx, LOWRES_HEIGHT/2-dy, LOWRES_WIDTH/2+dx, LOWRES_HEIGHT/2-2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2-adx, LOWRES_HEIGHT/2+dy, LOWRES_WIDTH/2-dx, LOWRES_HEIGHT/2+2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2+adx, LOWRES_HEIGHT/2+dy, LOWRES_WIDTH/2+dx, LOWRES_HEIGHT/2+2*dy);
+
+        shapeRenderer.line(LOWRES_WIDTH/2-dx, LOWRES_HEIGHT/2-2*dy, LOWRES_WIDTH/2-sdx, LOWRES_HEIGHT/2-2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2+dx, LOWRES_HEIGHT/2-2*dy, LOWRES_WIDTH/2+sdx, LOWRES_HEIGHT/2-2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2-dx, LOWRES_HEIGHT/2+2*dy, LOWRES_WIDTH/2-sdx, LOWRES_HEIGHT/2+2*dy);
+        shapeRenderer.line(LOWRES_WIDTH/2+dx, LOWRES_HEIGHT/2+2*dy, LOWRES_WIDTH/2+sdx, LOWRES_HEIGHT/2+2*dy);
+
+        shapeRenderer.end();
     }
 
     @Override

@@ -2,8 +2,7 @@ package com.monstrous.pixels.teavm;
 
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplicationConfiguration;
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplication;
-import com.monstrous.pixels.GameScreen;
-import com.monstrous.pixels.Main;
+import com.monstrous.pixels.screens.Main;
 
 /**
  * Launches the TeaVM/HTML application.

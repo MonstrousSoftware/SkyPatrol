@@ -2,8 +2,7 @@ package com.monstrous.pixels.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.monstrous.pixels.GameScreen;
-import com.monstrous.pixels.Main;
+import com.monstrous.pixels.screens.Main;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {

@@ -20,8 +20,8 @@ public class World implements Disposable {
 
     public World() {
         tanks = new Array<>();
-        tanks.add(new Tank(new Vector3(0,0,0)));
-        tanks.add(new Tank(new Vector3(28,0,0)));
+        tanks.add(new Tank(new Vector3(0,0,0), new Vector3(1,0,0)));
+        tanks.add(new Tank(new Vector3(28,0,0), new Vector3(0, 0, 1)));
 
 
         // load a gltf file
@@ -37,11 +37,25 @@ public class World implements Disposable {
     }
 
     private void populate(Array<Tank> tanks){
+        ModelInstance instance;
+
         instances.clear();
         for(Tank tank : tanks) {
-            instances.add(new ModelInstance(tankBody, tank.position));
-            instances.add(new ModelInstance(tankTurret, tank.position));
+            instance = new ModelInstance(tankBody, tank.position);
+            instance.transform.rotate(Vector3.Z, tank.direction);
+            instances.add(instance);
+            instance = new ModelInstance(tankTurret, tank.position);
+            instance.transform.rotate(Vector3.Z, tank.direction);
+            instances.add(instance);
         }
+    }
+
+    public void update( float deltaTime ){
+        for(Tank tank : tanks) {
+            tank.forward(deltaTime);
+            tank.rotate(deltaTime, 1f);
+        }
+        populate(tanks);
     }
 
     public Array<ModelInstance> getInstances(){
