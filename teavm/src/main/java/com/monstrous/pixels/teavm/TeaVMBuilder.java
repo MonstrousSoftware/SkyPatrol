@@ -19,6 +19,7 @@ public class TeaVMBuilder {
             if ("debug".equals(arg)) debug = true;
             else if ("run".equals(arg)) startJetty = true;
         }
+        debug = true;
         new TeaCompiler(
             new WebBackend()
                 .setHtmlWidth(800) /* Change this to fit your game's requirements. */
@@ -29,7 +30,7 @@ public class TeaVMBuilder {
                 .setJettyPort(8080)
         )
             .addAssets(new AssetFileHandle("../assets"))
-            
+
             .setOptimizationLevel(debug ? TeaVMOptimizationLevel.SIMPLE : TeaVMOptimizationLevel.ADVANCED)
             .setMainClass(TeaVMLauncher.class.getName())
             .setObfuscated(!debug)

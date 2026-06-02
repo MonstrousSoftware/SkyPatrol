@@ -8,16 +8,18 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 
 public class WireFramerBuilder {
 
+    // could be improved by merging triangles into quads
 
-    public static Model makeWireFrame( Model model ){
+    public static Model makeWireFrame( Node node ){
 
 
-        Mesh mesh = model.meshes.get(0);
+        Mesh mesh = node.parts.get(0).meshPart.mesh;
         short[] indices = new short[mesh.getNumIndices()];
         mesh.getIndices(indices);
         float[] vertices = new float[mesh.getMaxVertices() * mesh.getVertexSize()];
@@ -43,7 +45,7 @@ public class WireFramerBuilder {
             meshBuilder.triangle(indices[i], indices[i+1], indices[i+2]);
 
 
-        model = modelBuilder.end();
+        Model model = modelBuilder.end();
         return model;
     }
 }
