@@ -8,54 +8,37 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class InitScreen extends ScreenAdapter {
+public class InitScreen extends RetroScreen {
 
-    private Main game;
-    private BitmapFont font;
     private SpriteBatch batch;
 
 
     public InitScreen(Main game) {
-        this.game = game;
-
+        super(game);
     }
 
     @Override
     public void show() {
+        super.show();
         batch = new SpriteBatch();
-
-        font = new BitmapFont(Gdx.files.internal("font/zx-spectrum.fnt"));
-        font.setColor(Color.GREEN);
-
+        batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
     }
 
     @Override
-    public void render(float deltaTime) {
+    public void renderFrame(float deltaTime) {
         ScreenUtils.clear(Color.BLACK);
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
             game.setScreen( new StartScreen(game) );
 
         batch.begin();
-        font.draw(batch, "PRESS [SPACE]", 200, 32);
+        font.draw(batch, "PRESS [SPACE]", 70, 32);
         batch.end();
 
     }
 
-//    @Override
-//    public void resize(int width, int height) {
-//    }
-//
-//
-//    @Override
-//    public void hide() {
-//        // This method is called when another screen replaces this one.
-//    }
-//
     @Override
     public void dispose() {
         // Destroy screen's assets here.
-        font.dispose();
         batch.dispose();
-
     }
 }
