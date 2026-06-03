@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.filters.PostProcessor;
 import com.monstrous.pixels.sound.Beep;
 import com.monstrous.pixels.world.World;
-import net.mgsx.gltf.scene3d.scene.SceneManager;
+
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GameScreen extends ScreenAdapter {
@@ -24,21 +24,20 @@ public class GameScreen extends ScreenAdapter {
     public CameraInputController inputController;
     public ModelBatch modelBatch;
     public Model model;
-    public ModelInstance instance;
-    //public PixelPerfectViewport viewport;
+    public FrameBuffer fboSmall;
     public FrameBuffer fbo;
     public SpriteBatch batch;
-    public SpriteBatch batch2;
     public ShapeRenderer shapeRenderer;
     public PostProcessor postProcessor;
     public BitmapFont font;
     public Color background;
+    public int pixelScale;
     private int savedWidth, savedHeight;
     private Beep beep;
     private final Main game;
     private World world;
     private float time;
-    private boolean noCRT = false;
+    private boolean enableCRTeffect = true;
     private boolean enableMusic = false;
 
 
@@ -52,7 +51,7 @@ public class GameScreen extends ScreenAdapter {
         modelBatch = new ModelBatch();
 
 
-        cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT); //Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT);
         cam.position.set(10f, 10f, 10f);
         cam.lookAt(0, 0, 0);
         cam.near = 0.1f;
@@ -66,9 +65,9 @@ public class GameScreen extends ScreenAdapter {
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
 
-        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, LOWRES_WIDTH, LOWRES_HEIGHT, true);
+        fboSmall = new FrameBuffer(Pixmap.Format.RGBA4444, LOWRES_WIDTH, LOWRES_HEIGHT, true);
+
         batch = new SpriteBatch();
-        batch2 = new SpriteBatch();
         postProcessor = new PostProcessor();
 
         background = new Color(0.0f, 0.2f, 0.1f, 1.0f);
@@ -80,7 +79,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
 
         beep = new Beep();
-        beep.beep();
+        //beep.beep();
 
         if(enableMusic)
             beep.startMusic();
@@ -104,16 +103,14 @@ public class GameScreen extends ScreenAdapter {
             }
         }
         inputController.update();
-//        float delta = Gdx.graphics.getDeltaTime();
-//        instance.transform.rotate(Vector3.Y, 20f*delta);
 
         world.update(0.1f);
 
-        fbo.begin();
+        // render a low resolution frame to the frame buffer
+        fboSmall.begin();
             ScreenUtils.clear(background, true);
 
             modelBatch.begin(cam);
-            //modelBatch.render(instance);
             modelBatch.render(world.getInstances());
             modelBatch.end();
 
@@ -123,31 +120,35 @@ public class GameScreen extends ScreenAdapter {
             batch.begin();
             font.draw(batch, "SKY PATROL", 32, 32);
             batch.end();
-        fbo.end();
+        fboSmall.end();
 
 
-        if(noCRT) {
+        // place the low resolution frame centrally on the screen, surrounded by a border
+        fbo.begin();
+            ScreenUtils.clear(Color.BLUE, true);    // border
             batch.getProjectionMatrix().setToOrtho2D(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             batch.begin();
-            Sprite s = new Sprite(fbo.getColorBufferTexture());
+            Sprite s = new Sprite(fboSmall.getColorBufferTexture());
             s.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
             s.flip(false, true); // coordinate system in buffer differs from screen
-            batch.draw(s, 0, 0, 4 * s.getWidth(), 4 * s.getHeight()); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            int w = pixelScale * (int)s.getWidth();
+            int h = pixelScale * (int)s.getHeight();
+            int x = (Gdx.graphics.getWidth() - w)/2;
+            int y = (Gdx.graphics.getHeight() - h)/2;
+            batch.draw(s, x, y, w, h);
+            batch.end();
+        fbo.end();
 
+        // post-processing for visual effects
+        if(!enableCRTeffect) {
+            Sprite s2 = new Sprite(fbo.getColorBufferTexture());
+            s2.flip(false, true);   // flip Y
+            batch.begin();
+            batch.draw(s2, 0, 0);
             batch.end();
         } else {
-
-            postProcessor.render(fbo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());    // retro effect
+            postProcessor.render(fbo);    // retro effect
         }
-
-//        viewport.apply();
-//        batch2.begin();
-//        Sprite s = new Sprite(fbo.getColorBufferTexture());
-//        s.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-//        s.flip(false, true); // coordinate system in buffer differs from screen
-//        batch2.draw(s, 0, 0, 4*s.getWidth(), 4*s.getHeight()); //, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        //font.draw(batch2, "3D CUBE", 200, 32);
-//        batch2.end();
     }
 
     private void drawReticule(boolean locked){
@@ -179,8 +180,12 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
+        if(fbo != null)
+            fbo.dispose();
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
         postProcessor.resize(width, height);
-        //viewport.update(width, height);
+
+        pixelScale = Math.min(width/LOWRES_WIDTH, height/LOWRES_HEIGHT);
     }
 
 

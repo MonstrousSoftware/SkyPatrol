@@ -2,8 +2,10 @@
 
 Test of pixel perfect upsizing a low resolution screen for a retro theme.
 
-The idea is to render to a low resolution FBO (e.g. 640x480) and then render that full-screen.
-Then add some vignette and a CRT shader. (perhaps add some bloom?)
+The idea is to render to a low resolution FBO (e.g. 320x240) and then render that full-screen.
+Then add some vignette and a CRT shader. (perhaps add some bloom?).
+
+(For context, ZX Spectrum screen resolution was 256x192).
 
 Added loading of GLTF models and converting the model to a wireframe model.
 (Note: wireframe of triangles, not quads like you may see in Blender).

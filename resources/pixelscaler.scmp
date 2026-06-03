@@ -4,7 +4,7 @@ atlasData: {
 	drawables: []
 	fontDrawables: [
 		{
-			file: F:/Coding/IdeaProjects/PixelScaler/resources/zx-spectrum(2).png
+			file: F:/Coding/IdeaProjects/PixelScaler/assets/font/zx-spectrum.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -13,7 +13,7 @@ atlasData: {
 			}
 			tint: null
 			tintName: null
-			name: zx-spectrum(2)
+			name: zx-spectrum
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -35,17 +35,17 @@ jsonData: {
 				b: 1
 				a: 1
 			}
-			name: white
+			name: WHITE
 		}
 	]
 	fonts: [
 		{
 			class: com.ray3k.skincomposer.data.FontData
-			name: zx-spectrum2
+			name: zx-spectrum
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: F:/Coding/IdeaProjects/PixelScaler/resources/zx-spectrum(2).fnt
+			file: F:/Coding/IdeaProjects/PixelScaler/assets/font/zx-spectrum.fnt
 		}
 	]
 	freeTypeFonts: []
@@ -1638,7 +1638,7 @@ jsonData: {
 preferences: {
 	id: {
 		class: java.lang.Integer
-		value: 983618937
+		value: 372173683
 	}
 	resources-relative: {
 		class: java.lang.Boolean
