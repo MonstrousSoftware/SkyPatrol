@@ -1,28 +1,36 @@
 package com.monstrous.pixels.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.sound.Beep;
 import com.monstrous.pixels.world.World;
 
 
 public class GameScreen extends RetroScreen {
     public PerspectiveCamera cam;
-    public CameraInputController inputController;
+    public CamController inputController;
+    //public CameraInputController inputController;
     public ModelBatch modelBatch;
     public Model model;
     public SpriteBatch batch;
     public ShapeRenderer shapeRenderer;
     public Color background;
     private Beep beep;
+    private Sound soundLock;
+    private Sound soundBoom;
+    private Sound soundFire;
     private World world;
     private float time;
-    private boolean enableMusic = false;
+    private boolean enableMusic = true;
+    private int score = 0;
+
 
     public GameScreen(Main game) {
         super(game);
@@ -32,18 +40,20 @@ public class GameScreen extends RetroScreen {
     @Override
     public void show() {
         super.show();
+        enableCRTeffect = false;
         modelBatch = new ModelBatch();
 
         cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT);
         cam.position.set(10f, 10f, 10f);
-        cam.lookAt(0, 0, 0);
+        cam.lookAt(0, 10, 0);
         cam.near = 0.1f;
         cam.far = 1000f;
         cam.update();
 
-        world = new World();
+        world = new World(cam);
 
-        inputController = new CameraInputController(cam);
+        //inputController = new CameraInputController(cam);
+        inputController = new CamController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
 
         batch = new SpriteBatch();
@@ -53,6 +63,12 @@ public class GameScreen extends RetroScreen {
 
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
+
+
+
+        soundLock = Gdx.audio.newSound(Gdx.files.internal("sound/lock.wav"));
+        soundBoom = Gdx.audio.newSound(Gdx.files.internal("sound/explosion.wav"));
+        soundFire = Gdx.audio.newSound(Gdx.files.internal("sound/fire.wav"));
 
         beep = new Beep();
         //beep.beep();
@@ -68,7 +84,17 @@ public class GameScreen extends RetroScreen {
         time += deltaTime;
         inputController.update();
 
-        world.update(0.1f);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if(world.fireRocket(cam))
+                soundFire.play();
+        }
+
+        world.update(deltaTime);
+
+        if(world.rocketHits()){
+            soundBoom.play();
+            score += 10;
+        }
 
         // render frame
         ScreenUtils.clear(background, true);
@@ -77,9 +103,14 @@ public class GameScreen extends RetroScreen {
         modelBatch.render(world.getInstances());
         modelBatch.end();
 
-        drawReticule(time > 2);
+        boolean locked = world.weaponLocked(cam);
+        if(locked)
+            soundLock.play();
+        drawReticule(locked);
 
         batch.begin();
+        font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
+        font.draw(batch, String.format("%05d", score), 64, LOWRES_HEIGHT-8);
         font.draw(batch, "SKY PATROL", 32, 32);
         batch.end();
     }

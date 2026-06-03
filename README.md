@@ -12,7 +12,10 @@ Added loading of GLTF models and converting the model to a wireframe model.
 An idea is to include normals per vertex to hide lines belonging to back faces. This would require some logic
 in the shader (back face culling doesn't apply to GL_LINES).
 
-bug:teavm version has very blurry text (scaling?)
+
+
+
+
 
 ## Platforms
 
