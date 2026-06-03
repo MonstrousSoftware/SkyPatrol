@@ -38,7 +38,7 @@ public class GameScreen extends RetroScreen {
         cam.position.set(10f, 10f, 10f);
         cam.lookAt(0, 0, 0);
         cam.near = 0.1f;
-        cam.far = 150f;
+        cam.far = 1000f;
         cam.update();
 
         world = new World();

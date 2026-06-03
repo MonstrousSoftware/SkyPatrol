@@ -12,7 +12,7 @@ public class Tank {
 
     public Tank(Vector3 position, Vector3 direction) {
         this.position = new Vector3(position);
-        this.direction = new Vector3(direction);
+        this.direction = new Vector3(direction).nor();
         this.speed = 1f;
     }
 

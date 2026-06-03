@@ -3,25 +3,18 @@ package com.monstrous.pixels.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.monstrous.pixels.WireFramerBuilder;
-import com.monstrous.pixels.filters.PostProcessor;
+import com.monstrous.pixels.WireFrameBuilder;
 import com.monstrous.pixels.sound.Beep;
-import com.monstrous.pixels.world.World;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
-import net.mgsx.gltf.scene3d.scene.SceneManager;
+
 
 public class StartScreen  extends RetroScreen {
 
@@ -30,21 +23,9 @@ public class StartScreen  extends RetroScreen {
     public ModelBatch modelBatch;
     public Model model;
     public ModelInstance instance;
-    //public PixelPerfectViewport viewport;
-    //public FrameBuffer fbo;
     public SpriteBatch batch;
-    //public SpriteBatch batch2;
-    //public PostProcessor postProcessor;
-    //public BitmapFont font;
     public Color background;
-    //private int savedWidth, savedHeight;
-    //private int mulW, mulH;
-    //private SceneManager sceneManager;
     private Beep beep;
-    //private Main game;
-
-    private boolean enableMusic = false;
-
 
     public StartScreen(Main game) {
         super(game);
@@ -65,10 +46,10 @@ public class StartScreen  extends RetroScreen {
 
 
         // load a gltf file
-        SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/jet.gltf"));
+        SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
 
         // turn model into a wireframe model
-        Model model = WireFramerBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"));
+        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"));
 
 
         instance = new ModelInstance(model);
