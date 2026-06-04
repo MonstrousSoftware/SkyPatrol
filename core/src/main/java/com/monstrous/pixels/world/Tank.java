@@ -7,6 +7,7 @@ public class Tank {
     public final Vector3 position;
     public final Vector3 direction;
     public float speed;
+    public float timeToLive;
     private final Vector3 tmpVec = new Vector3();
 
 
@@ -14,6 +15,7 @@ public class Tank {
         this.position = new Vector3(position);
         this.direction = new Vector3(direction).nor();
         this.speed = 1f;
+        this.timeToLive = 1f;
     }
 
     public void forward(float delta){

@@ -17,7 +17,9 @@
 				5,
 				6,
 				7,
-				8
+				8,
+				9,
+				10
 			]
 		}
 	],
@@ -57,6 +59,14 @@
 		{
 			"mesh":8,
 			"name":"Building"
+		},
+		{
+			"mesh":9,
+			"name":"Helicopter"
+		},
+		{
+			"mesh":10,
+			"name":"Debris"
 		}
 	],
 	"materials":[
@@ -191,6 +201,32 @@
 						"NORMAL":34
 					},
 					"indices":35
+				}
+			]
+		},
+		{
+			"name":"Cube.008",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":36,
+						"TEXCOORD_0":37,
+						"NORMAL":38
+					},
+					"indices":39
+				}
+			]
+		},
+		{
+			"name":"Cone.001",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":40,
+						"TEXCOORD_0":41,
+						"NORMAL":42
+					},
+					"indices":31
 				}
 			]
 		}
@@ -501,6 +537,68 @@
 			"componentType":5123,
 			"count":48,
 			"type":"SCALAR"
+		},
+		{
+			"bufferView":36,
+			"componentType":5126,
+			"count":360,
+			"max":[
+				8.099991798400879,
+				3.1058802604675293,
+				9.408681869506836
+			],
+			"min":[
+				-8.562331199645996,
+				-1.3489078283309937,
+				-9.629106521606445
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":37,
+			"componentType":5126,
+			"count":360,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":38,
+			"componentType":5126,
+			"count":360,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":39,
+			"componentType":5123,
+			"count":570,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":40,
+			"componentType":5126,
+			"count":16,
+			"max":[
+				1,
+				1,
+				1
+			],
+			"min":[
+				-1,
+				-1,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":41,
+			"componentType":5126,
+			"count":16,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":42,
+			"componentType":5126,
+			"count":16,
+			"type":"VEC3"
 		}
 	],
 	"bufferViews":[
@@ -719,11 +817,53 @@
 			"byteLength":96,
 			"byteOffset":18124,
 			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":4320,
+			"byteOffset":18220,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":2880,
+			"byteOffset":22540,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":4320,
+			"byteOffset":25420,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":1140,
+			"byteOffset":29740,
+			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":192,
+			"byteOffset":30880,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":128,
+			"byteOffset":31072,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":192,
+			"byteOffset":31200,
+			"target":34962
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":18220,
+			"byteLength":31392,
 			"uri":"skypatrol.bin"
 		}
 	]

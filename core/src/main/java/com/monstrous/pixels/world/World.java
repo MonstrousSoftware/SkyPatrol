@@ -2,6 +2,7 @@ package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Intersector;
@@ -15,26 +16,28 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class World implements Disposable {
 
-    private final Array<Tank> tanks;
-    private final Array<Jet> jets;
-    private final Array<Building> buildings;
-    private final Array<Rocket> rockets;
+    public final Array<Tank> tanks;
+    public final Array<Jet> jets;
+    public final Array<Building> buildings;
+    public final Array<Rocket> rockets;
+    public final Array<Debris> debris;
     private final Array<ModelInstance> instances;
     private final Terrain terrain;
-    private final Model tankBody;
-    private final Model tankTurret;
-    private final Model building;
+    private final Model tankModel;
+    private final Model tankTurretModel;
+    private final Model buildingModel;
 //    private final Model aaBody;
 //    private final Model aaTurret;
-    private final Model jet;
-    private final Model rocket;
+    private final Model jetModel;
+    private final Model rocketModel;
+    private final Model debrisModel;
     private final Vector3 tmpVec = new Vector3();
     private float coolDown = 0;
 
 
     public World(Camera cam) {
         tanks = new Array<>();
-        tanks.add(new Tank(new Vector3(0,0,0), new Vector3(1,0,0)));
+        tanks.add(new Tank(new Vector3(0,0,-150), new Vector3(1,0,0)));
         tanks.add(new Tank(new Vector3(28,0,0), new Vector3(0, 0, 1)));
 
         jets = new Array<>();
@@ -47,55 +50,64 @@ public class World implements Disposable {
 
         rockets = new Array<>();
 
+        debris = new Array<>();
+
 
         // load a gltf file
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
 
         // turn model into a wireframe model
-        tankBody = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankBody"));
-        tankTurret = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankTurret"));
-        building = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"));
-        rocket = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"));
-        jet = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"));
+        tankModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankBody"), Color.GREEN);
+        tankTurretModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankTurret"), Color.GREEN);
+        buildingModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"), Color.BROWN);
+        rocketModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"), Color.WHITE);
+        jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
+        debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.LIGHT_GRAY);
 
 
         terrain = new Terrain();
 
         instances = new Array<>();
 
-        populate(terrain, tanks, jets, buildings);
+        populate(terrain, tanks, jets, buildings, debris);
     }
 
-    private void populate(Terrain terrain, Array<Tank> tanks, Array<Jet> jets, Array<Building> buildings){
+    private void populate(Terrain terrain, Array<Tank> tanks, Array<Jet> jets, Array<Building> buildings, Array<Debris> debris){
         ModelInstance instance;
 
         instances.clear();
         instances.add(terrain.instance);
 
         for(Building b : buildings) {
-            instance = new ModelInstance(building, b.position);
+            instance = new ModelInstance(buildingModel, b.position);
             instance.transform.rotate(Vector3.Z, b.direction);
             instances.add(instance);
         }
 
         for(Tank tank : tanks) {
-            instance = new ModelInstance(tankBody, tank.position);
+            instance = new ModelInstance(tankModel, tank.position);
             instance.transform.rotate(Vector3.Z, tank.direction);
             instances.add(instance);
-            instance = new ModelInstance(tankTurret, tank.position);
+            instance = new ModelInstance(tankTurretModel, tank.position);
             instance.transform.rotate(Vector3.Z, tank.direction);
             instances.add(instance);
         }
 
         for(Jet j : jets) {
-            instance = new ModelInstance(jet, j.position);
+            instance = new ModelInstance(jetModel, j.position);
             instance.transform.rotate(Vector3.Z, j.direction);
             instances.add(instance);
         }
 
         for(Rocket r : rockets) {
-            instance = new ModelInstance(rocket, r.position);
+            instance = new ModelInstance(rocketModel, r.position);
             instance.transform.rotate(Vector3.Z, r.direction);
+            instances.add(instance);
+        }
+
+        for(Debris d : debris) {
+            instance = new ModelInstance(debrisModel, d.position);
+            instance.transform.rotate(Vector3.Z, d.direction);
             instances.add(instance);
         }
     }
@@ -111,31 +123,61 @@ public class World implements Disposable {
 
     public void update( float deltaTime ){
         coolDown -= deltaTime;
+        Array<Tank> tanksToDelete = new Array<>();
         for(Tank tank : tanks) {
             tank.forward(deltaTime);
             tank.rotate(deltaTime, 1f);
+            if(tank.timeToLive <= 0)
+                tanksToDelete.add(tank);
             // todo let turrets rotate towards player
         }
+        tanks.removeAll(tanksToDelete, true);
+        Array<Jet> jetsToDelete = new Array<>();
         for(Jet jet : jets) {
             jet.forward(deltaTime);
-            jet.rotate(deltaTime, 1f);
+            jet.rotate(deltaTime, 10f);
+            if(jet.timeToLive <= 0)
+                jetsToDelete.add(jet);
         }
-        Array<Rocket> toDelete = new Array<>();
+        jets.removeAll(jetsToDelete, true);
+        Array<Rocket> rocketsToDelete = new Array<>();
         for(Rocket r : rockets) {
             r.forward(deltaTime);
             if(r.timeToLive <= 0)
-                toDelete.add(r);
+                rocketsToDelete.add(r);
         }
-        rockets.removeAll(toDelete, true);
-        populate(terrain, tanks, jets, buildings);
+        rockets.removeAll(rocketsToDelete, true);
+
+        Array<Debris> debrisToDelete = new Array<>();
+        for(Debris r : debris) {
+            r.forward(deltaTime);
+            if(r.timeToLive <= 0)
+                debrisToDelete.add(r);
+        }
+        debris.removeAll(debrisToDelete, true);
+        populate(terrain, tanks, jets, buildings, debris);
+    }
+
+    private void blowUp(Vector3 position){
+        Vector3 vel = new Vector3();
+        Vector3 axis = new Vector3();
+
+        for(int i = 0; i < 12; i++){
+            float az = (float)Math.random()*360f;
+            axis.setToRandomDirection();
+
+            vel.set((float)Math.sin(az), 1f + (float)Math.random(), (float)Math.cos(az)).nor();
+            debris.add(new Debris(position, vel, axis));
+        }
+
     }
 
     private final Vector3 intersection = new Vector3();
 
     public boolean weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
-        float tankRadius = tankBody.nodes.get(0).parts.get(0).meshPart.radius;
-        float jetRadius = jet.nodes.get(0).parts.get(0).meshPart.radius;
+        float tankRadius = tankModel.nodes.get(0).parts.get(0).meshPart.radius;
+        float jetRadius = jetModel.nodes.get(0).parts.get(0).meshPart.radius;
         for(Tank tank : tanks) {
             if(Intersector.intersectRaySphere(ray, tank.position, tankRadius, intersection))
                 return true;
@@ -147,24 +189,29 @@ public class World implements Disposable {
         return false;
     }
 
-    public boolean rocketHits(){
-        float tankRadius = tankBody.nodes.get(0).parts.get(0).meshPart.radius;
-        float jetRadius = jet.nodes.get(0).parts.get(0).meshPart.radius;
+    /** does a rocket hit any enemy? If so return the number of points earned, otherwise zero */
+    public int rocketHits(){
+        float tankRadius = tankModel.nodes.get(0).parts.get(0).meshPart.radius;
+        float jetRadius = 2f* jetModel.nodes.get(0).parts.get(0).meshPart.radius;
         for(Rocket r : rockets) {
             for (Tank tank : tanks) {
                 if (r.position.dst(tank.position) < tankRadius) {
                     r.timeToLive = 0;
-                    return true;
+                    tank.timeToLive = 0;
+                    blowUp(tank.position);
+                    return 100;
                 }
             }
             for (Jet jet : jets) {
                 if (r.position.dst(jet.position) < jetRadius) {
                     r.timeToLive = 0;
-                    return true;
+                    jet.timeToLive = 0;
+                    blowUp(jet.position);
+                    return 500;
                 }
             }
         }
-        return false;
+        return 0;
     }
 
     public Array<ModelInstance> getInstances(){
@@ -173,7 +220,7 @@ public class World implements Disposable {
 
     @Override
     public void dispose() {
-        tankBody.dispose();
-        tankTurret.dispose();
+        tankModel.dispose();
+        tankTurretModel.dispose();
     }
 }

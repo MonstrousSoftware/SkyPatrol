@@ -49,7 +49,7 @@ public class StartScreen  extends RetroScreen {
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
 
         // turn model into a wireframe model
-        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"));
+        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.CYAN);
 
 
         instance = new ModelInstance(model);
@@ -77,16 +77,16 @@ public class StartScreen  extends RetroScreen {
         float delta = Gdx.graphics.getDeltaTime();
         instance.transform.rotate(Vector3.Y, 20f*delta);
 
-        ScreenUtils.clear(background, true);
+        ScreenUtils.clear(Color.BLACK, true);
 
         modelBatch.begin(cam);
         modelBatch.render(instance);
         modelBatch.end();
 
         batch.begin();
-        font.draw(batch, "SKY PATROL", 10, 30);
-        font.draw(batch, "MONSTROUS SOFTWARE (C) 1980", 10, 20);
-        font.draw(batch, "PRESS 1 TO START", 32, 200);
+        font.draw(batch, "SKY PATROL", 100, 200);
+        font.draw(batch, "MONSTROUS SOFTWARE (C) 1980", 40, 10);
+        font.draw(batch, "PRESS 1 TO START", 60, 30);
         batch.end();
     }
 

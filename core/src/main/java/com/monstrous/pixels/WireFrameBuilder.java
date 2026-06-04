@@ -15,7 +15,7 @@ public class WireFrameBuilder {
 
     // could be improved by merging triangles into quads
 
-    public static Model makeWireFrame( Node node ){
+    public static Model makeWireFrame( Node node, Color color ){
 
 
         Mesh mesh = node.parts.get(0).meshPart.mesh;
@@ -26,7 +26,7 @@ public class WireFrameBuilder {
         int posOffset = mesh.getVertexAttribute(VertexAttributes.Usage.Position).offset / Float.BYTES;
 
 
-        Material mat = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        Material mat = new Material(ColorAttribute.createDiffuse(color));
         int vattr = VertexAttributes.Usage.Position;
 
         ModelBuilder modelBuilder = new ModelBuilder();
