@@ -20,6 +20,7 @@ public class WireFrameBuilder {
         short v1, v2;
 
         public Line(short v1, short v2) {
+            // always place smallest first, to have equivalence regardless of line direction
             if(v1 < v2) {
                 this.v1 = v1;
                 this.v2 = v2;
@@ -52,6 +53,7 @@ public class WireFrameBuilder {
 
 
         Material mat = new Material(ColorAttribute.createDiffuse(color));
+        // add normals to each vertex in order to let the shader do back face culling per line
         int vattr = VertexAttributes.Usage.Position|VertexAttributes.Usage.ColorPacked|VertexAttributes.Usage.Normal;
 
         ModelBuilder modelBuilder = new ModelBuilder();

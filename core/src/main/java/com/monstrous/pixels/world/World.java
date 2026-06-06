@@ -44,7 +44,7 @@ public class World implements Disposable {
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.LIGHT_GRAY);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
-        tankType.speed = 5f;
+        tankType.speed = 1f;
         tankType.turnSpeed = 1f;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
@@ -160,8 +160,7 @@ public class World implements Disposable {
 
     public boolean fireRocket(Camera cam){
         if(coolDown <= 0) {
-            addRocket(tmpVec.set(cam.position).add(new Vector3(0, -1, 0)), cam.direction);
-            //rockets.add(new Rocket(tmpVec.set(cam.position).add(new Vector3(0, -1, 0)), cam.direction));
+            addRocket(tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
             coolDown = 0.5f;
             return true;
         }
