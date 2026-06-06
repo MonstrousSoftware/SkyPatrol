@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.sound.Beep;
@@ -52,7 +49,7 @@ public class GameScreen extends RetroScreen {
         cam.far = 1000f;
         cam.update();
 
-        world = new World(cam);
+        world = new World();
 
         //inputController = new CameraInputController(cam);
         inputController = new CamController(cam);
@@ -112,9 +109,14 @@ public class GameScreen extends RetroScreen {
         drawReticule(locked);
         //drawRadar();
 
+        int mm = (int)time / 60;
+        int ss = (int)time - 60*mm;
+
         batch.begin();
         font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("%05d", score), 64, LOWRES_HEIGHT-8);
+
+        font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
         font.draw(batch, "SKY PATROL", 32, 32);
         batch.end();
     }

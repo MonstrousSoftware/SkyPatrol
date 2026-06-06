@@ -17,6 +17,7 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 public class World implements Disposable {
 
     public final Array<GameObject> gameObjects;
+    public final Array<GameObject> enemies;
     private final Array<ModelInstance> instances;
     private final Terrain terrain;
     private final Vector3 tmpVec = new Vector3();
@@ -28,7 +29,7 @@ public class World implements Disposable {
     public GameObjectType debrisType;
 
 
-    public World(Camera cam) {
+    public World() {
 
         // load a gltf file
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
@@ -37,6 +38,7 @@ public class World implements Disposable {
         Model tankModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankBody"), Color.GREEN);
         Model tankTurretModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankTurret"), Color.GREEN);
         Model buildingModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"), Color.BROWN);
+        //Model towerModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Tower"), Color.BROWN);
         Model rocketModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"), Color.WHITE);
         Model jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.LIGHT_GRAY);
@@ -46,7 +48,7 @@ public class World implements Disposable {
         tankType.turnSpeed = 1f;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
-        jetType.turnSpeed = 30f;
+        jetType.turnSpeed = 10f;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
         rocketType.timeToLive = 5f;
@@ -61,10 +63,11 @@ public class World implements Disposable {
         terrain = new Terrain();
 
         gameObjects = new Array<>();
+        enemies = new Array<>();  // subset
 
-        populate();
+        populate2();
 
-        blowUp(new Vector3(0,0,-100));
+        //blowUp(new Vector3(0,0,-100));
 
         instances = new Array<>();
 
@@ -82,16 +85,52 @@ public class World implements Disposable {
         addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
     }
 
+    private void populate2(){
+        int numTanks = 10;
+        int numJets = 10;
+        int numBuildings = 30;
+
+        for(int i = 0; i < numTanks; i++) {
+            float x = (float)Math.random() * 500f - 250f;
+            float z = (float)Math.random() * 500f - 250f;
+            addTank(new Vector3(x, 0, z), new Vector3(1, 0, 0));
+        }
+
+        for(int i = 0; i < numJets; i++) {
+            float x = (float)Math.random() * 500f - 250f;
+            float z = (float)Math.random() * 500f - 250f;
+            float h = 10f + 20f * (float)Math.random();
+            addJet(new Vector3(x, h, z), new Vector3(1, 0, 0));
+        }
+
+        for(int i = 0; i < numBuildings; i++) {
+            float x = (float)Math.random() * 500f - 250f;
+            float z = (float)Math.random() * 500f - 250f;
+            addBuilding(new Vector3(x, 0, z), new Vector3(1, 0, 0));
+        }
+//        addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
+//
+//        addBuilding(new Vector3(10,0,0), new Vector3(1,0,1) );
+//        addBuilding(new Vector3(38,0,0), new Vector3(-1,0,-1) );
+//
+//        addJet( new Vector3(0,18,60), new Vector3(1,0,0));
+//        addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
+    }
+
     public void addBuilding(Vector3 position, Vector3 direction){
         gameObjects.add(new GameObject(buildingType, position, direction));
     }
 
     public void addTank(Vector3 position, Vector3 direction){
-        gameObjects.add(new GameObject(tankType, position, direction));
+        GameObject go = new GameObject(tankType, position, direction);
+        gameObjects.add(go);
+        enemies.add(go);
     }
 
     public void addJet(Vector3 position, Vector3 direction){
-        gameObjects.add(new GameObject(jetType, position, direction));
+        GameObject go = new GameObject(jetType, position, direction);
+        gameObjects.add(go);
+        enemies.add(go);
     }
 
     public void addRocket(Vector3 position, Vector3 direction){
@@ -144,6 +183,7 @@ public class World implements Disposable {
 
         }
         gameObjects.removeAll(toDelete, true);
+        enemies.removeAll(toDelete, true);
 
         generateInstances();
     }
@@ -167,7 +207,7 @@ public class World implements Disposable {
 
     public boolean weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
-        for(GameObject go : gameObjects ){
+        for(GameObject go : enemies ){
             if(go.type == tankType || go.type == jetType) {
                 if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection))
                     return true;
@@ -183,7 +223,7 @@ public class World implements Disposable {
             if(r.type != rocketType)
                 continue;
 
-            for(GameObject t : gameObjects ){
+            for(GameObject t : enemies ){
                 if(t.type == tankType || t.type == jetType){
                     if (r.position.dst(t.position) < t.type.radius) {
                         r.isDead = true;
