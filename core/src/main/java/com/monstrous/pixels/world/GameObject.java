@@ -35,13 +35,15 @@ public class GameObject {
         }
         if(turnSpeed > 0)
             direction.rotate(Vector3.Y, delta * turnSpeed);
-//        if(type.spinSpeed > 0)
-//            forward.rotate(spinAxis, delta * type.spinSpeed);
-//        else
-//            forward.set(direction);
+
 
         if(type.gravity > 0)
             direction.y -= delta * type.gravity;
+
+        if(type.spinSpeed > 0)
+            forward.rotate(spinAxis, delta * type.spinSpeed);
+        else
+            forward.set(direction);
 
         if(timeToLive >= 0){
             timeToLive -= delta;

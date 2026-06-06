@@ -53,7 +53,7 @@ public class World implements Disposable {
         buildingType = new GameObjectType("BUILDING", buildingModel);
         debrisType = new GameObjectType("DEBRIS", debrisModel);
         debrisType.speed = 30f;
-        debrisType.timeToLive = 8f;
+        debrisType.timeToLive = 18f;
         debrisType.spinSpeed = 50f;
         debrisType.gravity = 1f;
 
@@ -62,20 +62,28 @@ public class World implements Disposable {
 
         gameObjects = new Array<>();
 
-        addTank(new Vector3(0,0,-150), new Vector3(1,0,0) );
-        addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
-
-        gameObjects.add(new GameObject(buildingType,new Vector3(10,0,0), new Vector3(1,0,1) ));
-        gameObjects.add(new GameObject(buildingType,new Vector3(38,0,0), new Vector3(-1,0,-1) ));
-
-        addJet( new Vector3(0,18,60), new Vector3(1,0,0));
-        addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
+        populate();
 
         blowUp(new Vector3(0,0,-100));
 
         instances = new Array<>();
 
-        updateInstances();
+        generateInstances();
+    }
+
+    private void populate(){
+        addTank(new Vector3(0,0,-150), new Vector3(1,0,0) );
+        addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
+
+        addBuilding(new Vector3(10,0,0), new Vector3(1,0,1) );
+        addBuilding(new Vector3(38,0,0), new Vector3(-1,0,-1) );
+
+        addJet( new Vector3(0,18,60), new Vector3(1,0,0));
+        addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
+    }
+
+    public void addBuilding(Vector3 position, Vector3 direction){
+        gameObjects.add(new GameObject(buildingType, position, direction));
     }
 
     public void addTank(Vector3 position, Vector3 direction){
@@ -96,7 +104,7 @@ public class World implements Disposable {
         return go;
     }
 
-    private void updateInstances(){
+    private void generateInstances(){
         ModelInstance instance;
 
         instances.clear();
@@ -104,11 +112,12 @@ public class World implements Disposable {
 
         for(GameObject go : gameObjects){
             instance = new ModelInstance(go.type.model, go.position);
-            instance.transform.rotate(Vector3.Z, go.direction);
+            instance.transform.rotate(Vector3.Z, go.forward);
             instances.add(instance);
+            // for tank turret etc.
             if(go.type.model2 != null){
                 instance = new ModelInstance(go.type.model2, go.position);
-                instance.transform.rotate(Vector3.Z, go.direction);
+                instance.transform.rotate(Vector3.Z, go.forward); // todo
                 instances.add(instance);
             }
         }
@@ -136,20 +145,19 @@ public class World implements Disposable {
         }
         gameObjects.removeAll(toDelete, true);
 
-        updateInstances();
+        generateInstances();
     }
 
     private void blowUp(Vector3 position){
         Vector3 vel = new Vector3();
         Vector3 axis = new Vector3();
 
-        for(int i = 0; i < 42; i++){
+        for(int i = 0; i < 12; i++){
             float az = (float)Math.random()*360f;
             axis.setToRandomDirection();
 
-            vel.set((float)Math.sin(az), 1f + (float)Math.random(), (float)Math.cos(az)).nor();
-            //debris.add(new Debris(position, vel, axis));
-            GameObject go = addDebris(position, vel);   // todo
+            vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor();
+            GameObject go = addDebris(position, vel);
             go.spinAxis.setToRandomDirection();
         }
 
