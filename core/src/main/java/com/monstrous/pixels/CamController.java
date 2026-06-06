@@ -10,7 +10,11 @@ public class CamController extends InputAdapter {
 
     public Camera camera;
     public float rotateSpeed = 90f;
+    public float tiltSpeed = 30f;
     public float forwardSpeed = 10f;
+    public float tiltMax = 45f;
+    public final float maxRoll = 30f;
+    public final float rollSpeed = 40f;
     public int forwardKey = Input.Keys.UP;
     public int backwardKey = Input.Keys.DOWN;
     public int rotateRightKey = Input.Keys.RIGHT;
@@ -21,10 +25,10 @@ public class CamController extends InputAdapter {
     protected boolean backwardPressed;
     protected boolean rotateRightPressed;
     protected boolean rotateLeftPressed;
-    protected boolean controlsInverted;
     private float rollAngle = 0;
+    private float tiltAngle = 0;
     private final Vector3 tmpV1 = new Vector3();
-    private final Vector3 tmpV2 = new Vector3();
+
 
     public CamController(Camera camera) {
         this.camera = camera;
@@ -32,53 +36,36 @@ public class CamController extends InputAdapter {
 
     public void update(){
         final float delta = Gdx.graphics.getDeltaTime();
-        tmpV1.set(camera.direction).scl(delta * forwardSpeed);
-        tmpV1.y = 0;
-        camera.translate(tmpV1);
+        // get speed vector from horizontal components of camera direction
+        tmpV1.set(camera.direction).scl(1,0,1).nor().scl(delta * forwardSpeed);
+        camera.translate(tmpV1);    // move forward
+
+        // roll (banking)
+        float roll = 0;
+        if (rotateRightPressed && rollAngle < maxRoll)
+            roll = rollSpeed*delta;
+        if (rotateLeftPressed && rollAngle > -maxRoll)
+            roll = -rollSpeed*delta;
+        if(!rotateRightPressed &&  !rotateLeftPressed)
+            roll = -0.5f*rollSpeed*delta*Math.signum(rollAngle);
+        rollAngle += roll;
+        camera.rotate(camera.direction, roll);
 
 
-        if(!rotateRightPressed &&  !rotateLeftPressed) {
-            camera.rotate(camera.direction, -20f*delta*Math.signum(rollAngle));
-            rollAngle -= 20f* delta * Math.signum(rollAngle);
-        }
-        // pressing right and left together forces roll to zero (may be needed after a looping)
-        if(rotateRightPressed &&  rotateLeftPressed) {
-            camera.up.set(Vector3.Y);
-            rollAngle = 0;
-        }
-        //Gdx.app.log("roll angle", ""+rollAngle);
+        // yaw
+        if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rotateSpeed);
+        if (rotateLeftPressed ) camera.rotate(Vector3.Y, delta * rotateSpeed);
 
-        if (rotateRightPressed || rotateLeftPressed || forwardPressed || backwardPressed) {
-
-
-            if (rotateRightPressed && rollAngle < 40f) {
-                rollAngle += 40f*delta;
-                camera.rotate(camera.direction, delta*40f);
-            }
-            if (rotateLeftPressed && rollAngle > -40f) {
-                rollAngle -= 40f*delta;
-                camera.rotate(camera.direction, -delta*40f);
-            }
-
-
-
-
-
-            //camera.up.set(Vector3.Y);
-            // yaw
-            if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
-            if (rotateLeftPressed ) camera.rotate(Vector3.Y, -delta * rollAngle);
-
-            // tilt camera up/down (pitch)
-            if (forwardPressed) {
-                tmpV1.set(camera.up).crs(camera.direction);
-                camera.rotate(tmpV1, -delta * rotateSpeed);
-            }
-            if (backwardPressed) {
-                tmpV1.set(camera.up).crs(camera.direction);
-                camera.rotate(tmpV1, delta * rotateSpeed);
-            }
-
+        // tilt camera up/down (pitch) up to a max of 45 degrees
+        float tilt = 0;
+        if (forwardPressed && tiltAngle > -tiltMax)
+            tilt = -delta * tiltSpeed;
+        if (backwardPressed && tiltAngle < tiltMax)
+            tilt = delta * tiltSpeed;
+        if(Math.abs(tilt) > 0.1f) {
+            tiltAngle += tilt;
+            tmpV1.set(camera.up).crs(camera.direction);
+            camera.rotate(tmpV1, tilt);
         }
         if (autoUpdate) camera.update();
     }
