@@ -13,6 +13,7 @@ import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.WireFrameBuilder;
 import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
+import com.monstrous.pixels.world.GameObject;
 import com.monstrous.pixels.world.World;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
@@ -21,7 +22,6 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 public class GameScreen extends RetroScreen {
     public PerspectiveCamera cam;
     public CamController inputController;
-    //public CameraInputController inputController;
     public ModelBatch modelBatch;
     public Model model;
     public SpriteBatch batch;
@@ -36,6 +36,8 @@ public class GameScreen extends RetroScreen {
     private boolean enableMusic = false;
     private int score = 0;
     private WireFrameShader wireFrameShader;
+    private String message = "";
+    private float messageTimer = 0;
 
 
     public GameScreen(Main game) {
@@ -93,6 +95,8 @@ public class GameScreen extends RetroScreen {
             }
         });
 
+        message = "ENGAGE!";
+        messageTimer = 1f;
     }
 
     @Override
@@ -107,11 +111,18 @@ public class GameScreen extends RetroScreen {
         }
 
         world.update(0.016f);//;deltaTime);
+        if(messageTimer > 0){
+            messageTimer -= deltaTime;
+            if(messageTimer <= 0)
+                message = "";
+        }
 
-        int points = world.rocketHits();
-        if(points > 0){
+        GameObject killed = world.rocketHits();
+        if(killed != null){
             soundBoom.play();
-            score += points;
+            score += killed.type.scorePoints;
+            message = "DESTROYED "+killed.type.typeName;
+            messageTimer = 1f;
         }
 
         // render frame
@@ -131,11 +142,11 @@ public class GameScreen extends RetroScreen {
         int ss = (int)time - 60*mm;
 
         batch.begin();
-        font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
-        font.draw(batch, String.format("%05d", score), 64, LOWRES_HEIGHT-8);
+        //font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
+        font.draw(batch, String.format("SCORE: %05d", score), 0, LOWRES_HEIGHT-8);
 
-        font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
-        font.draw(batch, "SKY PATROL", 32, 32);
+        font.draw(batch, String.format("TIME:%02d:%02d", mm, ss), 225, LOWRES_HEIGHT-8);
+        font.draw(batch, message, 100, 10);
         batch.end();
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameObjectType {
     public String typeName;
+    public int scorePoints;
     public final Model model;
     public final Model model2;
     public final float radius;
@@ -23,6 +24,7 @@ public class GameObjectType {
     public GameObjectType(String typeName, Model model, Model model2 ) {
 
         this.typeName = typeName;
+        this.scorePoints = 0;
         this.model = model;
         this.model2 = model2;
         this.radius = model.nodes.get(0).parts.get(0).meshPart.radius;

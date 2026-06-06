@@ -46,9 +46,11 @@ public class World implements Disposable {
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
         tankType.speed = 1f;
         tankType.turnSpeed = 1f;
+        tankType.scorePoints = 100;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
         jetType.turnSpeed = 10f;
+        jetType.scorePoints = 500;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
         rocketType.timeToLive = 5f;
@@ -212,7 +214,7 @@ public class World implements Disposable {
     }
 
     /** does a rocket hit any enemy? If so return the number of points earned, otherwise zero */
-    public int rocketHits(){
+    public GameObject rocketHits(){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
             if(r.type != rocketType)
@@ -224,12 +226,12 @@ public class World implements Disposable {
                         r.isDead = true;
                         t.isDead= true;
                         blowUp(t.position);
-                        return t.type == jetType? 500 : 100;
+                        return t; //.type == jetType? 500 : 100;
                     }
                 }
             }
         }
-        return 0;
+        return null;
     }
 
     public Array<ModelInstance> getInstances(){
