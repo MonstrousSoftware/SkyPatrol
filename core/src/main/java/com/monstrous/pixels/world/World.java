@@ -23,6 +23,7 @@ public class World implements Disposable {
     private final Array<ModelInstance> instances;
     private final Terrain terrain;
     private final Vector3 tmpVec = new Vector3();
+    private final Vector3 tmpVec2 = new Vector3();
     private float coolDown = 0;
     public GameObjectType tankType;
     public GameObjectType jetType;
@@ -46,13 +47,15 @@ public class World implements Disposable {
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.BLACK);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
-        tankType.speed = 1f;
+        tankType.speed = 5f;
         tankType.turnSpeed = 1f;
         tankType.scorePoints = 100;
+        tankType.isEnemy = true;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
         jetType.turnSpeed = 10f;
         jetType.scorePoints = 500;
+        jetType.isEnemy = true;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
         rocketType.timeToLive = 5f;
@@ -70,8 +73,6 @@ public class World implements Disposable {
         enemies = new Array<>();  // subset
 
         populate();
-
-        //blowUp(new Vector3(0,0,-100));
 
         instances = new Array<>();
 
@@ -133,8 +134,10 @@ public class World implements Disposable {
         enemies.add(go);
     }
 
-    public void addRocket(Vector3 position, Vector3 direction){
-        gameObjects.add(new GameObject(rocketType, position, direction));
+    public void addRocket(boolean isEnemy, Vector3 position, Vector3 direction){
+        GameObject go = new GameObject(rocketType, position, direction);
+        go.isEnemy = isEnemy;
+        gameObjects.add(go);
     }
 
     public GameObject addDebris(Vector3 position, Vector3 direction){
@@ -156,7 +159,7 @@ public class World implements Disposable {
             // for tank turret etc.
             if(go.type.model2 != null){
                 instance = new ModelInstance(go.type.model2, go.position);
-                instance.transform.rotate(Vector3.Z, go.forward); // todo
+                instance.transform.rotate(Vector3.Z, go.forward2);
                 instances.add(instance);
             }
         }
@@ -164,14 +167,14 @@ public class World implements Disposable {
 
     public boolean fireRocket(Camera cam){
         if(coolDown <= 0) {
-            addRocket(tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
+            addRocket(false, tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
             coolDown = 0.5f;
             return true;
         }
         return false;
     }
 
-    public void update( float deltaTime ){
+    public void update( float deltaTime, Vector3 cameraPosition ){
         coolDown -= deltaTime;
 
         Array<GameObject> toDelete = new Array<>();
@@ -184,8 +187,26 @@ public class World implements Disposable {
         gameObjects.removeAll(toDelete, true);
         enemies.removeAll(toDelete, true);
 
+        for(GameObject tank : enemies){
+            if(tank.type != tankType)
+                continue;
+            // make turret point towards camera
+            tank.forward2.set(cameraPosition).sub(tank.position).scl(1,0,1).nor();
+
+            tank.timeToFire -= deltaTime;
+            if(tank.timeToFire < 0){
+                tank.timeToFire = (float)Math.random() * 10f;
+                tmpVec2.set(tank.forward2);
+                tmpVec2.y += 0.2f;
+                tmpVec2.nor();
+                addRocket(true, tmpVec.set(tank.position).add(new Vector3(0, 1.5f, 0)), tmpVec2);
+            }
+        }
+
+
         generateInstances();
     }
+
 
     private void blowUp(GameObject target){
         Vector3 vel = new Vector3();
@@ -220,20 +241,27 @@ public class World implements Disposable {
     }
 
     /** does a rocket hit any enemy? If so return the number of points earned, otherwise zero */
-    public GameObject rocketHits(){
+    public GameObject rocketHits(Vector3 cameraPosition){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
             if(r.type != rocketType)
                 continue;
-
-            for(GameObject t : enemies ){
-                if(t.type == tankType || t.type == jetType){
-                    if (r.position.dst(t.position) < t.type.radius) {
-                        r.isDead = true;
-                        t.isDead= true;
-                        blowUp(t);
-                        return t; //.type == jetType? 500 : 100;
+            if(!r.isEnemy) {
+                // player rockets
+                for (GameObject t : enemies) {
+                    if (t.type == tankType || t.type == jetType) {
+                        if (r.position.dst(t.position) < t.type.radius) {
+                            r.isDead = true;
+                            t.isDead = true;
+                            blowUp(t);
+                            return t; //.type == jetType? 500 : 100;
+                        }
                     }
+                }
+            } else {
+                // enemy rockets
+                if(r.position.dst(cameraPosition) < 5f){
+                    Gdx.app.log("PLAYER DEAD", "");
                 }
             }
         }

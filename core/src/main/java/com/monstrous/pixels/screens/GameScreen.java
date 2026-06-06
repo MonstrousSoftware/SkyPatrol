@@ -110,14 +110,14 @@ public class GameScreen extends RetroScreen {
                 soundFire.play();
         }
 
-        world.update(0.016f);//;deltaTime);
+        world.update(0.016f, cam.position);//;deltaTime);
         if(messageTimer > 0){
             messageTimer -= deltaTime;
             if(messageTimer <= 0)
                 message = "";
         }
 
-        GameObject killed = world.rocketHits();
+        GameObject killed = world.rocketHits(cam.position);
         if(killed != null){
             soundBoom.play();
             score += killed.type.scorePoints;

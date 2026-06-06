@@ -15,6 +15,7 @@ public class GameObjectType {
     public final Vector3 spinAxis;
     public float timeToLive;
     public float gravity;
+    public boolean isEnemy;
 
 
     public GameObjectType(String typeName, Model model ) {
@@ -34,5 +35,6 @@ public class GameObjectType {
         timeToLive = 99999999f;
         spinAxis = new Vector3(Vector3.Y);
         gravity = 0;
+        isEnemy = false;
     }
 }

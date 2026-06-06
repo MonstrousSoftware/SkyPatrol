@@ -7,11 +7,14 @@ public class GameObject {
     public final Vector3 position;
     public final Vector3 direction;
     public final Vector3 forward;
+    public final Vector3 forward2;
     public final Vector3 spinAxis;
     public float speed;
     public float turnSpeed;
     public float timeToLive;
+    public float timeToFire;
     public boolean isDead;
+    public boolean isEnemy;
 
     private final Vector3 tmpVec = new Vector3();
 
@@ -21,11 +24,14 @@ public class GameObject {
         this.position = new Vector3(position);
         this.direction = new Vector3(direction).nor();
         this.forward = new Vector3(direction).nor();
+        this.forward2 = new Vector3(direction).nor();
         this.speed = type.speed;
         this.turnSpeed = type.turnSpeed;
         this.timeToLive = type.timeToLive;
+        this.timeToFire = (float)Math.random() * 10f;
         this.spinAxis = new Vector3(type.spinAxis);
         this.isDead = false;
+        this.isEnemy = type.isEnemy;
     }
 
     public void update(float delta){
@@ -44,6 +50,7 @@ public class GameObject {
             forward.rotate(spinAxis, delta * type.spinSpeed);
         else
             forward.set(direction);
+        forward2.set(forward);
 
         if(timeToLive >= 0){
             timeToLive -= delta;
