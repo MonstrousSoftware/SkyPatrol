@@ -6,11 +6,16 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
+import com.monstrous.pixels.WireFrameBuilder;
+import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
 import com.monstrous.pixels.world.World;
+import net.mgsx.gltf.loaders.gltf.GLTFLoader;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 
 public class GameScreen extends RetroScreen {
@@ -30,6 +35,7 @@ public class GameScreen extends RetroScreen {
     private float time;
     private boolean enableMusic = false;
     private int score = 0;
+    private WireFrameShader wireFrameShader;
 
 
     public GameScreen(Main game) {
@@ -40,7 +46,7 @@ public class GameScreen extends RetroScreen {
     @Override
     public void show() {
         super.show();
-        modelBatch = new ModelBatch();
+
 
         cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT);
         cam.position.set(0f, 10f, 10f);
@@ -74,6 +80,18 @@ public class GameScreen extends RetroScreen {
 
         if(enableMusic)
             beep.startMusic();
+
+        Renderable renderable = new Renderable();
+        ModelInstance instance = world.getInstances().get(1);
+        instance.getRenderable(renderable);
+        wireFrameShader = new WireFrameShader(renderable);
+        //modelBatch = new ModelBatch();
+        modelBatch = new ModelBatch(new DefaultShaderProvider() {
+            @Override
+            protected Shader createShader(final Renderable renderable) {
+                return wireFrameShader;
+            }
+        });
 
     }
 

@@ -65,7 +65,7 @@ public class World implements Disposable {
         gameObjects = new Array<>();
         enemies = new Array<>();  // subset
 
-        populate2();
+        populate();
 
         //blowUp(new Vector3(0,0,-100));
 
@@ -78,6 +78,8 @@ public class World implements Disposable {
         addTank(new Vector3(0,0,-150), new Vector3(1,0,0) );
         addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
 
+        addBuilding(new Vector3(0,0,-20), new Vector3(1,0,0) );
+
         addBuilding(new Vector3(10,0,0), new Vector3(1,0,1) );
         addBuilding(new Vector3(38,0,0), new Vector3(-1,0,-1) );
 
@@ -86,6 +88,7 @@ public class World implements Disposable {
     }
 
     private void populate2(){
+        // todo fix seed
         int numTanks = 10;
         int numJets = 10;
         int numBuildings = 30;
@@ -108,13 +111,6 @@ public class World implements Disposable {
             float z = (float)Math.random() * 500f - 250f;
             addBuilding(new Vector3(x, 0, z), new Vector3(1, 0, 0));
         }
-//        addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
-//
-//        addBuilding(new Vector3(10,0,0), new Vector3(1,0,1) );
-//        addBuilding(new Vector3(38,0,0), new Vector3(-1,0,-1) );
-//
-//        addJet( new Vector3(0,18,60), new Vector3(1,0,0));
-//        addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
     }
 
     public void addBuilding(Vector3 position, Vector3 direction){
