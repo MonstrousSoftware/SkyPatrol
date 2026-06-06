@@ -9,8 +9,12 @@ Then add some vignette and a CRT shader. (perhaps add some bloom?).
 
 Added loading of GLTF models and converting the model to a wireframe model.
 (Note: wireframe of triangles, not quads like you may see in Blender).
+
 An idea is to include normals per vertex to hide lines belonging to back faces. This would require some logic
 in the shader (back face culling doesn't apply to GL_LINES).
+The wire frame shader does exactly that. It uses the normal vector per vertex, transforms it
+to world space.  In the fragment shader we take the dot product of the normal vector
+and the view vector and discard any that are back facing (dot product less than zero).
 
 To add enemies shooting back.
 Multiple levels (after you've eliminated all enemies).

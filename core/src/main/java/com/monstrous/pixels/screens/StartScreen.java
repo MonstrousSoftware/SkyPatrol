@@ -4,13 +4,13 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.WireFrameBuilder;
+import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
@@ -34,8 +34,6 @@ public class StartScreen  extends RetroScreen {
     @Override
     public void show() {
         super.show();
-        modelBatch = new ModelBatch();
-
 
         cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT);
         cam.position.set(10f, 10f, 10f);
@@ -49,10 +47,20 @@ public class StartScreen  extends RetroScreen {
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
 
         // turn model into a wireframe model
-        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.CYAN);
+        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"), Color.CYAN);
 
 
         instance = new ModelInstance(model);
+
+        Renderable renderable = new Renderable();
+        instance.getRenderable(renderable);
+        WireFrameShader wireFrameShader = new WireFrameShader(renderable);
+        modelBatch = new ModelBatch(new DefaultShaderProvider() {
+            @Override
+            protected Shader createShader(final Renderable renderable) {
+                return wireFrameShader;
+            }
+        });
 
         inputController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
