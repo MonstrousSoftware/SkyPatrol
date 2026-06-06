@@ -54,7 +54,7 @@ public class WireFrameBuilder {
 
         Material mat = new Material(ColorAttribute.createDiffuse(color));
         // add normals to each vertex in order to let the shader do back face culling per line
-        int vattr = VertexAttributes.Usage.Position|VertexAttributes.Usage.ColorPacked|VertexAttributes.Usage.Normal;
+        int vattr = VertexAttributes.Usage.Position|VertexAttributes.Usage.Normal;
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
@@ -64,7 +64,7 @@ public class WireFrameBuilder {
 
         MeshPartBuilder.VertexInfo vert = new MeshPartBuilder.VertexInfo();
         vert.hasPosition = true;
-        vert.hasColor = true;
+        vert.hasColor = false;
         vert.hasNormal = true;
         vert.hasUV = false;
 
@@ -72,7 +72,6 @@ public class WireFrameBuilder {
         for(int i = 0; i < vertices.length; i += stride) {
             vert.position.set(vertices[i + posOffset], vertices[i + posOffset + 1], vertices[i + posOffset + 2]);
             vert.normal.set(vertices[i + norOffset], vertices[i + norOffset + 1], vertices[i + norOffset + 2]);
-            vert.color.set(color);
             meshBuilder.vertex(vert);
         }
 

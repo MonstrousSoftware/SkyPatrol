@@ -3,8 +3,10 @@ package com.monstrous.pixels.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -41,7 +43,7 @@ public class World implements Disposable {
         //Model towerModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Tower"), Color.BROWN);
         Model rocketModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"), Color.WHITE);
         Model jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
-        Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.LIGHT_GRAY);
+        Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.BLACK);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
         tankType.speed = 1f;
@@ -57,8 +59,8 @@ public class World implements Disposable {
         buildingType = new GameObjectType("BUILDING", buildingModel);
         debrisType = new GameObjectType("DEBRIS", debrisModel);
         debrisType.speed = 30f;
-        debrisType.timeToLive = 18f;
-        debrisType.spinSpeed = 50f;
+        debrisType.timeToLive = 8f;
+        debrisType.spinSpeed = 150f;
         debrisType.gravity = 1f;
 
 
@@ -185,7 +187,7 @@ public class World implements Disposable {
         generateInstances();
     }
 
-    private void blowUp(Vector3 position){
+    private void blowUp(GameObject target){
         Vector3 vel = new Vector3();
         Vector3 axis = new Vector3();
 
@@ -194,8 +196,12 @@ public class World implements Disposable {
             axis.setToRandomDirection();
 
             vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor();
-            GameObject go = addDebris(position, vel);
+            GameObject go = addDebris(target.position, vel);
             go.spinAxis.setToRandomDirection();
+            // make debris model match colour of destroyed object
+            Material mat = target.type.model.materials.get(0);
+            Color diffuse = ((ColorAttribute)(mat.get(ColorAttribute.Diffuse))).color;
+            go.type.model.materials.get(0).set(ColorAttribute.createDiffuse(diffuse));
         }
 
     }
@@ -225,7 +231,7 @@ public class World implements Disposable {
                     if (r.position.dst(t.position) < t.type.radius) {
                         r.isDead = true;
                         t.isDead= true;
-                        blowUp(t.position);
+                        blowUp(t);
                         return t; //.type == jetType? 500 : 100;
                     }
                 }
