@@ -47,7 +47,7 @@ public class StartScreen  extends RetroScreen {
         SceneAsset sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/skypatrol.gltf"));
 
         // turn model into a wireframe model
-        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"), Color.CYAN);
+        Model model = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.CYAN);
 
 
         instance = new ModelInstance(model);
