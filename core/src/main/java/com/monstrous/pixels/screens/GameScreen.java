@@ -13,9 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.sound.Beep;
-import com.monstrous.pixels.world.Building;
-import com.monstrous.pixels.world.Jet;
-import com.monstrous.pixels.world.Tank;
 import com.monstrous.pixels.world.World;
 
 
@@ -34,7 +31,7 @@ public class GameScreen extends RetroScreen {
     private Sound soundFire;
     private World world;
     private float time;
-    private boolean enableMusic = true;
+    private boolean enableMusic = false;
     private int score = 0;
 
 
@@ -94,7 +91,7 @@ public class GameScreen extends RetroScreen {
                 soundFire.play();
         }
 
-        world.update(deltaTime);
+        world.update(0.016f);//;deltaTime);
 
         int points = world.rocketHits();
         if(points > 0){
@@ -113,7 +110,7 @@ public class GameScreen extends RetroScreen {
         if(locked)
             soundLock.play();
         drawReticule(locked);
-        drawRadar();
+        //drawRadar();
 
         batch.begin();
         font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
@@ -143,38 +140,38 @@ public class GameScreen extends RetroScreen {
         shapeRenderer.end();
     }
 
-    private final Vector3 tmpV = new Vector3();
-    private final Quaternion quat = new Quaternion();
+//    private final Vector3 tmpV = new Vector3();
+//    private final Quaternion quat = new Quaternion();
 
-    private void drawRadar(){
-        float scale = 0.05f;
-        float cx = 3*LOWRES_WIDTH/4;
-        float cy = 3*LOWRES_HEIGHT/4;
-
-        cam.view.getRotation(quat);
-        float degrees = 180f + quat.getAngleAround(Vector3.Y);
-
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Point);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.point(cx, cy, 0);
-        shapeRenderer.setColor(Color.BROWN);
-        for(Building t : world.buildings) {
-            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, -degrees).add(cx, 0, cy);
-            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-        }
-        shapeRenderer.setColor(Color.GREEN);
-        for(Tank t : world.tanks) {
-            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
-            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-        }
-        shapeRenderer.setColor(Color.BLUE);
-        for(Jet t : world.jets) {
-            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
-            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-        }
-        shapeRenderer.end();
-    }
+//    private void drawRadar(){
+//        float scale = 0.05f;
+//        float cx = 3*LOWRES_WIDTH/4;
+//        float cy = 3*LOWRES_HEIGHT/4;
+//
+//        cam.view.getRotation(quat);
+//        float degrees = 180f + quat.getAngleAround(Vector3.Y);
+//
+//
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Point);
+//        shapeRenderer.setColor(Color.WHITE);
+//        shapeRenderer.point(cx, cy, 0);
+//        shapeRenderer.setColor(Color.BROWN);
+//        for(Building t : world.buildings) {
+//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, -degrees).add(cx, 0, cy);
+//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
+//        }
+//        shapeRenderer.setColor(Color.GREEN);
+//        for(Tank t : world.tanks) {
+//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
+//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
+//        }
+//        shapeRenderer.setColor(Color.BLUE);
+//        for(Jet t : world.jets) {
+//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
+//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
+//        }
+//        shapeRenderer.end();
+//    }
 
 
     @Override

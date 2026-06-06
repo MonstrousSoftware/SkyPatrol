@@ -12,9 +12,9 @@ public class CamController extends InputAdapter {
     public float rotateSpeed = 90f;
     public float tiltSpeed = 30f;
     public float forwardSpeed = 10f;
-    public float tiltMax = 45f;
+    public float tiltMax = 30f;
     public final float maxRoll = 30f;
-    public final float rollSpeed = 40f;
+    public final float rollSpeed = 80f;
     public int forwardKey = Input.Keys.UP;
     public int backwardKey = Input.Keys.DOWN;
     public int rotateRightKey = Input.Keys.RIGHT;
@@ -53,8 +53,8 @@ public class CamController extends InputAdapter {
 
 
         // yaw
-        if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rotateSpeed);
-        if (rotateLeftPressed ) camera.rotate(Vector3.Y, delta * rotateSpeed);
+        if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
+        if (rotateLeftPressed ) camera.rotate(Vector3.Y, -delta * rollAngle);
 
         // tilt camera up/down (pitch) up to a max of 45 degrees
         float tilt = 0;
