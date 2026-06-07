@@ -29,6 +29,7 @@ public class World implements Disposable {
     public GameObjectType jetType;
     public GameObjectType buildingType;
     public GameObjectType rocketType;
+    public GameObjectType enemyRocketType;
     public GameObjectType debrisType;
 
 
@@ -59,6 +60,10 @@ public class World implements Disposable {
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
         rocketType.timeToLive = 5f;
+        enemyRocketType = new GameObjectType("ROCKET", rocketModel);
+        enemyRocketType.speed = 60f;
+        enemyRocketType.timeToLive = 5f;
+        enemyRocketType.gravity = 0.1f;
         buildingType = new GameObjectType("BUILDING", buildingModel);
         debrisType = new GameObjectType("DEBRIS", debrisModel);
         debrisType.speed = 30f;
@@ -72,7 +77,7 @@ public class World implements Disposable {
         gameObjects = new Array<>();
         enemies = new Array<>();  // subset
 
-        populate();
+        populate2();
 
         instances = new Array<>();
 
@@ -135,6 +140,17 @@ public class World implements Disposable {
     }
 
     public void addRocket(boolean isEnemy, Vector3 position, Vector3 direction){
+        GameObject go;
+        if(isEnemy) {
+            go = new GameObject(enemyRocketType, position, direction);
+            go.isEnemy = isEnemy;
+        } else {
+            go = new GameObject(rocketType, position, direction);
+        }
+        gameObjects.add(go);
+    }
+
+    public void addEnemyRocket(boolean isEnemy, Vector3 position, Vector3 direction){
         GameObject go = new GameObject(rocketType, position, direction);
         go.isEnemy = isEnemy;
         gameObjects.add(go);
@@ -244,7 +260,7 @@ public class World implements Disposable {
     public GameObject rocketHits(Vector3 cameraPosition){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
-            if(r.type != rocketType)
+            if(r.type != rocketType  && r.type != enemyRocketType)
                 continue;
             if(!r.isEnemy) {
                 // player rockets

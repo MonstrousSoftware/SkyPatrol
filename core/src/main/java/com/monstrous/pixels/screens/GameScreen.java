@@ -133,8 +133,8 @@ public class GameScreen extends RetroScreen {
         modelBatch.end();
 
         boolean locked = world.weaponLocked(cam);
-        if(locked)
-            soundLock.play();
+//        if(locked)
+//            soundLock.play();
         drawReticule(locked);
         //drawRadar();
 
@@ -143,7 +143,8 @@ public class GameScreen extends RetroScreen {
 
         batch.begin();
         //font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
-        font.draw(batch, String.format("SCORE: %05d", score), 0, LOWRES_HEIGHT-8);
+        font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
+        font.draw(batch, "\0 \0 \0 \0 \0", 8, LOWRES_HEIGHT-24);
 
         font.draw(batch, String.format("TIME:%02d:%02d", mm, ss), 225, LOWRES_HEIGHT-8);
         font.draw(batch, message, 100, 10);

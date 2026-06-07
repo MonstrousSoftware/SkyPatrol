@@ -39,7 +39,7 @@ public abstract class RetroScreen extends ScreenAdapter {
     private int pixelScale;
     private int savedWidth, savedHeight;
     protected final Main game;
-    protected boolean enableCRTeffect = false;
+    protected boolean enableCRTeffect = true;
 
 
     public RetroScreen(Main game) {
