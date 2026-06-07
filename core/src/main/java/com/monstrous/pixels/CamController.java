@@ -25,6 +25,7 @@ public class CamController extends InputAdapter {
     protected boolean backwardPressed;
     protected boolean rotateRightPressed;
     protected boolean rotateLeftPressed;
+    protected boolean shiftPressed;
     private float rollAngle = 0;
     private float tiltAngle = 0;
     private final Vector3 tmpV1 = new Vector3();
@@ -52,9 +53,17 @@ public class CamController extends InputAdapter {
         camera.rotate(camera.direction, roll);
 
 
-        // yaw
-        if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
-        if (rotateLeftPressed ) camera.rotate(Vector3.Y, -delta * rollAngle);
+
+        if(shiftPressed){
+            // strafe
+            if (rotateRightPressed) camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(-delta*20));
+            if (rotateLeftPressed)  camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(delta*20));
+
+        } else {
+            // yaw
+            if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
+            if (rotateLeftPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
+        }
 
         // tilt camera up/down (pitch) up to a max of 45 degrees
         float tilt = 0;
@@ -81,6 +90,8 @@ public class CamController extends InputAdapter {
             rotateRightPressed = true;
         else if (keycode == rotateLeftKey)
             rotateLeftPressed = true;
+        else if (keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT)
+            shiftPressed = true;
         return false;
     }
 
@@ -94,6 +105,8 @@ public class CamController extends InputAdapter {
             rotateRightPressed = false;
         else if (keycode == rotateLeftKey)
             rotateLeftPressed = false;
+        else if (keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT)
+            shiftPressed = false;
         return false;
     }
 }

@@ -103,7 +103,7 @@ public class GameScreen extends RetroScreen {
         lives  = 5;
         livesString = new StringBuilder();
         livesString.setLength(0);
-        livesString.append("\0 ".repeat(Math.max(0, lives)));
+        livesString.append("STATUS: 100%");
     }
 
     @Override
@@ -137,7 +137,9 @@ public class GameScreen extends RetroScreen {
             if(killed.type == world.helicopterType){
                 lives--;
                 livesString.setLength(0);
-                livesString.append("\0 ".repeat(Math.max(0, lives)));
+                livesString.append("STATUS: ");
+                livesString.append(lives * 20);
+                livesString.append("%");
                 if(lives > 0) {
                     message = "TAKING DAMAGE!";
                     messageTimer = 1f;
@@ -173,7 +175,7 @@ public class GameScreen extends RetroScreen {
 
         font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-24);
 
-        font.draw(batch, String.format("%02d:%02d", mm, ss), 250, LOWRES_HEIGHT-8);
+        font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
         font.draw(batch, message, 100, 10);
         batch.end();
     }
