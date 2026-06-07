@@ -38,6 +38,8 @@ public class GameScreen extends RetroScreen {
     private WireFrameShader wireFrameShader;
     private String message = "";
     private float messageTimer = 0;
+    private int lives;
+    private StringBuilder livesString;
 
 
     public GameScreen(Main game) {
@@ -97,6 +99,11 @@ public class GameScreen extends RetroScreen {
 
         message = "ENGAGE!";
         messageTimer = 1f;
+
+        lives  = 5;
+        livesString = new StringBuilder();
+        livesString.setLength(0);
+        livesString.append("\0 ".repeat(Math.max(0, lives)));
     }
 
     @Override
@@ -117,12 +124,32 @@ public class GameScreen extends RetroScreen {
                 message = "";
         }
 
+        float distance = world.weaponLocked(cam);   // -1 means no lock
+        if(distance > 0) {
+            //soundLock.play();
+            message = "DISTANCE: "+(int)distance;
+            messageTimer = 1f;
+        }
+
         GameObject killed = world.rocketHits(cam.position);
         if(killed != null){
             soundBoom.play();
-            score += killed.type.scorePoints;
-            message = "DESTROYED "+killed.type.typeName;
-            messageTimer = 1f;
+            if(killed.type == world.helicopterType){
+                lives--;
+                livesString.setLength(0);
+                livesString.append("\0 ".repeat(Math.max(0, lives)));
+                if(lives > 0) {
+                    message = "TAKING DAMAGE!";
+                    messageTimer = 1f;
+                } else {
+                    message = "GAME OVER!";
+                    messageTimer = 10f;
+                }
+            } else {
+                score += killed.type.scorePoints;
+                message = "DESTROYED " + killed.type.typeName;
+                messageTimer = 1f;
+            }
         }
 
         // render frame
@@ -132,10 +159,9 @@ public class GameScreen extends RetroScreen {
         modelBatch.render(world.getInstances());
         modelBatch.end();
 
-        boolean locked = world.weaponLocked(cam);
-//        if(locked)
-//            soundLock.play();
-        drawReticule(locked);
+
+        drawReticule(distance);
+
         //drawRadar();
 
         int mm = (int)time / 60;
@@ -144,17 +170,18 @@ public class GameScreen extends RetroScreen {
         batch.begin();
         //font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
-        font.draw(batch, "\0 \0 \0 \0 \0", 8, LOWRES_HEIGHT-24);
 
-        font.draw(batch, String.format("TIME:%02d:%02d", mm, ss), 225, LOWRES_HEIGHT-8);
+        font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-24);
+
+        font.draw(batch, String.format("%02d:%02d", mm, ss), 250, LOWRES_HEIGHT-8);
         font.draw(batch, message, 100, 10);
         batch.end();
     }
 
-    private void drawReticule(boolean locked){
+    private void drawReticule(float distance){
         int dx = 30;
         int sdx = 15;
-        int adx = locked ? 15 : 30;
+        int adx = distance > 0 ? 15 : 30;
         int dy = 10;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);

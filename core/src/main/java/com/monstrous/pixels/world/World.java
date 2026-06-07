@@ -31,6 +31,8 @@ public class World implements Disposable {
     public GameObjectType rocketType;
     public GameObjectType enemyRocketType;
     public GameObjectType debrisType;
+    public GameObjectType helicopterType;
+    private final GameObject helicopter;
 
 
     public World() {
@@ -46,6 +48,7 @@ public class World implements Disposable {
         Model rocketModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"), Color.WHITE);
         Model jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.BLACK);
+        Model helicopterModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.WHITE);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
         tankType.speed = 5f;
@@ -70,6 +73,7 @@ public class World implements Disposable {
         debrisType.timeToLive = 8f;
         debrisType.spinSpeed = 150f;
         debrisType.gravity = 1f;
+        helicopterType = new GameObjectType("HELICOPTER", helicopterModel);
 
 
         terrain = new Terrain();
@@ -77,11 +81,12 @@ public class World implements Disposable {
         gameObjects = new Array<>();
         enemies = new Array<>();  // subset
 
-        populate2();
+        populate();
 
         instances = new Array<>();
 
         generateInstances();
+        helicopter = new GameObject(helicopterType, Vector3.Zero, Vector3.Zero);
     }
 
     private void populate(){
@@ -245,15 +250,16 @@ public class World implements Disposable {
 
     private final Vector3 intersection = new Vector3();
 
-    public boolean weaponLocked(Camera cam){
+    public float weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
         for(GameObject go : enemies ){
             if(go.type == tankType || go.type == jetType) {
-                if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection))
-                    return true;
+                if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection)) {
+                    return intersection.dst(cam.position);
+                }
             }
         }
-        return false;
+        return -1;
     }
 
     /** does a rocket hit any enemy? If so return the number of points earned, otherwise zero */
@@ -276,8 +282,10 @@ public class World implements Disposable {
                 }
             } else {
                 // enemy rockets
-                if(r.position.dst(cameraPosition) < 5f){
-                    Gdx.app.log("PLAYER DEAD", "");
+                if(r.position.dst(cameraPosition) < 2f){
+                    r.isDead = true;
+                    Gdx.app.log("PLAYER HIT", "");
+                    return helicopter;
                 }
             }
         }
