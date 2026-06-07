@@ -56,6 +56,7 @@ public class CamController extends InputAdapter {
 
         if(shiftPressed){
             // strafe
+            // use a cross product of up and forward to get a left vector.  Then remove the vertical component, normalize and scale
             if (rotateRightPressed) camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(-delta*20));
             if (rotateLeftPressed)  camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(delta*20));
 

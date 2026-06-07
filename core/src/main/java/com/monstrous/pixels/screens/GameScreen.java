@@ -33,6 +33,7 @@ public class GameScreen extends RetroScreen {
     private Sound soundFire;
     private World world;
     private float time;
+    private float targetDistance;
     private boolean enableMusic = false;
     private int score = 0;
     private WireFrameShader wireFrameShader;
@@ -103,12 +104,11 @@ public class GameScreen extends RetroScreen {
         lives  = 5;
         livesString = new StringBuilder();
         livesString.setLength(0);
-        livesString.append("STATUS: 100%");
+        livesString.append(20*lives);
+        livesString.append("%");
     }
 
-    @Override
-    protected void renderFrame(float deltaTime) {
-        // do updates
+    private void update(float deltaTime){
         time += deltaTime;
         inputController.update();
 
@@ -124,10 +124,10 @@ public class GameScreen extends RetroScreen {
                 message = "";
         }
 
-        float distance = world.weaponLocked(cam);   // -1 means no lock
-        if(distance > 0) {
+        targetDistance = world.weaponLocked(cam);   // -1 means no lock
+        if(targetDistance > 0) {
             //soundLock.play();
-            message = "DISTANCE: "+(int)distance;
+            message = "DISTANCE: "+(int)targetDistance;
             messageTimer = 1f;
         }
 
@@ -137,14 +137,13 @@ public class GameScreen extends RetroScreen {
             if(killed.type == world.helicopterType){
                 lives--;
                 livesString.setLength(0);
-                livesString.append("STATUS: ");
                 livesString.append(lives * 20);
                 livesString.append("%");
                 if(lives > 0) {
                     message = "TAKING DAMAGE!";
                     messageTimer = 1f;
                 } else {
-                    message = "GAME OVER!";
+                    message = "GAME OVER! (PRESS 1)";
                     messageTimer = 10f;
                 }
             } else {
@@ -154,6 +153,19 @@ public class GameScreen extends RetroScreen {
             }
         }
 
+    }
+
+
+    @Override
+    protected void renderFrame(float deltaTime) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+            game.setScreen(new StartScreen(game));
+            return;
+        }
+        // do updates
+        if(lives > 0)
+            update(deltaTime);
+
         // render frame
         ScreenUtils.clear(background, true);
 
@@ -162,7 +174,7 @@ public class GameScreen extends RetroScreen {
         modelBatch.end();
 
 
-        drawReticule(distance);
+        drawReticule(targetDistance);
 
         //drawRadar();
 
