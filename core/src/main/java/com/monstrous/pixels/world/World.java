@@ -32,6 +32,7 @@ public class World implements Disposable {
     public GameObjectType buildingType;
     public GameObjectType rocketType;
     public GameObjectType enemyRocketType;
+    public GameObjectType towerType;
     public GameObjectType debrisType;
     public GameObjectType helicopterType;
     private final GameObject helicopter;
@@ -49,7 +50,7 @@ public class World implements Disposable {
         Model tankModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankBody"), Color.GREEN);
         Model tankTurretModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("TankTurret"), Color.GREEN);
         Model buildingModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Building"), Color.BROWN);
-        //Model towerModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Tower"), Color.BROWN);
+        Model towerModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("ControlTower"), Color.BROWN);
         Model rocketModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Rocket"), Color.WHITE);
         Model jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.BLACK);
@@ -73,6 +74,7 @@ public class World implements Disposable {
         enemyRocketType.timeToLive = 5f;
         enemyRocketType.gravity = 0.1f;
         buildingType = new GameObjectType("BUILDING", buildingModel);
+        towerType = new GameObjectType("TOWER", towerModel);
         debrisType = new GameObjectType("DEBRIS", debrisModel);
         debrisType.speed = 30f;
         debrisType.timeToLive = 8f;
@@ -117,12 +119,13 @@ public class World implements Disposable {
         int numTanks = 1 + 3 * (level-1);
         int numJets =  3 * (level-1);
         int numBuildings = 5 * level;
+        int numTowers = 1;
         float spawnAreaSize = 250f;
 
-        if(level % 2 == 1)
+        if(level == 1)
             background.set(0.0f, 0.2f, 0.1f, 1.0f); // greenish
         else
-            background.set(0.1f, 0.0f, 0.1f, 1.0f);
+        background.set(MathUtils.random()*0.3f, MathUtils.random()*0.3f, MathUtils.random()*0.3f, 1.0f);
 
         gameObjects.clear();
         for(int i = 0; i < numTanks; i++) {
@@ -146,11 +149,21 @@ public class World implements Disposable {
             float deg = MathUtils.random(0, 360);
             addBuilding(new Vector3(x, 0, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
         }
+
+        for(int i = 0; i < numTowers; i++) {
+            float x =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            addTower(new Vector3(x, 0, z), new Vector3(1,0,1));
+        }
         generateInstances();
     }
 
     public void addBuilding(Vector3 position, Vector3 direction){
         gameObjects.add(new GameObject(buildingType, position, direction));
+    }
+
+    public void addTower(Vector3 position, Vector3 direction){
+        gameObjects.add(new GameObject(towerType, position, direction));
     }
 
     public void addTank(Vector3 position, Vector3 direction){
@@ -310,7 +323,7 @@ public class World implements Disposable {
                 // player rockets
                 for (GameObject t : enemies) {
                     if (t.type == tankType || t.type == jetType) {
-                        if (r.position.dst(t.position) < t.type.radius) {
+                        if (r.position.dst(t.position) <  t.type.radius) {
                             r.isDead = true;
                             t.isDead = true;
                             blowUp(t);
