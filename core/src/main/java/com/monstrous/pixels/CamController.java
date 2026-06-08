@@ -25,7 +25,7 @@ public class CamController extends InputAdapter {
     protected boolean backwardPressed;
     protected boolean rotateRightPressed;
     protected boolean rotateLeftPressed;
-    protected boolean shiftPressed;
+    protected boolean controlPressed;
     private float rollAngle = 0;
     private float tiltAngle = 0;
     private final Vector3 tmpV1 = new Vector3();
@@ -54,7 +54,7 @@ public class CamController extends InputAdapter {
 
 
 
-        if(shiftPressed){
+        if(controlPressed){
             // strafe
             // use a cross product of up and forward to get a left vector.  Then remove the vertical component, normalize and scale
             if (rotateRightPressed) camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(-delta*20));
@@ -91,8 +91,8 @@ public class CamController extends InputAdapter {
             rotateRightPressed = true;
         else if (keycode == rotateLeftKey)
             rotateLeftPressed = true;
-        else if (keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT)
-            shiftPressed = true;
+        else if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT)
+            controlPressed = true;
         return false;
     }
 
@@ -106,8 +106,8 @@ public class CamController extends InputAdapter {
             rotateRightPressed = false;
         else if (keycode == rotateLeftKey)
             rotateLeftPressed = false;
-        else if (keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT)
-            shiftPressed = false;
+        else if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT)
+            controlPressed = false;
         return false;
     }
 }

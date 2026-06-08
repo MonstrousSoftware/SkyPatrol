@@ -1,6 +1,7 @@
 package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -18,8 +19,8 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class World implements Disposable {
 
-    public final Array<GameObject> gameObjects;
-    public final Array<GameObject> enemies;
+    private final Array<GameObject> gameObjects;
+    private final Array<GameObject> enemies;
     private final Array<ModelInstance> instances;
     private final Terrain terrain;
     private final Vector3 tmpVec = new Vector3();
@@ -33,6 +34,8 @@ public class World implements Disposable {
     public GameObjectType debrisType;
     public GameObjectType helicopterType;
     private final GameObject helicopter;
+    private final Sound soundRocketFlyBy;
+
 
 
     public World() {
@@ -87,6 +90,8 @@ public class World implements Disposable {
 
         generateInstances();
         helicopter = new GameObject(helicopterType, Vector3.Zero, Vector3.Zero);
+
+        soundRocketFlyBy = Gdx.audio.newSound(Gdx.files.internal("sound/rocket-flyby.wav"));
     }
 
     private void populate(){
@@ -144,21 +149,17 @@ public class World implements Disposable {
         enemies.add(go);
     }
 
-    public void addRocket(boolean isEnemy, Vector3 position, Vector3 direction){
-        GameObject go;
-        if(isEnemy) {
-            go = new GameObject(enemyRocketType, position, direction);
-            go.isEnemy = isEnemy;
-        } else {
-            go = new GameObject(rocketType, position, direction);
-        }
-        gameObjects.add(go);
+    public void addFriendlyRocket(Vector3 position, Vector3 direction){
+            GameObject go = new GameObject(rocketType, position, direction);
+            go.isEnemy = false;
+            gameObjects.add(go);
     }
 
-    public void addEnemyRocket(boolean isEnemy, Vector3 position, Vector3 direction){
-        GameObject go = new GameObject(rocketType, position, direction);
-        go.isEnemy = isEnemy;
+    public void addEnemyRocket(Vector3 position, Vector3 direction){
+        GameObject go = new GameObject(enemyRocketType, position, direction);
+        go.isEnemy = true;
         gameObjects.add(go);
+        //rocketFlyBy.play();
     }
 
     public GameObject addDebris(Vector3 position, Vector3 direction){
@@ -188,7 +189,7 @@ public class World implements Disposable {
 
     public boolean fireRocket(Camera cam){
         if(coolDown <= 0) {
-            addRocket(false, tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
+            addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
             coolDown = 0.5f;
             return true;
         }
@@ -208,19 +209,35 @@ public class World implements Disposable {
         gameObjects.removeAll(toDelete, true);
         enemies.removeAll(toDelete, true);
 
-        for(GameObject tank : enemies){
-            if(tank.type != tankType)
-                continue;
-            // make turret point towards camera
-            tank.forward2.set(cameraPosition).sub(tank.position).scl(1,0,1).nor();
+        for(GameObject go : enemies){
 
-            tank.timeToFire -= deltaTime;
-            if(tank.timeToFire < 0){
-                tank.timeToFire = (float)Math.random() * 10f;
-                tmpVec2.set(tank.forward2);
-                tmpVec2.y += 0.2f;
-                tmpVec2.nor();
-                addRocket(true, tmpVec.set(tank.position).add(new Vector3(0, 1.5f, 0)), tmpVec2);
+            if(go.type == tankType) {
+                // make turret point towards camera (instantly)
+                go.forward2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
+
+                go.timeToFire -= deltaTime;
+                if (go.timeToFire < 0) {
+                    go.timeToFire = (float) Math.random() * 10f;
+                    tmpVec2.set(go.forward2);
+                    tmpVec2.y += 0.2f;
+                    tmpVec2.nor();
+                    addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, 1.5f, 0)), tmpVec2);
+                }
+            }
+            if(go.type == jetType) {
+                // work out vector to player in the horizontal plane
+                go.forward2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
+
+                // if jet is heading more or less towards the player (dot product is close to 1)
+                // and cool down period is expired, then fire a rocket
+                go.timeToFire -= deltaTime;
+                if (go.timeToFire < 0 && go.direction.dot(go.forward2) > 0.9f) {
+                    go.timeToFire = (float) Math.random() * 10f;
+                    tmpVec2.set(go.forward2);
+                    //tmpVec2.y += 0.2f;
+                    //tmpVec2.nor();
+                    addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
+                }
             }
         }
 
@@ -262,7 +279,8 @@ public class World implements Disposable {
         return -1;
     }
 
-    /** does a rocket hit any enemy? If so return the number of points earned, otherwise zero */
+    /** does a rocket hit any enemy? If so return the object that was hit, otherwise null.
+     * If the player was hit, we return the helicopter object. */
     public GameObject rocketHits(Vector3 cameraPosition){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
@@ -276,13 +294,21 @@ public class World implements Disposable {
                             r.isDead = true;
                             t.isDead = true;
                             blowUp(t);
-                            return t; //.type == jetType? 500 : 100;
+                            return t;
                         }
                     }
                 }
             } else {
                 // enemy rockets
-                if(r.position.dst(cameraPosition) < 2f){
+                if(!r.isMakingSound){
+                    // if the enemy rocket is close enough, play the rocket sound
+                    float dist = cameraPosition.dst(r.position);
+                    if(dist < 100f){
+                        r.isMakingSound = true;
+                        soundRocketFlyBy.play();
+                    }
+                }
+                if(r.position.dst(cameraPosition) < 2f){    // is size of hitbox
                     r.isDead = true;
                     Gdx.app.log("PLAYER HIT", "");
                     return helicopter;

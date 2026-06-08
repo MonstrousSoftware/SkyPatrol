@@ -21,6 +21,8 @@ Multiple levels (after you've eliminated all enemies).
 Mountains on the horizon?
 
 
+Press CONTROL plus LEFT or RIGHT to strafe instead of turn.
+
 
 
 ## Platforms

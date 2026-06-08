@@ -15,6 +15,7 @@ public class GameObject {
     public float timeToFire;
     public boolean isDead;
     public boolean isEnemy;
+    public boolean isMakingSound;
 
     private final Vector3 tmpVec = new Vector3();
 
@@ -32,6 +33,7 @@ public class GameObject {
         this.spinAxis = new Vector3(type.spinAxis);
         this.isDead = false;
         this.isEnemy = type.isEnemy;
+        this.isMakingSound = false;
     }
 
     public void update(float delta){
