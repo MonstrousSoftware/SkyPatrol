@@ -80,6 +80,11 @@ public class CamController extends InputAdapter {
         if (autoUpdate) camera.update();
     }
 
+    public void reset(){
+        tiltAngle = 0;
+        rollAngle = 0;
+    }
+
 
     @Override
     public boolean keyDown (int keycode) {

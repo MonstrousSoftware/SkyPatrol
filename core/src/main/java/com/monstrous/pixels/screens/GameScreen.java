@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.WireFrameBuilder;
@@ -26,7 +27,7 @@ public class GameScreen extends RetroScreen {
     public Model model;
     public SpriteBatch batch;
     public ShapeRenderer shapeRenderer;
-    public Color background;
+    //public Color background;
     private Beep beep;
     private Sound soundLock;
     private Sound soundBoom;
@@ -41,6 +42,9 @@ public class GameScreen extends RetroScreen {
     private float messageTimer = 0;
     private int lives;
     private StringBuilder livesString;
+    private int level;
+    private float levelUpTimer;
+    private float startupTimer;
 
 
     public GameScreen(Main game) {
@@ -61,6 +65,8 @@ public class GameScreen extends RetroScreen {
         cam.update();
 
         world = new World();
+        level = 1;
+        world.populate(level);
 
         //inputController = new CameraInputController(cam);
         inputController = new CamController(cam);
@@ -69,7 +75,7 @@ public class GameScreen extends RetroScreen {
         batch = new SpriteBatch();
         batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
 
-        background = new Color(0.0f, 0.2f, 0.1f, 1.0f); // greenish
+        //background = new Color(0.0f, 0.2f, 0.1f, 1.0f); // greenish
 
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
@@ -106,6 +112,9 @@ public class GameScreen extends RetroScreen {
         livesString.setLength(0);
         livesString.append(20*lives);
         livesString.append("%");
+
+        levelUpTimer = -1;
+        startupTimer = 2;
     }
 
     private void update(float deltaTime){
@@ -152,7 +161,30 @@ public class GameScreen extends RetroScreen {
                 messageTimer = 1f;
             }
         }
+        if(levelUpTimer < 0 && world.enemyCount() == 0){
+            // start next level with a little delay so we can enjoy the explosion
+            levelUpTimer = 2f;
+        }
+        if(levelUpTimer > 0) {
+            //System.out.println("levelUpTimer "+levelUpTimer+" "+deltaTime);
+            levelUpTimer -= deltaTime;
+            if(levelUpTimer <= 0)
+                levelUp();
+        }
+        startupTimer -= deltaTime;
+    }
 
+    private void levelUp(){
+        level++;
+        lives = 5;
+        message = "GET READY!";
+        messageTimer = 2f;
+        world.populate(level);
+        cam.position.set(0f, 10f, 10f);
+        cam.up.set(Vector3.Y);
+        cam.lookAt(0, 10, 0);
+        inputController.reset();
+        startupTimer = 2f;
     }
 
 
@@ -167,14 +199,15 @@ public class GameScreen extends RetroScreen {
             update(deltaTime);
 
         // render frame
-        ScreenUtils.clear(background, true);
+        ScreenUtils.clear(world.getColor(), true);
 
-        modelBatch.begin(cam);
-        modelBatch.render(world.getInstances());
-        modelBatch.end();
+        if(startupTimer < 0) { // hide during start up sequence
+            modelBatch.begin(cam);
+            modelBatch.render(world.getInstances());
+            modelBatch.end();
 
-
-        drawReticule(targetDistance);
+            drawReticule(targetDistance);
+        }
 
         //drawRadar();
 
@@ -185,10 +218,16 @@ public class GameScreen extends RetroScreen {
         //font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
 
+        font.draw(batch, String.format("LEVEL: %d", level), 150, LOWRES_HEIGHT-8);
+
         font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-24);
 
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
         font.draw(batch, message, 100, 10);
+
+        if(startupTimer > 0) { // level up sequence
+            font.draw(batch, String.format("LEVEL: %d", level), 100, LOWRES_HEIGHT/2f);
+        }
         batch.end();
     }
 

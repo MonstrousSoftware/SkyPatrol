@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
@@ -35,6 +36,7 @@ public class World implements Disposable {
     public GameObjectType helicopterType;
     private final GameObject helicopter;
     private final Sound soundRocketFlyBy;
+    private final Color background = new Color();
 
 
 
@@ -84,17 +86,15 @@ public class World implements Disposable {
         gameObjects = new Array<>();
         enemies = new Array<>();  // subset
 
-        populate();
-
         instances = new Array<>();
 
-        generateInstances();
+        //generateInstances();
         helicopter = new GameObject(helicopterType, Vector3.Zero, Vector3.Zero);
 
         soundRocketFlyBy = Gdx.audio.newSound(Gdx.files.internal("sound/rocket-flyby.wav"));
     }
 
-    private void populate(){
+    private void populateOld(){
         addTank(new Vector3(0,0,-150), new Vector3(1,0,0) );
         addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
 
@@ -107,30 +107,46 @@ public class World implements Disposable {
         addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
     }
 
-    private void populate2(){
-        // todo fix seed
-        int numTanks = 10;
-        int numJets = 10;
-        int numBuildings = 30;
+    public Color getColor(){
+        return background;
+    }
 
+    public void populate(int level){
+        int seed = level * 1234;
+        MathUtils.random.setSeed(seed);
+        int numTanks = 1 + 3 * (level-1);
+        int numJets =  3 * (level-1);
+        int numBuildings = 5 * level;
+        float spawnAreaSize = 250f;
+
+        if(level % 2 == 1)
+            background.set(0.0f, 0.2f, 0.1f, 1.0f); // greenish
+        else
+            background.set(0.1f, 0.0f, 0.1f, 1.0f);
+
+        gameObjects.clear();
         for(int i = 0; i < numTanks; i++) {
-            float x = (float)Math.random() * 500f - 250f;
-            float z = (float)Math.random() * 500f - 250f;
-            addTank(new Vector3(x, 0, z), new Vector3(1, 0, 0));
+            float x = (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float z = (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float deg = MathUtils.random(0, 360);
+            addTank(new Vector3(x, 0, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
         }
 
         for(int i = 0; i < numJets; i++) {
-            float x = (float)Math.random() * 500f - 250f;
-            float z = (float)Math.random() * 500f - 250f;
-            float h = 10f + 20f * (float)Math.random();
-            addJet(new Vector3(x, h, z), new Vector3(1, 0, 0));
+            float x =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float h = 10f + 30f * MathUtils.random();
+            float deg = MathUtils.random(0, 360);
+            addJet(new Vector3(x, h, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
         }
 
         for(int i = 0; i < numBuildings; i++) {
-            float x = (float)Math.random() * 500f - 250f;
-            float z = (float)Math.random() * 500f - 250f;
-            addBuilding(new Vector3(x, 0, z), new Vector3(1, 0, 0));
+            float x =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float deg = MathUtils.random(0, 360);
+            addBuilding(new Vector3(x, 0, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
         }
+        generateInstances();
     }
 
     public void addBuilding(Vector3 position, Vector3 direction){
@@ -166,6 +182,10 @@ public class World implements Disposable {
         GameObject go = new GameObject(debrisType, position, direction);
         gameObjects.add(go);
         return go;
+    }
+
+    public int enemyCount(){
+        return enemies.size;
     }
 
     private void generateInstances(){
