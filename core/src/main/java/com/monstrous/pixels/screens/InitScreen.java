@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class InitScreen extends RetroScreen {
 
     private SpriteBatch batch;
+    private Texture texture;
 
 
     public InitScreen(Main game) {
@@ -20,6 +22,7 @@ public class InitScreen extends RetroScreen {
     @Override
     public void show() {
         super.show();
+        texture = new Texture(Gdx.files.internal("images/title.png"));
         batch = new SpriteBatch();
         batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
     }
@@ -31,7 +34,9 @@ public class InitScreen extends RetroScreen {
             game.setScreen( new StartScreen(game) );
 
         batch.begin();
-        font.draw(batch, "PRESS [SPACE]", 70, 32);
+        batch.draw(texture, 0, 0);
+        font.setColor(Color.WHITE);
+        font.draw(batch, "PRESS [SPACE]", 200, 32);
         batch.end();
 
     }
@@ -40,5 +45,6 @@ public class InitScreen extends RetroScreen {
     public void dispose() {
         // Destroy screen's assets here.
         batch.dispose();
+        texture.dispose();
     }
 }

@@ -65,7 +65,7 @@ public class GameScreen extends RetroScreen {
         cam.update();
 
         world = new World();
-        level = 1;
+        level = 0;
         world.populate(level);
 
         //inputController = new CameraInputController(cam);
@@ -104,17 +104,9 @@ public class GameScreen extends RetroScreen {
             }
         });
 
-        message = "ENGAGE!";
-        messageTimer = 1f;
-
-        lives  = 5;
         livesString = new StringBuilder();
-        livesString.setLength(0);
-        livesString.append(20*lives);
-        livesString.append("%");
 
-        levelUpTimer = -1;
-        startupTimer = 2;
+        levelUp();
     }
 
     private void update(float deltaTime){
@@ -161,9 +153,11 @@ public class GameScreen extends RetroScreen {
                 messageTimer = 1f;
             }
         }
-        if(levelUpTimer < 0 && world.enemyCount() == 0){
+        // all enemies defeated? go to next level (after a few seconds)
+        if(world.enemyCount() == 0){
             // start next level with a little delay so we can enjoy the explosion
-            levelUpTimer = 2f;
+            if(levelUpTimer < 0)    // timer not started yet?
+                levelUpTimer = 2f;  // start timer before level up
         }
         if(levelUpTimer > 0) {
             //System.out.println("levelUpTimer "+levelUpTimer+" "+deltaTime);
@@ -177,6 +171,9 @@ public class GameScreen extends RetroScreen {
     private void levelUp(){
         level++;
         lives = 5;
+        livesString.setLength(0);
+        livesString.append(lives * 20);
+        livesString.append("%");
         message = "GET READY!";
         messageTimer = 2f;
         world.populate(level);
@@ -185,6 +182,7 @@ public class GameScreen extends RetroScreen {
         cam.lookAt(0, 10, 0);
         inputController.reset();
         startupTimer = 2f;
+        levelUpTimer = -1;
     }
 
 
