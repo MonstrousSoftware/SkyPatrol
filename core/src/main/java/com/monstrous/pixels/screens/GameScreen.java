@@ -192,7 +192,7 @@ public class GameScreen extends RetroScreen {
     @Override
     protected void renderFrame(float deltaTime) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            game.setScreen(new StartScreen(game));
+            game.setScreen(new NewScoreScreen(game, score));
             return;
         }
         // do updates

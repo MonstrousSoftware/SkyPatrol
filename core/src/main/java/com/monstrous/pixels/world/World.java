@@ -268,8 +268,6 @@ public class World implements Disposable {
                 if (go.timeToFire < 0 && go.direction.dot(go.forward2) > 0.9f) {
                     go.timeToFire = (float) Math.random() * 10f;
                     tmpVec2.set(go.forward2);
-                    //tmpVec2.y += 0.2f;
-                    //tmpVec2.nor();
                     addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
                 }
             }
@@ -284,9 +282,11 @@ public class World implements Disposable {
         Vector3 vel = new Vector3();
         Vector3 axis = new Vector3();
 
-        for(int i = 0; i < 12; i++){
-            float az = (float)Math.random()*360f;
-            axis.setToRandomDirection();
+        target.isDead = true;
+
+        for(int i = 0; i < 12; i++){    // pieces of debris
+            float az = (float)Math.random()*360f; // XZ direction
+            axis.setToRandomDirection();    // spin axis
 
             vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor();
             GameObject go = addDebris(target.position, vel);
@@ -318,17 +318,18 @@ public class World implements Disposable {
     public GameObject rocketHits(Vector3 cameraPosition){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
-            if(r.type == rocketType) {
+            if(r.type == rocketType) { // player rockets
+                // rockets are "heat seeking". They will follow their target.
                 if(r.target != null){
                     // make rocket point towards target (instantly)
                     r.direction.set(r.target.position).sub(r.position).nor();
                 }
-                // player rockets
+                // have we hit an enemy
                 for (GameObject t : enemies) {
                     if (t.type == tankType || t.type == jetType) {
                         if (r.position.dst(t.position) <  t.type.radius) {
                             r.isDead = true;
-                            t.isDead = true;
+
                             blowUp(t);
                             return t;
                         }
