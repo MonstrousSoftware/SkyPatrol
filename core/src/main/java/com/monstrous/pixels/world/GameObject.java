@@ -3,12 +3,15 @@ package com.monstrous.pixels.world;
 import com.badlogic.gdx.math.Vector3;
 
 public class GameObject {
+    // note: this is a fat game object carrying member fields for all types of game objects
+    // but it avoids a class hierarchy
     public final GameObjectType type;
     public final Vector3 position;
     public final Vector3 direction;
     public final Vector3 forward;
     public final Vector3 forward2;
     public final Vector3 spinAxis;
+    public GameObject target;       // for rockets
     public float speed;
     public float turnSpeed;
     public float timeToLive;
@@ -31,6 +34,7 @@ public class GameObject {
         this.timeToLive = type.timeToLive;
         this.timeToFire = (float)Math.random() * 10f;
         this.spinAxis = new Vector3(type.spinAxis);
+        this.target = null;
         this.isDead = false;
         this.isEnemy = type.isEnemy;
         this.isMakingSound = false;

@@ -178,9 +178,10 @@ public class World implements Disposable {
         enemies.add(go);
     }
 
-    public void addFriendlyRocket(Vector3 position, Vector3 direction){
+    public void addFriendlyRocket(Vector3 position, Vector3 direction, GameObject target){
             GameObject go = new GameObject(rocketType, position, direction);
             go.isEnemy = false;
+            go.target = target;
             gameObjects.add(go);
     }
 
@@ -220,9 +221,9 @@ public class World implements Disposable {
         }
     }
 
-    public boolean fireRocket(Camera cam){
+    public boolean fireRocket(Camera cam, GameObject target){
         if(coolDown <= 0) {
-            addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction);
+            addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction, target);
             coolDown = 0.5f;
             return true;
         }
@@ -300,16 +301,16 @@ public class World implements Disposable {
 
     private final Vector3 intersection = new Vector3();
 
-    public float weaponLocked(Camera cam){
+    public GameObject weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
         for(GameObject go : enemies ){
             if(go.type == tankType || go.type == jetType) {
                 if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection)) {
-                    return intersection.dst(cam.position);
+                    return go;
                 }
             }
         }
-        return -1;
+        return null;
     }
 
     /** does a rocket hit any enemy? If so return the object that was hit, otherwise null.
@@ -317,9 +318,11 @@ public class World implements Disposable {
     public GameObject rocketHits(Vector3 cameraPosition){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
-            if(r.type != rocketType  && r.type != enemyRocketType)
-                continue;
-            if(!r.isEnemy) {
+            if(r.type == rocketType) {
+                if(r.target != null){
+                    // make rocket point towards target (instantly)
+                    r.direction.set(r.target.position).sub(r.position).nor();
+                }
                 // player rockets
                 for (GameObject t : enemies) {
                     if (t.type == tankType || t.type == jetType) {
@@ -331,7 +334,7 @@ public class World implements Disposable {
                         }
                     }
                 }
-            } else {
+            } else if(r.type == enemyRocketType){
                 // enemy rockets
                 if(!r.isMakingSound){
                     // if the enemy rocket is close enough, play the rocket sound

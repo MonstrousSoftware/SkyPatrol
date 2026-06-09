@@ -45,6 +45,8 @@ public class GameScreen extends RetroScreen {
     private int level;
     private float levelUpTimer;
     private float startupTimer;
+    private final Vector3 intersection = new Vector3();
+    private GameObject target;
 
 
     public GameScreen(Main game) {
@@ -114,7 +116,7 @@ public class GameScreen extends RetroScreen {
         inputController.update();
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            if(world.fireRocket(cam))
+            if(world.fireRocket(cam, target))   // target may be null
                 soundFire.play();
         }
 
@@ -125,9 +127,10 @@ public class GameScreen extends RetroScreen {
                 message = "";
         }
 
-        targetDistance = world.weaponLocked(cam);   // -1 means no lock
-        if(targetDistance > 0) {
+        target = world.weaponLocked(cam);   // null means no lock
+        if(target != null) {
             //soundLock.play();
+            targetDistance = target.position.dst(cam.position);
             message = "DISTANCE: "+(int)targetDistance;
             messageTimer = 1f;
         }
@@ -204,7 +207,7 @@ public class GameScreen extends RetroScreen {
             modelBatch.render(world.getInstances());
             modelBatch.end();
 
-            drawReticule(targetDistance);
+            drawReticule(target);
         }
 
         //drawRadar();
@@ -229,10 +232,10 @@ public class GameScreen extends RetroScreen {
         batch.end();
     }
 
-    private void drawReticule(float distance){
+    private void drawReticule(GameObject target){
         int dx = 30;
         int sdx = 15;
-        int adx = distance > 0 ? 15 : 30;
+        int adx = target != null ? 15 : 30;
         int dy = 10;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
