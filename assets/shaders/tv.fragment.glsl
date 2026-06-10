@@ -72,9 +72,9 @@ void main()
     //float staticVal = 0.0;
     //float y = uv.y;
 
-    float red 	=   texture2D(	u_texture, 	vec2(uv.x + xOffset -0.02*rgbOffsetOpt,y)).r+staticVal;
+    float red 	=   texture2D(	u_texture, 	vec2(uv.x + xOffset -0.01*rgbOffsetOpt,y)).r+staticVal;
     float green = 	texture2D(	u_texture, 	vec2(uv.x + xOffset,	  y)).g+staticVal;
-    float blue 	=	texture2D(	u_texture, 	vec2(uv.x + xOffset +0.02*rgbOffsetOpt,y)).b+staticVal;
+    float blue 	=	texture2D(	u_texture, 	vec2(uv.x + xOffset +0.01*rgbOffsetOpt,y)).b+staticVal;
 
     vec3 color = vec3(red,green,blue);
     //color = texture2D(u_texture, uv).rgb;

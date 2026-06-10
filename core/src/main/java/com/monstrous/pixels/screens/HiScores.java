@@ -9,17 +9,13 @@ import java.util.Arrays;
 public class HiScores {
     public final int NUM_SCORES = 10;
 
-    Preferences prefs;
+    private final Preferences prefs;
     private final Score[] scores;
 
     public HiScores() {
         prefs = Gdx.app.getPreferences("skypatrol.txt");
         scores = new Score[NUM_SCORES];
         load();
-//        for(int i = 0; i < NUM_SCORES; i++){
-//            scores[i] =  new Score((NUM_SCORES-i)*100, "BOB");
-//        }
-//        save();
     }
 
     public int lowestScore(){

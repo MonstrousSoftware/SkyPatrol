@@ -21,7 +21,7 @@ public class Beep implements Disposable {
         //device = Gdx.audio.newAudioDevice(44100, true);
 
         beep = Gdx.audio.newSound(Gdx.files.internal("sound/beep-02.mp3"));
-        music = Gdx.audio.newMusic(Gdx.files.internal("music/hazel_-_battle_squadron_in_the_game_-_amigaremix_01978.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/Elijah_K - Game.mp3"));
     }
 
 

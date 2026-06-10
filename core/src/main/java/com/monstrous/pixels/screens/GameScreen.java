@@ -35,7 +35,7 @@ public class GameScreen extends RetroScreen {
     private World world;
     private float time;
     private float targetDistance;
-    private boolean enableMusic = false;
+    private boolean enableMusic = true;
     private int score = 0;
     private WireFrameShader wireFrameShader;
     private String message = "";
