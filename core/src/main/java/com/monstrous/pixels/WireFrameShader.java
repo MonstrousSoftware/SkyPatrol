@@ -9,10 +9,6 @@ import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 
 public class WireFrameShader extends DefaultShader {
 
-
-    /** Constructor that includes the terrain parameters.
-     * Terrain parameters can be changed at every frame via the setXXX() methods
-     * */
     public WireFrameShader(Renderable renderable) {
         super(renderable, new Config(
             Gdx.files.internal("shaders/wireframe.vertex.glsl").readString(),

@@ -46,11 +46,12 @@ float staticV(vec2 uv) {
 
 void main()
 {
+    vec2 pix = vec2(1.0/u_resolution.x, 1.0/u_resolution.y);
 
     vec2 uv = v_texCoord0.xy;
 
-    float fuzzOffset = fnoise(vec2(u_time*15.0,uv.y*80.0))*0.003;
-    float largeFuzzOffset = fnoise(vec2(u_time*1.0,uv.y*25.0))*0.004;
+    float fuzzOffset = fnoise(vec2(u_time*15.0,uv.y*80.0))*pix.x*2.0;
+    float largeFuzzOffset = fnoise(vec2(u_time*1.0,uv.y*25.0))*pix.x*10.0;
     float xOffset = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt;
 
     float vertMovementOn = (1.0-step(fnoise(vec2(u_time*0.2,8.0)),0.4))*vertMovementOpt;
@@ -61,34 +62,22 @@ void main()
 
     float staticVal = 0.0;
 
-    for (float y = -1.0; y <= 1.0; y += 1.0) {
-        float maxDist = 5.0/200.0;
-        float dist = y/200.0;
-        staticVal += staticV(vec2(uv.x,uv.y+dist))*(maxDist-abs(dist))*1.5;
-    }
-
-    staticVal *= bottomStaticOpt;
-
-    //float staticVal = 0.0;
-    //float y = uv.y;
-
-    float red 	=   texture2D(	u_texture, 	vec2(uv.x + xOffset -0.01*rgbOffsetOpt,y)).r+staticVal;
+    float red 	=   texture2D(	u_texture, 	vec2(uv.x + xOffset -pix.x*rgbOffsetOpt,y)).r+staticVal;
     float green = 	texture2D(	u_texture, 	vec2(uv.x + xOffset,	  y)).g+staticVal;
-    float blue 	=	texture2D(	u_texture, 	vec2(uv.x + xOffset +0.01*rgbOffsetOpt,y)).b+staticVal;
+    float blue 	=	texture2D(	u_texture, 	vec2(uv.x + xOffset +pix.x*rgbOffsetOpt,y)).b+staticVal;
 
     vec3 color = vec3(red,green,blue);
-    //color = texture2D(u_texture, uv).rgb;
 
-    float scanline = sin(uv.y*800.0)*0.001*scanlinesOpt;
+    float scanline = sin(uv.y*u_resolution.y/2.0)*0.002*scanlinesOpt;
     color -= scanline;
 
-        // vignette effect
-        vec2 dist = v_texCoord0 * (1.0 - v_texCoord0.yx);
-        float vigExtent = 45.0;
-        float vig = dist.x*dist.y * vigExtent; // multiply with sth for intensity
-        float vigPower = 0.15;
-        vig = pow(vig, vigPower); // change pow for modifying the extent of the  vignette
-        color.rgb = mix(color.rgb, color.rgb*vig, 0.9);
+    // vignette effect
+    vec2 dist = v_texCoord0 * (1.0 - v_texCoord0.yx);
+    float vigExtent = 45.0;
+    float vig = dist.x*dist.y * vigExtent; // multiply with sth for intensity
+    float vigPower = 0.15;
+    vig = pow(vig, vigPower); // change pow for modifying the extent of the  vignette
+    color.rgb = mix(color.rgb, color.rgb*vig, 0.9);
 
     gl_FragColor = vec4(color, 1.0);
 }
