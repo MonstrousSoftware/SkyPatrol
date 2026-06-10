@@ -42,12 +42,12 @@ public class NewScoreScreen extends RetroScreen {
 
     @Override
     public void renderFrame(float deltaTime) {
-        if(points < game.lowestScore()){    // not a new hi score, go straight to next screen without adding this score
+        if(points < game.hiScores.lowestScore()){    // not a new hi score, go straight to next screen without adding this score
             game.setScreen(new HiScoreScreen(game));
             return;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            game.addScore(name.toString(), points);
+            game.hiScores.addScore(name.toString(), points);
             game.setScreen(new HiScoreScreen(game));
             return;
         }

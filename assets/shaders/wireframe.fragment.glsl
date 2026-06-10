@@ -11,7 +11,7 @@ varying vec3 v_view;
 void main() {
 
     // discard back facing fragments
-    if( dot(v_normal, v_view) < 0)
+    if( dot(v_normal, v_view) < 0.0)
         discard;
 
     gl_FragColor = u_diffuseColor;

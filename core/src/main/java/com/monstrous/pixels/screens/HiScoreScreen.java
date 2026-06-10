@@ -40,7 +40,7 @@ public class HiScoreScreen extends RetroScreen {
         batch.begin();
         font.draw(batch, "--== HI SCORES ==--", 80, 200);
         for(int i = 0; i < 10; i++){
-            Score score = game.scores[i];
+            Score score = game.hiScores.getScore(i);
             String line = String.format("%8d...%s", score.points, score.name);
             font.draw(batch, line, 80, 180-i*10);
         }
