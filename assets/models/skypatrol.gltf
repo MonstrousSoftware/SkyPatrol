@@ -19,7 +19,8 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11
 			]
 		}
 	],
@@ -67,6 +68,10 @@
 		{
 			"mesh":10,
 			"name":"Debris"
+		},
+		{
+			"mesh":11,
+			"name":"Watermelon"
 		}
 	],
 	"materials":[
@@ -227,6 +232,19 @@
 						"NORMAL":42
 					},
 					"indices":31
+				}
+			]
+		},
+		{
+			"name":"Sphere",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":43,
+						"TEXCOORD_0":44,
+						"NORMAL":45
+					},
+					"indices":46
 				}
 			]
 		}
@@ -599,6 +617,40 @@
 			"componentType":5126,
 			"count":16,
 			"type":"VEC3"
+		},
+		{
+			"bufferView":43,
+			"componentType":5126,
+			"count":408,
+			"max":[
+				0.980785071849823,
+				0.48768332600593567,
+				0.70914226770401
+			],
+			"min":[
+				0,
+				-0.9989581108093262,
+				-0.9989581108093262
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":44,
+			"componentType":5126,
+			"count":408,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":45,
+			"componentType":5126,
+			"count":408,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":46,
+			"componentType":5123,
+			"count":624,
+			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
@@ -859,11 +911,35 @@
 			"byteLength":192,
 			"byteOffset":31200,
 			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":4896,
+			"byteOffset":31392,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":3264,
+			"byteOffset":36288,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":4896,
+			"byteOffset":39552,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":1248,
+			"byteOffset":44448,
+			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":31392,
+			"byteLength":45696,
 			"uri":"skypatrol.bin"
 		}
 	]
