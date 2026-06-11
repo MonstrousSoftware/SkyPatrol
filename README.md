@@ -16,12 +16,15 @@ The wire frame shader does exactly that. It uses the normal vector per vertex, t
 to world space.  In the fragment shader we take the dot product of the normal vector
 and the view vector and discard any that are back facing (dot product less than zero).
 
-To add enemies shooting back.
-Multiple levels (after you've eliminated all enemies).
+
 Mountains on the horizon?
 
 
 Press CONTROL plus LEFT or RIGHT to strafe instead of turn.
+
+
+
+Music: "Game" by Elija_K via Free Music Archive (CC BY)
 
 
 

@@ -39,6 +39,14 @@ public class Beep implements Disposable {
         music.play();
     }
 
+    public void stopMusic(){
+        music.stop();
+    }
+
+    public boolean isMusicPlaying(){
+        return music.isPlaying();
+    }
+
     @Override
     public void dispose() {
         device.dispose();

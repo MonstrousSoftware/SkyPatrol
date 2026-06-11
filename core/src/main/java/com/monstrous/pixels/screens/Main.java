@@ -3,8 +3,6 @@ package com.monstrous.pixels.screens;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import java.util.Arrays;
-
 
 public class Main extends Game {
 

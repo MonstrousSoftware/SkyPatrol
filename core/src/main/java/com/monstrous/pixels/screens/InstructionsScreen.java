@@ -31,7 +31,7 @@ public class InstructionsScreen extends RetroScreen {
         batch = new SpriteBatch();
         batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
 
-        background = Color.CYAN;
+        background = Color.BLUE;
 
         FileHandle file = Gdx.files.internal("instructions.txt");
         text = file.readString();
@@ -49,12 +49,8 @@ public class InstructionsScreen extends RetroScreen {
         ScreenUtils.clear(background, false);
 
         batch.begin();
-        font.setColor(Color.BLACK);
-        font.draw(batch, "--== INSTRUCTIONS ==--", 80, 200);
-        font.draw(batch, text, 10, 180);
-//        for(int i = 0; i < 10; i++){
-//            font.draw(batch, lines.get(i), 80, 180-i*10);
-//        }
+        font.setColor(Color.YELLOW);
+        font.draw(batch, text, 10, 200);
         font.draw(batch, "PRESS 1 TO CONTINUE", 90, 10);
         batch.end();
     }

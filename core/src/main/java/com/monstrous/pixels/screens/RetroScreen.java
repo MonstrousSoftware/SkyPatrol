@@ -73,6 +73,9 @@ public abstract class RetroScreen extends ScreenAdapter {
                 Gdx.graphics.setFullscreenMode(currentMode);
             }
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+            enableCRTeffect = !enableCRTeffect;
+        }
 
         // render a low resolution frame to the frame buffer
         fboSmall.begin();

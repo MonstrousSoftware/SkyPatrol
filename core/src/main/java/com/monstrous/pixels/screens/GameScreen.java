@@ -119,6 +119,12 @@ public class GameScreen extends RetroScreen {
             if(world.fireRocket(cam, target))   // target may be null
                 soundFire.play();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+            if(beep.isMusicPlaying())
+                beep.stopMusic();
+            else
+                beep.startMusic();
+        }
 
         world.update(0.016f, cam.position);//;deltaTime);
         if(messageTimer > 0){
@@ -141,6 +147,7 @@ public class GameScreen extends RetroScreen {
             if(killed.type == world.helicopterType){
                 lives--;
                 livesString.setLength(0);
+                livesString.append("HEALTH: ");
                 livesString.append(lives * 20);
                 livesString.append("%");
                 if(lives > 0) {
@@ -175,6 +182,7 @@ public class GameScreen extends RetroScreen {
         level++;
         lives = 5;
         livesString.setLength(0);
+        livesString.append("HEALTH: ");
         livesString.append(lives * 20);
         livesString.append("%");
         message = "GET READY!";
@@ -210,20 +218,14 @@ public class GameScreen extends RetroScreen {
             drawReticule(target);
         }
 
-        //drawRadar();
-
         int mm = (int)time / 60;
         int ss = (int)time - 60*mm;
 
         batch.begin();
-        //font.draw(batch, "SCORE: ", 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
-
         font.draw(batch, String.format("LEVEL: %d", level), 150, LOWRES_HEIGHT-8);
-
-        font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-24);
-
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
+        font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-18);
         font.draw(batch, message, 100, 10);
 
         if(startupTimer > 0) { // level up sequence
@@ -252,39 +254,6 @@ public class GameScreen extends RetroScreen {
 
         shapeRenderer.end();
     }
-
-//    private final Vector3 tmpV = new Vector3();
-//    private final Quaternion quat = new Quaternion();
-
-//    private void drawRadar(){
-//        float scale = 0.05f;
-//        float cx = 3*LOWRES_WIDTH/4;
-//        float cy = 3*LOWRES_HEIGHT/4;
-//
-//        cam.view.getRotation(quat);
-//        float degrees = 180f + quat.getAngleAround(Vector3.Y);
-//
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Point);
-//        shapeRenderer.setColor(Color.WHITE);
-//        shapeRenderer.point(cx, cy, 0);
-//        shapeRenderer.setColor(Color.BROWN);
-//        for(Building t : world.buildings) {
-//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, -degrees).add(cx, 0, cy);
-//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-//        }
-//        shapeRenderer.setColor(Color.GREEN);
-//        for(Tank t : world.tanks) {
-//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
-//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-//        }
-//        shapeRenderer.setColor(Color.BLUE);
-//        for(Jet t : world.jets) {
-//            tmpV.set(t.position).sub(cam.position).scl(scale).rotate(Vector3.Y, degrees).add(cx, 0, cy);
-//            shapeRenderer.point(tmpV.x, tmpV.z, 0);
-//        }
-//        shapeRenderer.end();
-//    }
 
 
     @Override

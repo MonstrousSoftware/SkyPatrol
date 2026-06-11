@@ -38,7 +38,7 @@ public class HiScoreScreen extends RetroScreen {
         ScreenUtils.clear(background, false);
 
         batch.begin();
-        font.draw(batch, "--== HI SCORES ==--", 80, 200);
+        font.draw(batch, "--== TOP GUNS ==--", 80, 200);
         for(int i = 0; i < 10; i++){
             Score score = game.hiScores.getScore(i);
             String line = String.format("%8d...%s", score.points, score.name);
