@@ -24,10 +24,8 @@ public class GameScreen extends RetroScreen {
     public PerspectiveCamera cam;
     public CamController inputController;
     public ModelBatch modelBatch;
-    public Model model;
     public SpriteBatch batch;
     public ShapeRenderer shapeRenderer;
-    //public Color background;
     private Beep beep;
     private Sound soundLock;
     private Sound soundBoom;
@@ -45,7 +43,7 @@ public class GameScreen extends RetroScreen {
     private int level;
     private float levelUpTimer;
     private float startupTimer;
-    private final Vector3 intersection = new Vector3();
+    //private final Vector3 intersection = new Vector3();
     private GameObject target;
 
 
@@ -98,7 +96,7 @@ public class GameScreen extends RetroScreen {
         ModelInstance instance = world.getInstances().get(1);
         instance.getRenderable(renderable);
         wireFrameShader = new WireFrameShader(renderable);
-        //modelBatch = new ModelBatch();
+
         modelBatch = new ModelBatch(new DefaultShaderProvider() {
             @Override
             protected Shader createShader(final Renderable renderable) {
@@ -255,12 +253,18 @@ public class GameScreen extends RetroScreen {
         shapeRenderer.end();
     }
 
+    @Override
+    public void hide() {
+        dispose();
+    }
 
     @Override
     public void dispose() {
+        System.out.println("RetroScreen.dispose()");
+        if(beep.isMusicPlaying())
+            beep.stopMusic();
         world.dispose();
         modelBatch.dispose();
-        model.dispose();
         batch.dispose();
         shapeRenderer.dispose();
     }

@@ -115,6 +115,7 @@ public abstract class RetroScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        //System.out.println("RetroScreen.dispose()");
         fboSmall.dispose();
         fbo.dispose();
         font.dispose();
