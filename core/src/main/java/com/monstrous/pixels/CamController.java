@@ -12,6 +12,7 @@ public class CamController extends InputAdapter {
     public float rotateSpeed = 90f;
     public float tiltSpeed = 30f;
     public float forwardSpeed = 10f;
+    public float strafeSpeed = 10f;
     public float tiltMax = 30f;
     public final float maxRoll = 30f;
     public final float rollSpeed = 80f;
@@ -57,8 +58,8 @@ public class CamController extends InputAdapter {
         if(controlPressed){
             // strafe
             // use a cross product of up and forward to get a left vector.  Then remove the vertical component, normalize and scale
-            if (rotateRightPressed) camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(-delta*20));
-            if (rotateLeftPressed)  camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(delta*20));
+            if (rotateRightPressed) camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(-delta*strafeSpeed));
+            if (rotateLeftPressed)  camera.translate( tmpV1.set(camera.up).crs(camera.direction).scl(1,0,1).nor().scl(delta*strafeSpeed));
 
         } else {
             // yaw

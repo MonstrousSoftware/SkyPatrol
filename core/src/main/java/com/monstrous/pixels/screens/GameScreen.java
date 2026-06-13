@@ -39,6 +39,7 @@ public class GameScreen extends RetroScreen {
     private String message = "";
     private float messageTimer = 0;
     private int lives;
+    private boolean gettingHit;
     private StringBuilder livesString;
     private int level;
     private float levelUpTimer;
@@ -139,10 +140,13 @@ public class GameScreen extends RetroScreen {
             messageTimer = 1f;
         }
 
+        gettingHit = false;
         GameObject killed = world.rocketHits(cam.position);
         if(killed != null){
             soundBoom.play();
+
             if(killed.type == world.helicopterType){
+                gettingHit = true;
                 lives--;
                 livesString.setLength(0);
                 livesString.append("HEALTH: ");
@@ -206,7 +210,7 @@ public class GameScreen extends RetroScreen {
             update(deltaTime);
 
         // render frame
-        ScreenUtils.clear(world.getColor(), true);
+        ScreenUtils.clear(gettingHit ? Color.WHITE: world.getColor(), true);
 
         if(startupTimer < 0) { // hide during start up sequence
             modelBatch.begin(cam);

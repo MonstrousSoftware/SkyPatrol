@@ -57,8 +57,8 @@ public class World implements Disposable {
         Model helicopterModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.WHITE);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
-        tankType.speed = 5f;
-        tankType.turnSpeed = 1f;
+        tankType.speed = 3f;
+        tankType.turnSpeed = 2f;
         tankType.scorePoints = 100;
         tankType.isEnemy = true;
         jetType = new GameObjectType("JET", jetModel);
@@ -68,7 +68,7 @@ public class World implements Disposable {
         jetType.isEnemy = true;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
-        rocketType.timeToLive = 5f;
+        rocketType.timeToLive = 4f;
         enemyRocketType = new GameObjectType("ROCKET", rocketModel);
         enemyRocketType.speed = 60f;
         enemyRocketType.timeToLive = 5f;
@@ -117,15 +117,15 @@ public class World implements Disposable {
         int seed = level * 1234;
         MathUtils.random.setSeed(seed);
         int numTanks = 1 + 3 * (level-1);
-        int numJets =  3 * (level-1);
+        int numJets =  2 * (level-1);
         int numBuildings = 5 * level;
         int numTowers = 1;
-        float spawnAreaSize = 250f;
+        float spawnAreaSize = 250f+10*level;
 
         if(level == 1)
             background.set(0.0f, 0.2f, 0.1f, 1.0f); // greenish
         else
-        background.set(MathUtils.random()*0.3f, MathUtils.random()*0.3f, MathUtils.random()*0.3f, 1.0f);
+            background.set(MathUtils.random()*0.3f, MathUtils.random()*0.3f, MathUtils.random()*0.3f, 1.0f);
 
         gameObjects.clear();
         for(int i = 0; i < numTanks; i++) {

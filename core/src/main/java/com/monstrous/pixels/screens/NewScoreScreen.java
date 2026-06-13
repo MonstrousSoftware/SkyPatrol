@@ -78,7 +78,10 @@ public class NewScoreScreen extends RetroScreen {
         font.draw(batch, "--== NEW HI SCORE ==--", 80, 200);
         font.draw(batch, pointsString, 150, 160);
         font.draw(batch, name, 150, 100);
+        font.draw(batch, "USE CURSOR KEYS TO EDIT NAME", 40, 60);
         font.draw(batch, "PRESS 1 TO CONTINUE", 90, 10);
+
+        font.draw(batch, "_", 150+9*charIndex, 96);
         batch.end();
     }
 
