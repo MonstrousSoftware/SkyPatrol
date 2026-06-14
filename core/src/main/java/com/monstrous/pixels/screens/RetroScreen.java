@@ -37,7 +37,7 @@ public abstract class RetroScreen extends ScreenAdapter {
     public BitmapFont font;
     public Color borderColor;
     private int pixelScale;
-    private int savedWidth, savedHeight;
+    //private int savedWidth, savedHeight;
     protected final Main game;
     protected boolean enableCRTeffect = true;
 
@@ -66,10 +66,11 @@ public abstract class RetroScreen extends ScreenAdapter {
             boolean fullScreen = Gdx.graphics.isFullscreen();
             Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
             if (fullScreen)
-                Gdx.graphics.setWindowedMode(savedWidth, savedHeight);
+                Gdx.graphics.setWindowedMode(game.savedWidth, game.savedHeight);
             else {
-                savedWidth = Gdx.graphics.getWidth();
-                savedHeight = Gdx.graphics.getHeight();
+                // save window size in the Main class so it persists over different screens
+                game.savedWidth = Gdx.graphics.getWidth();
+                game.savedHeight = Gdx.graphics.getHeight();
                 Gdx.graphics.setFullscreenMode(currentMode);
             }
         }

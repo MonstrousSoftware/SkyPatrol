@@ -68,7 +68,7 @@ public class World implements Disposable {
         jetType.isEnemy = true;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
-        rocketType.timeToLive = 4f;
+        rocketType.timeToLive = 5f;
         enemyRocketType = new GameObjectType("ROCKET", rocketModel);
         enemyRocketType.speed = 60f;
         enemyRocketType.timeToLive = 5f;

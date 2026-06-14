@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 public class Main extends Game {
 
     public HiScores hiScores;
+    public int savedWidth, savedHeight;
 
     @Override
     public void create() {
