@@ -37,7 +37,6 @@ public abstract class RetroScreen extends ScreenAdapter {
     public BitmapFont font;
     public Color borderColor;
     private int pixelScale;
-    //private int savedWidth, savedHeight;
     protected final Main game;
     protected boolean enableCRTeffect = true;
 

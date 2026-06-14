@@ -17,7 +17,7 @@ public class Main extends Game {
         if(Gdx.app.getType() == Application.ApplicationType.WebGL)
             setScreen(new InitScreen(this));
         else
-            setScreen(new InitScreen(this));
+            setScreen(new LoadScreen(this));
 
     }
 
