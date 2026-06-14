@@ -26,7 +26,7 @@ public class World implements Disposable {
     private final Terrain terrain;
     private final Vector3 tmpVec = new Vector3();
     private final Vector3 tmpVec2 = new Vector3();
-    private float coolDown = 0;
+    private float rocketCoolDown = 0;
     public GameObjectType tankType;
     public GameObjectType jetType;
     public GameObjectType buildingType;
@@ -68,7 +68,7 @@ public class World implements Disposable {
         jetType.isEnemy = true;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
-        rocketType.timeToLive = 5f;
+        rocketType.timeToLive = 7f;
         enemyRocketType = new GameObjectType("ROCKET", rocketModel);
         enemyRocketType.speed = 60f;
         enemyRocketType.timeToLive = 5f;
@@ -90,31 +90,20 @@ public class World implements Disposable {
 
         instances = new Array<>();
 
-        //generateInstances();
+        // this game object is not placed in the gameObjects array, is never visible
+        // but used to signify the player
         helicopter = new GameObject(helicopterType, Vector3.Zero, Vector3.Zero);
 
         soundRocketFlyBy = Gdx.audio.newSound(Gdx.files.internal("sound/rocket-flyby.wav"));
     }
 
-    private void populateOld(){
-        addTank(new Vector3(0,0,-150), new Vector3(1,0,0) );
-        addTank(new Vector3(28,0,0), new Vector3(0,0,1) );
-
-        addBuilding(new Vector3(0,0,-20), new Vector3(1,0,0) );
-
-        addBuilding(new Vector3(10,0,0), new Vector3(1,0,1) );
-        addBuilding(new Vector3(38,0,0), new Vector3(-1,0,-1) );
-
-        addJet( new Vector3(0,18,60), new Vector3(1,0,0));
-        addJet( new Vector3(68,22,0), new Vector3(0, 0, 1));
-    }
 
     public Color getColor(){
         return background;
     }
 
     public void populate(int level){
-        int seed = level * 1234;
+        int seed = level * 1234;        // random but reproducible
         MathUtils.random.setSeed(seed);
         int numTanks = 1 + 3 * (level-1);
         int numJets =  2 * (level-1);
@@ -189,7 +178,6 @@ public class World implements Disposable {
         GameObject go = new GameObject(enemyRocketType, position, direction);
         go.isEnemy = true;
         gameObjects.add(go);
-        //rocketFlyBy.play();
     }
 
     public GameObject addDebris(Vector3 position, Vector3 direction){
@@ -212,7 +200,7 @@ public class World implements Disposable {
             instance = new ModelInstance(go.type.model, go.position);
             instance.transform.rotate(Vector3.Z, go.forward);
             instances.add(instance);
-            // for tank turret etc.
+            // for tank turret
             if(go.type.model2 != null){
                 instance = new ModelInstance(go.type.model2, go.position);
                 instance.transform.rotate(Vector3.Z, go.forward2);
@@ -221,17 +209,19 @@ public class World implements Disposable {
         }
     }
 
+    /** player fires rocket in camera's forward direction. Target may be null.
+     */
     public boolean fireRocket(Camera cam, GameObject target){
-        if(coolDown <= 0) {
+        if(rocketCoolDown <= 0) {
             addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction, target);
-            coolDown = 0.5f;
+            rocketCoolDown = 0.5f;
             return true;
         }
         return false;
     }
 
     public void update( float deltaTime, Vector3 cameraPosition ){
-        coolDown -= deltaTime;
+        rocketCoolDown -= deltaTime;
 
         Array<GameObject> toDelete = new Array<>();
         for(GameObject go : gameObjects){
@@ -286,7 +276,7 @@ public class World implements Disposable {
 
         for(int i = 0; i < 12; i++){    // pieces of debris
             float az = (float)Math.random()*360f; // XZ direction
-            axis.setToRandomDirection();    // spin axis
+            axis.setToRandomDirection();    // random spin axis
 
             vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor();
             GameObject go = addDebris(target.position, vel);
@@ -301,13 +291,12 @@ public class World implements Disposable {
 
     private final Vector3 intersection = new Vector3();
 
+    /** Use ray casting to check if there is an enemy directly in front. Returns null if not */
     public GameObject weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
         for(GameObject go : enemies ){
-            if(go.type == tankType || go.type == jetType) {
-                if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection)) {
-                    return go;
-                }
+            if (Intersector.intersectRaySphere(ray, go.position, go.type.radius, intersection)) {
+                return go;
             }
         }
         return null;
@@ -319,39 +308,37 @@ public class World implements Disposable {
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
             if(r.type == rocketType) { // player rockets
-                // rockets are "heat seeking". They will follow their target.
+                // rocket with a target are "heat seeking". They will follow their target.
                 if(r.target != null){
                     // make rocket point towards target (instantly)
                     r.direction.set(r.target.position).sub(r.position).nor();
                 }
-                // have we hit an enemy
+                // have we hit an enemy?
                 for (GameObject t : enemies) {
-                    if (t.type == tankType || t.type == jetType) {
-                        if (r.position.dst(t.position) <  t.type.radius) {
-                            r.isDead = true;
-
-                            blowUp(t);
-                            return t;
-                        }
+                    if (r.position.dst(t.position) <  t.type.radius) {
+                        r.isDead = true;    // delete rocket
+                        blowUp(t);          // blow up enemy
+                        return t;
                     }
                 }
-            } else if(r.type == enemyRocketType){
-                // enemy rockets
+            } else if(r.type == enemyRocketType){ // enemy rockets
+
+                // if the enemy rocket is close enough, play the rocket sound
                 if(!r.isMakingSound){
-                    // if the enemy rocket is close enough, play the rocket sound
+
                     float dist = camera.position.dst(r.position);
                     if(dist < 100f){
                         r.isMakingSound = true;
                         soundRocketFlyBy.play();
                     }
                 }
-                if(r.position.dst(camera.position) < 2f){    // is size of hitbox
+                // if the enemy rocket is very close, take damage or die
+                if(r.position.dst(camera.position) < 1f){    // is size of hitbox
                     float dot = r.direction.dot(camera.direction);
                     System.out.println("rocket angle: "+dot);
                     if(dot < -0.5f) {   // rockets from behind will always miss
-                        r.isDead = true;
-                        Gdx.app.log("PLAYER HIT", "");
-                        return helicopter;
+                        r.isDead = true;    // delete rocket
+                        return helicopter;  // signifies the player was hit
                     }
                 }
             }

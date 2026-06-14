@@ -33,7 +33,7 @@ public class GameScreen extends RetroScreen {
     private World world;
     private float time;
     private float targetDistance;
-    private boolean enableMusic = true;
+    //private boolean enableMusic = true;
     private int score = 0;
     private WireFrameShader wireFrameShader;
     private String message = "";
@@ -45,6 +45,7 @@ public class GameScreen extends RetroScreen {
     private float levelUpTimer;
     private float startupTimer;
     private GameObject target;
+    private boolean oneLife = true;
 
 
     public GameScreen(Main game) {
@@ -85,7 +86,7 @@ public class GameScreen extends RetroScreen {
 
         beep = new Beep();
 
-        if(enableMusic)
+        if(game.enableMusic)
             beep.startMusic();
 
         Renderable renderable = new Renderable();
@@ -114,13 +115,16 @@ public class GameScreen extends RetroScreen {
                 soundFire.play();
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            if(beep.isMusicPlaying())
+            if (beep.isMusicPlaying()) {
                 beep.stopMusic();
-            else
+                game.enableMusic = false;
+            } else {
+                game.enableMusic = true;
                 beep.startMusic();
+            }
         }
 
-        world.update(0.016f, cam.position);//;deltaTime);
+        world.update(deltaTime, cam.position);
         if(messageTimer > 0){
             messageTimer -= deltaTime;
             if(messageTimer <= 0)
@@ -142,12 +146,12 @@ public class GameScreen extends RetroScreen {
 
             if(killed.type == world.helicopterType){
                 gettingHit = true;
-                lives--;
+                lives-= oneLife ? 5 : 1;
                 livesString.setLength(0);
                 livesString.append("HEALTH: ");
                 livesString.append(lives * 20);
                 livesString.append("%");
-                if(lives > 0) {
+                if(!oneLife && lives > 0) {
                     message = "TAKING DAMAGE!";
                     messageTimer = 1f;
                 } else {
@@ -221,7 +225,8 @@ public class GameScreen extends RetroScreen {
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("LEVEL: %d", level), 150, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
-        font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-18);
+        if(!oneLife)
+            font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-18);
         font.draw(batch, message, 100, 10);
 
         if(startupTimer > 0) { // level up sequence
