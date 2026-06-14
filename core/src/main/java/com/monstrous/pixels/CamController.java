@@ -53,8 +53,6 @@ public class CamController extends InputAdapter {
         rollAngle += roll;
         camera.rotate(camera.direction, roll);
 
-
-
         if(controlPressed){
             // strafe
             // use a cross product of up and forward to get a left vector.  Then remove the vertical component, normalize and scale
@@ -63,8 +61,8 @@ public class CamController extends InputAdapter {
 
         } else {
             // yaw
-            if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
-            if (rotateLeftPressed) camera.rotate(Vector3.Y, -delta * rollAngle);
+            if (rotateRightPressed) camera.rotate(Vector3.Y, -delta * rollAngle *1.5f);
+            if (rotateLeftPressed) camera.rotate(Vector3.Y, -delta * rollAngle *1.5f);
         }
 
         // tilt camera up/down (pitch) up to a max of 45 degrees

@@ -266,7 +266,7 @@ public class World implements Disposable {
                 // and cool down period is expired, then fire a rocket
                 go.timeToFire -= deltaTime;
                 if (go.timeToFire < 0 && go.direction.dot(go.forward2) > 0.9f) {
-                    go.timeToFire = (float) Math.random() * 10f;
+                    go.timeToFire = (float) Math.random() * 3f;
                     tmpVec2.set(go.forward2);
                     addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
                 }
@@ -315,7 +315,7 @@ public class World implements Disposable {
 
     /** does a rocket hit any enemy? If so return the object that was hit, otherwise null.
      * If the player was hit, we return the helicopter object. */
-    public GameObject rocketHits(Vector3 cameraPosition){
+    public GameObject rocketHits(Camera camera){
         for(int i = 0; i < gameObjects.size; i++ ){
             GameObject r = gameObjects.get(i);
             if(r.type == rocketType) { // player rockets
@@ -339,16 +339,20 @@ public class World implements Disposable {
                 // enemy rockets
                 if(!r.isMakingSound){
                     // if the enemy rocket is close enough, play the rocket sound
-                    float dist = cameraPosition.dst(r.position);
+                    float dist = camera.position.dst(r.position);
                     if(dist < 100f){
                         r.isMakingSound = true;
                         soundRocketFlyBy.play();
                     }
                 }
-                if(r.position.dst(cameraPosition) < 2f){    // is size of hitbox
-                    r.isDead = true;
-                    Gdx.app.log("PLAYER HIT", "");
-                    return helicopter;
+                if(r.position.dst(camera.position) < 2f){    // is size of hitbox
+                    float dot = r.direction.dot(camera.direction);
+                    System.out.println("rocket angle: "+dot);
+                    if(dot < -0.5f) {   // rockets from behind will always miss
+                        r.isDead = true;
+                        Gdx.app.log("PLAYER HIT", "");
+                        return helicopter;
+                    }
                 }
             }
         }

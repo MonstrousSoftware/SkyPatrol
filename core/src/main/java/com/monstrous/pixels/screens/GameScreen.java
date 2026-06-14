@@ -44,7 +44,6 @@ public class GameScreen extends RetroScreen {
     private int level;
     private float levelUpTimer;
     private float startupTimer;
-    //private final Vector3 intersection = new Vector3();
     private GameObject target;
 
 
@@ -69,14 +68,11 @@ public class GameScreen extends RetroScreen {
         level = 0;
         world.populate(level);
 
-        //inputController = new CameraInputController(cam);
         inputController = new CamController(cam);
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
 
         batch = new SpriteBatch();
         batch.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
-
-        //background = new Color(0.0f, 0.2f, 0.1f, 1.0f); // greenish
 
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
@@ -88,7 +84,6 @@ public class GameScreen extends RetroScreen {
         soundFire = Gdx.audio.newSound(Gdx.files.internal("sound/fire.wav"));
 
         beep = new Beep();
-        //beep.beep();
 
         if(enableMusic)
             beep.startMusic();
@@ -141,7 +136,7 @@ public class GameScreen extends RetroScreen {
         }
 
         gettingHit = false;
-        GameObject killed = world.rocketHits(cam.position);
+        GameObject killed = world.rocketHits(cam);
         if(killed != null){
             soundBoom.play();
 
@@ -172,7 +167,6 @@ public class GameScreen extends RetroScreen {
                 levelUpTimer = 2f;  // start timer before level up
         }
         if(levelUpTimer > 0) {
-            //System.out.println("levelUpTimer "+levelUpTimer+" "+deltaTime);
             levelUpTimer -= deltaTime;
             if(levelUpTimer <= 0)
                 levelUp();
@@ -264,7 +258,6 @@ public class GameScreen extends RetroScreen {
 
     @Override
     public void dispose() {
-        System.out.println("RetroScreen.dispose()");
         if(beep.isMusicPlaying())
             beep.stopMusic();
         world.dispose();
