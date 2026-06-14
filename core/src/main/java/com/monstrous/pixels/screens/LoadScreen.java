@@ -72,10 +72,18 @@ public class LoadScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if(!more && Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            game.setScreen(new StartScreen(game));
+            return;
+        }
+        fbo.begin();
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         if (onPause ){
-            sb.setLength(0);
-            sb.append("> LOAD \"SKYPATROL\"");
+            batch.begin();
+            font.draw(batch, "> LOAD \"SKYPATROL\"", 0, 160);
+            batch.end();
+
             if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
                 onPause = false;
                 sb.append("\n");
@@ -104,7 +112,7 @@ public class LoadScreen extends ScreenAdapter {
                 }
             }
 
-            for(int i = 0; i < 64; i++) {
+            for (int i = 0; i < 512; i++) {
                 int col = oriPixmap.getPixel(x, y);
                 pixmap.drawPixel(x, y, col);
                 x++;
@@ -113,21 +121,19 @@ public class LoadScreen extends ScreenAdapter {
                     x = 0;
                 }
             }
-            newTexture.draw(pixmap, 0,0);
+            newTexture.draw(pixmap, 0, 0);
 
 
-
-
+            batch.begin();
+            batch.draw(newTexture, 0, 0);
+            if (!more) {
+                font.setColor(Color.BLACK);
+                font.draw(batch, "PRESS [SPACE]", 120, 10);
+            }
+            batch.end();
 
         }
-        fbo.begin();
-            ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-            batch.begin();
-            //if(!more)
-                batch.draw(newTexture, 0,0);
-//            else
-//                font.draw(batch, sb.toString(), 0, 160);
-            batch.end();
+
         fbo.end();
         filter.render(fbo);
     }

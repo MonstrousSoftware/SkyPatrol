@@ -15,7 +15,7 @@ public class Main extends Game {
         hiScores = new HiScores();
 
         if(Gdx.app.getType() == Application.ApplicationType.WebGL)
-            setScreen(new InitScreen(this));
+            setScreen(new LoadScreen(this));
         else
             setScreen(new LoadScreen(this));
 

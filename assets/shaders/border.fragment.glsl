@@ -34,6 +34,7 @@ void main()
     // is this pixel in the border?
     if(uv.y < borderHeight || uv.y > 1.0-borderHeight || uv.x < borderWidth || uv.x > 1.0-borderWidth){
         int line = int(uv.y*128.0);
+        //int b = int(mod(line, 3.0));
         int b = u_pattern[line];
         color = u_colors[b];  // black, yellow or blue
         //color = vec3(1-b, 1-b, b);
