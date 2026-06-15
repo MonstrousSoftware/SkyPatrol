@@ -18,7 +18,7 @@ The wire frame shader does exactly that. It uses the normal vector per vertex, t
 to world space.  In the fragment shader we take the dot product of the normal vector
 and the view vector and discard any that are back facing (dot product less than zero).
 
-
+todo: use texture instead of uniform array for the border pattern as in WebGP you can only use a constant as index into an array. 
 
 
 Mountains on the horizon?

@@ -22,6 +22,8 @@ import javax.swing.*;
 public class LoadScreen extends ScreenAdapter {
     public final int LOWRES_WIDTH = 320;
     public final int LOWRES_HEIGHT = 240;
+    public final int ZX_WIDTH = 256;
+    public final int ZX_HEIGHT = 192;
 
     final static String FILE_NAME = "tapes/input.wav";
 
@@ -42,11 +44,15 @@ public class LoadScreen extends ScreenAdapter {
     private int x, y;
 
     public LoadScreen(Main game) {
+
+        //super(game); //
         this.game = game;
     }
 
     @Override
     public void show() {
+        super.show();
+
         font = new BitmapFont(Gdx.files.internal("font/zx-spectrum.fnt"));
         font.setColor(Color.GREEN);
         font.getLineHeight();
@@ -55,7 +61,7 @@ public class LoadScreen extends ScreenAdapter {
         filter = new BorderFilter();
         sound = Gdx.audio.newSound(Gdx.files.internal(FILE_NAME));
 
-        texture = new Texture(Gdx.files.internal("images/title.png"));
+        texture = new Texture(Gdx.files.internal("images/choppa-zx.png"));
         if (!texture.getTextureData().isPrepared()) {
             texture.getTextureData().prepare();
         }
@@ -79,12 +85,12 @@ public class LoadScreen extends ScreenAdapter {
         fbo.begin();
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
-        if (onPause ){
+        if ( onPause ){
             batch.begin();
             font.draw(batch, "> LOAD \"SKYPATROL\"", 0, 160);
             batch.end();
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 onPause = false;
                 sb.append("\n");
                 x = 0;
@@ -102,8 +108,10 @@ public class LoadScreen extends ScreenAdapter {
                 }
             }
         } else {
+            // convert a few ms of samples
             more = cassette.updateConversion(delta);
 
+            // read any converted bytes
             while (cassette.isDataReady()) {
                 byte b = cassette.getByte();
                 if (b != 0) {   // for ascii this makes sense
@@ -112,6 +120,7 @@ public class LoadScreen extends ScreenAdapter {
                 }
             }
 
+            // visual feedback
             for (int i = 0; i < 512; i++) {
                 int col = oriPixmap.getPixel(x, y);
                 pixmap.drawPixel(x, y, col);
@@ -138,6 +147,7 @@ public class LoadScreen extends ScreenAdapter {
         filter.render(fbo);
     }
 
+
     @Override
     public void hide() {
         dispose();
@@ -158,12 +168,4 @@ public class LoadScreen extends ScreenAdapter {
         filter.dispose();
         fbo.dispose();
     }
-
-//    private void writeMessage(){
-//        String msg = "Now is the time for all good men\nto come to the aid of the party.\nDrink your Ovaltine.";
-//        WavIO wavIO = new WavIO();
-//        byte[] newSamples = cassette.convertToSamples(msg.getBytes());
-//        if (!wavIO.write(Gdx.files.local("output.wav"), newSamples))
-//            System.out.println("WRITE ERROR");
-//    }
 }

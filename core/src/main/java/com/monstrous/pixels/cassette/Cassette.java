@@ -52,7 +52,7 @@ public class Cassette {
             int value = convertNextByte();
             if(value < 0){
                 conversionFinished = true;
-                border.setBorderColor(0);
+                border.setBorderColor(BorderFilter.BLACK);
                 break;
             }
             byte k = (byte)value;
@@ -96,7 +96,7 @@ public class Cassette {
                 digit = 2;
 
             if(border != null)
-                border.changeColor(digit == 0 ? 1 : 2);     // do a ZX Spectrum style border color change
+                border.changeColor(digit == 0 ? BorderFilter.YELLOW : BorderFilter.CYAN);     // do a ZX Spectrum style border color change
 
             character[charIndex] = digit;
         }
@@ -129,7 +129,7 @@ public class Cassette {
         sampleIndex = 0;
         conversionFinished = false;
         charTimer = 0;
-        border.setBorderColor(2);
+        border.setBorderColor(BorderFilter.CYAN);
     }
 
     public boolean isDataReady(){
