@@ -22,7 +22,7 @@ import com.monstrous.pixels.world.World;
 /** Shared screen adapter that will expand a low resolution frame to the full screen and apply visual effects.
  * Takes care of the frame buffers, upscaling etc.
  * Provides font.
- * Subclasses need to implement renderFrame()
+ * Subclasses need to implement renderFrame() and call super methods in constructor and show().
  */
 
 

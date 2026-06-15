@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Disposable;
 
 
-public class BorderFilter implements Disposable {
+public class Border implements Disposable {
 
     private static final int BORDER_SIZE = 50;
     private static final int NUM_STRIPES = 128;
@@ -26,18 +26,17 @@ public class BorderFilter implements Disposable {
     private int width, height;
 
 
-    public BorderFilter() {
+    public Border() {
 
         // texture for the border pattern, we only need one pixel of width which will be stretched for the full screen width
         // NUM_STRIPES defines the vertical resolution
-        patternTexture = new Texture(1, NUM_STRIPES, Pixmap.Format.RGBA8888);
-        patternPixmap = new Pixmap(1, NUM_STRIPES, Pixmap.Format.RGBA8888);
+        // we don't need an alpha channel
+        patternTexture = new Texture(1, NUM_STRIPES, Pixmap.Format.RGB565);
+        patternPixmap = new Pixmap(1, NUM_STRIPES, Pixmap.Format.RGB565);
 
         batch = new SpriteBatch();
         setBorderColor(BLACK);
     }
-
-    private final Color color = new Color();
 
     /** add a horizontal color bar */
     public void changeColor(int colorCode){
@@ -71,6 +70,10 @@ public class BorderFilter implements Disposable {
         this.width = width;
         this.height = height;
         batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+    }
+
+    public Texture getBorderTexture(){
+        return patternTexture;
     }
 
     public void render( FrameBuffer fbo ) {

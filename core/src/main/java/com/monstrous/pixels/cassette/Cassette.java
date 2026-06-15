@@ -1,6 +1,6 @@
 package com.monstrous.pixels.cassette;
 
-import com.monstrous.pixels.filters.BorderFilter;
+import com.monstrous.pixels.filters.Border;
 
 /** Class to convert audio samples to data */
 public class Cassette {
@@ -19,13 +19,13 @@ public class Cassette {
     private float charTimer;
     private byte[] samples;     // audio samples
     private int sampleIndex;
-    private final BorderFilter border;
+    private final Border border;
 
-    public Cassette(BorderFilter border){
+    public Cassette(Border border){
         this(border, 18000, 0.004f);
     }
 
-    public Cassette(BorderFilter border, int sampleRate, float sequenceDuration) {
+    public Cassette(Border border, int sampleRate, float sequenceDuration) {
         this.border = border;
         this.sampleRate = sampleRate;
         this.sequenceDuration = sequenceDuration;
@@ -52,7 +52,7 @@ public class Cassette {
             int value = convertNextByte();
             if(value < 0){
                 conversionFinished = true;
-                border.setBorderColor(BorderFilter.BLACK);
+                border.setBorderColor(Border.BLACK);
                 break;
             }
             byte k = (byte)value;
@@ -96,7 +96,7 @@ public class Cassette {
                 digit = 2;
 
             if(border != null)
-                border.changeColor(digit == 0 ? BorderFilter.YELLOW : BorderFilter.CYAN);     // do a ZX Spectrum style border color change
+                border.changeColor(digit == 0 ? Border.YELLOW : Border.CYAN);     // do a ZX Spectrum style border color change
 
             character[charIndex] = digit;
         }
@@ -129,7 +129,7 @@ public class Cassette {
         sampleIndex = 0;
         conversionFinished = false;
         charTimer = 0;
-        border.setBorderColor(BorderFilter.CYAN);
+        border.setBorderColor(Border.CYAN);
     }
 
     public boolean isDataReady(){
