@@ -252,7 +252,7 @@ public class GameScreen extends RetroScreen {
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
         if(!oneLife)
             font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-18);
-        font.draw(batch, message, 100, 10);
+        font.draw(batch, message, 10, 10);
 
         if(startupTimer > 0) { // level up sequence
             font.draw(batch, String.format("LEVEL: %d", level), 100, LOWRES_HEIGHT/2f);

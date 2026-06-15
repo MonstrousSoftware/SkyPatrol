@@ -27,6 +27,7 @@ public class World implements Disposable {
     private final Vector3 tmpVec = new Vector3();
     private final Vector3 tmpVec2 = new Vector3();
     private float rocketCoolDown = 0;
+    private float rocketFireRate = 2f;
     public GameObjectType tankType;
     public GameObjectType jetType;
     public GameObjectType buildingType;
@@ -35,6 +36,8 @@ public class World implements Disposable {
     public GameObjectType towerType;
     public GameObjectType debrisType;
     public GameObjectType helicopterType;
+    public GameObjectType watermelonType;
+    private GameObject watermelon;
     private final GameObject helicopter;
     private final Sound soundRocketFlyBy;
     private final Color background = new Color();
@@ -55,6 +58,7 @@ public class World implements Disposable {
         Model jetModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Jet"), Color.CYAN);
         Model debrisModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Debris"), Color.BLACK);
         Model helicopterModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.WHITE);
+        Model watermelonModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Watermelon"), Color.GREEN);
 
         tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
         tankType.speed = 3f;
@@ -80,6 +84,9 @@ public class World implements Disposable {
         debrisType.timeToLive = 8f;
         debrisType.spinSpeed = 150f;
         debrisType.gravity = 1f;
+        watermelonType = new GameObjectType("LEVITATING WATERMELON", watermelonModel);
+        watermelonType.speed = 0f;
+        watermelonType.spinSpeed = 150f;
         helicopterType = new GameObjectType("HELICOPTER", helicopterModel);
 
 
@@ -144,6 +151,12 @@ public class World implements Disposable {
             float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
             addTower(new Vector3(x, 0, z), new Vector3(1,0,1));
         }
+
+        for(int i = 0; i < 1; i++) {
+            float x =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
+            watermelon = addWatermelon(new Vector3(x, 8, z));   // add height
+        }
         generateInstances();
     }
 
@@ -168,10 +181,10 @@ public class World implements Disposable {
     }
 
     public void addFriendlyRocket(Vector3 position, Vector3 direction, GameObject target){
-            GameObject go = new GameObject(rocketType, position, direction);
-            go.isEnemy = false;
-            go.target = target;
-            gameObjects.add(go);
+        GameObject go = new GameObject(rocketType, position, direction);
+        go.isEnemy = false;
+        go.target = target;
+        gameObjects.add(go);
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 direction){
@@ -182,6 +195,12 @@ public class World implements Disposable {
 
     public GameObject addDebris(Vector3 position, Vector3 direction){
         GameObject go = new GameObject(debrisType, position, direction);
+        gameObjects.add(go);
+        return go;
+    }
+
+    public GameObject addWatermelon(Vector3 position){
+        GameObject go = new GameObject(watermelonType, position, Vector3.Z);
         gameObjects.add(go);
         return go;
     }
@@ -214,7 +233,7 @@ public class World implements Disposable {
     public boolean fireRocket(Camera cam, GameObject target){
         if(rocketCoolDown <= 0) {
             addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction, target);
-            rocketCoolDown = 0.5f;
+            rocketCoolDown = rocketFireRate;
             return true;
         }
         return false;
@@ -299,6 +318,9 @@ public class World implements Disposable {
                 return go;
             }
         }
+        if (!watermelon.isDead && Intersector.intersectRaySphere(ray, watermelon.position, watermelon.type.radius, intersection)) {
+            return watermelon;
+        }
         return null;
     }
 
@@ -321,6 +343,12 @@ public class World implements Disposable {
                         return t;
                     }
                 }
+                if (!watermelon.isDead && r.position.dst(watermelon.position) <  5) { //watermelon.type.radius) {
+                    r.isDead = true;    // delete rocket
+                    rocketFireRate *= 0.8f; // increase firing rate by some %
+                    blowUp(watermelon);          // blow up enemy
+                    return watermelon;
+                }
             } else if(r.type == enemyRocketType){ // enemy rockets
 
                 // if the enemy rocket is close enough, play the rocket sound
@@ -342,6 +370,7 @@ public class World implements Disposable {
                     }
                 }
             }
+
         }
         return null;
     }
