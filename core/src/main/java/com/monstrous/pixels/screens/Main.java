@@ -9,6 +9,7 @@ public class Main extends Game {
     public HiScores hiScores;
     public int savedWidth, savedHeight;
     public boolean enableMusic = true;
+    public boolean invertedControls = false;
 
     @Override
     public void create() {

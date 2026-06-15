@@ -70,6 +70,7 @@ public class GameScreen extends RetroScreen {
         world.populate(level);
 
         inputController = new CamController(cam);
+        setUpDownControls();
         Gdx.input.setInputProcessor(new InputMultiplexer(inputController));
 
         batch = new SpriteBatch();
@@ -106,6 +107,16 @@ public class GameScreen extends RetroScreen {
         levelUp();
     }
 
+    private void setUpDownControls(){
+        if(game.invertedControls) {
+            inputController.forwardKey = Input.Keys.DOWN;
+            inputController.backwardKey = Input.Keys.UP;
+        } else {
+            inputController.forwardKey = Input.Keys.UP;
+            inputController.backwardKey = Input.Keys.DOWN;
+        }
+    }
+
     private void update(float deltaTime){
         time += deltaTime;
         inputController.update();
@@ -114,7 +125,12 @@ public class GameScreen extends RetroScreen {
             if(world.fireRocket(cam, target))   // target may be null
                 soundFire.play();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+            message = enableCRTeffect ? "TV OUTPUT" : "MONITOR OUTPUT";
+            messageTimer = 1f;
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+
             if (beep.isMusicPlaying()) {
                 beep.stopMusic();
                 game.enableMusic = false;
@@ -122,7 +138,16 @@ public class GameScreen extends RetroScreen {
                 game.enableMusic = true;
                 beep.startMusic();
             }
+            message = game.enableMusic ? "MUSIC ON" : "MUSIC OFF";
+            messageTimer = 1f;
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+            game.invertedControls = !game.invertedControls;
+            message = game.invertedControls ? "INVERTED PITCH CONTROL" : "REGULAR PITCH CONTROL";
+            messageTimer = 1f;
+            setUpDownControls();
+        }
+
 
         world.update(deltaTime, cam.position);
         if(messageTimer > 0){
