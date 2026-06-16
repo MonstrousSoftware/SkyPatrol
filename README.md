@@ -1,7 +1,10 @@
 # SkyPatrol
 
-Entry for LibGDX game jame #37
+Entry for LibGDX game jame #37 (June 2026)
+
 Theme: 8 bit game (one life only).
+
+![image](screenshot3.png)
 
 This started as a test of pixel perfect upsizing a low resolution screen for a retro theme.
 
@@ -22,6 +25,14 @@ The wire frame shader does exactly that. It uses the normal vector per vertex, t
 to world space.  In the fragment shader we take the dot product of the normal vector
 and the view vector and discard any that are back facing (dot product less than zero).
 
+Playing with one life only can be quite brutal because sometimes the bad guys get a lucky shot.
+But we had to have it because it was the theme.
+Press 8 in the game to use a health percentage instead (20% damage per hit, restored at each level).
+If you use this mode, your score in the hi score table won't appear with the "one life only" asterisk.
+(revealing you to all who play this single player game as a cheater).
+
+Play it here:
+    https://monstrous-software.itch.io/sky-patrol
 
 Music: 
     "Game" by Elija_K via Free Music Archive (CC BY)

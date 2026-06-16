@@ -24,7 +24,7 @@ public class TeaVMBuilder {
             new WebBackend()
                 .setHtmlWidth(800) /* Change this to fit your game's requirements. */
                 .setHtmlHeight(600) /* Change this to fit your game's requirements. */
-                .setHtmlTitle("PixelScaler")
+                .setHtmlTitle("Sky Patrol")
 //                .setWebAssembly(true) /* Uncomment this line to use WASM output instead of JavaScript output. */
                 .setStartJettyAfterBuild(startJetty)
                 .setJettyPort(8080)

@@ -1,12 +1,14 @@
 package com.monstrous.pixels.screens;
 
 public class Score implements Comparable<Score> {
-    int points;
-    String name;
+    public int points;
+    public String name;
+    public boolean hardCore;
 
-    public Score(int points, String name) {
+    public Score(int points, String name, boolean hardCore) {
         this.points = points;
         this.name = name;
+        this.hardCore = hardCore;
     }
 
 

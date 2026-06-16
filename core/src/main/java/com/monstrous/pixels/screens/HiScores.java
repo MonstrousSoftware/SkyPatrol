@@ -26,11 +26,12 @@ public class HiScores {
         return scores[i];
     }
 
-    public void addScore(String name, int points){
+    public void addScore(String name, int points, boolean hardCore){
         if(points < lowestScore())
             return;
         scores[NUM_SCORES-1].points = points;
         scores[NUM_SCORES-1].name = name;
+        scores[NUM_SCORES-1].hardCore = hardCore;
         Arrays.sort(scores);
         save();
     }
@@ -40,7 +41,8 @@ public class HiScores {
         for(int i = 0; i < NUM_SCORES; i++){
             String name = prefs.getString("name"+i, "BOB");
             int points = prefs.getInteger("points"+i, (NUM_SCORES-i)*100);
-            scores[i] =  new Score(points, name);
+            boolean hardCore = prefs.getBoolean("hardcore"+i, true);
+            scores[i] =  new Score(points, name, hardCore);
         }
     }
 
@@ -48,6 +50,7 @@ public class HiScores {
         for(int i = 0; i < NUM_SCORES; i++){
             prefs.putString("name"+i, scores[i].name);
             prefs.putInteger("points"+i, scores[i].points);
+            prefs.putBoolean("hardcore"+i, scores[i].hardCore);
         }
         prefs.flush();
     }

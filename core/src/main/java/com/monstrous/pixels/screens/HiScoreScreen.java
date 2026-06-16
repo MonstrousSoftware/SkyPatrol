@@ -41,9 +41,10 @@ public class HiScoreScreen extends RetroScreen {
         font.draw(batch, "--== TOP GUNS ==--", 80, 200);
         for(int i = 0; i < 10; i++){
             Score score = game.hiScores.getScore(i);
-            String line = String.format("%8d...%s", score.points, score.name);
+            String line = String.format("%8d...%s %s", score.points, score.name, score.hardCore ? "*": "");
             font.draw(batch, line, 80, 180-i*10);
         }
+        font.draw(batch, "*: ONE LIFE ONLY", 90, 60);
         font.draw(batch, "PRESS 1 TO CONTINUE", 90, 10);
         batch.end();
     }

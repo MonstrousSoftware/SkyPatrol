@@ -15,14 +15,15 @@ public class NewScoreScreen extends RetroScreen {
     private Color background;
     private StringBuffer name;
     private String pointsString;
-    private char[] initials = new char[3];
+    private final boolean hardCore;
     private int charIndex;
 
 
 
-    public NewScoreScreen(Main game, int points) {
+    public NewScoreScreen(Main game, int points, boolean hardCore) {
         super(game);
         this.points = points;
+        this.hardCore = hardCore;
     }
 
     @Override
@@ -36,8 +37,6 @@ public class NewScoreScreen extends RetroScreen {
         name = new StringBuffer();
         charIndex = 0;
         pointsString = ""+points;
-        for(int i = 0;i < 3; i++)
-            initials[i] = 'A';
     }
 
     @Override
@@ -47,19 +46,19 @@ public class NewScoreScreen extends RetroScreen {
             return;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            game.hiScores.addScore(name.toString(), points);
+            game.hiScores.addScore(name.toString(), points, hardCore);
             game.setScreen(new HiScoreScreen(game));
             return;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
-            initials[charIndex]++;
-            if(initials[charIndex] > 'Z')
-                initials[charIndex] = 'A';
+            game.initials[charIndex]++;
+            if(game.initials[charIndex] > 'Z')
+                game.initials[charIndex] = 'A';
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
-            initials[charIndex]--;
-            if(initials[charIndex] < 'A')
-                initials[charIndex] = 'Z';
+            game.initials[charIndex]--;
+            if(game.initials[charIndex] < 'A')
+                game.initials[charIndex] = 'Z';
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && charIndex > 0){
             charIndex--;
@@ -70,7 +69,7 @@ public class NewScoreScreen extends RetroScreen {
 
         name.setLength(0);
         for(int i = 0;i < 3; i++)
-            name.append(initials[i]);
+            name.append(game.initials[i]);
 
         ScreenUtils.clear(background, false);
 

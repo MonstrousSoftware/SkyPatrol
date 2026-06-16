@@ -27,13 +27,11 @@ public class GameScreen extends RetroScreen {
     public SpriteBatch batch;
     public ShapeRenderer shapeRenderer;
     private Beep beep;
-    private Sound soundLock;
     private Sound soundBoom;
     private Sound soundFire;
     private World world;
     private float time;
     private float targetDistance;
-    //private boolean enableMusic = true;
     private int score = 0;
     private WireFrameShader wireFrameShader;
     private String message = "";
@@ -45,7 +43,7 @@ public class GameScreen extends RetroScreen {
     private float levelUpTimer;
     private float startupTimer;
     private GameObject target;
-    private boolean oneLife = true;
+    private boolean hardCore;
 
 
     public GameScreen(Main game) {
@@ -79,9 +77,6 @@ public class GameScreen extends RetroScreen {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.getProjectionMatrix().setToOrtho2D(0,0, LOWRES_WIDTH, LOWRES_HEIGHT);
 
-
-
-        soundLock = Gdx.audio.newSound(Gdx.files.internal("sound/lock.wav"));
         soundBoom = Gdx.audio.newSound(Gdx.files.internal("sound/explosion.wav"));
         soundFire = Gdx.audio.newSound(Gdx.files.internal("sound/fire.wav"));
 
@@ -105,6 +100,8 @@ public class GameScreen extends RetroScreen {
         livesString = new StringBuilder();
 
         levelUp();
+
+        hardCore = game.oneLife;
     }
 
     private void setUpDownControls(){
@@ -147,6 +144,13 @@ public class GameScreen extends RetroScreen {
             messageTimer = 1f;
             setUpDownControls();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+            game.oneLife = !game.oneLife;
+            message = game.oneLife ? "ONE LIFE ONLY" : "HEALTH PERCENTAGE";
+            messageTimer = 1f;
+            if(!game.oneLife)       // using health status even a little bit invalidated hard core status for the score.
+                hardCore = false;
+        }
 
 
         world.update(deltaTime, cam.position);
@@ -171,12 +175,12 @@ public class GameScreen extends RetroScreen {
 
             if(killed.type == world.helicopterType){
                 gettingHit = true;
-                lives-= oneLife ? 5 : 1;
+                lives-= game.oneLife ? 5 : 1;
                 livesString.setLength(0);
                 livesString.append("HEALTH: ");
                 livesString.append(lives * 20);
                 livesString.append("%");
-                if(!oneLife && lives > 0) {
+                if(!game.oneLife && lives > 0) {
                     message = "TAKING DAMAGE!";
                     messageTimer = 1f;
                 } else {
@@ -225,7 +229,7 @@ public class GameScreen extends RetroScreen {
     @Override
     protected void renderFrame(float deltaTime) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            game.setScreen(new NewScoreScreen(game, score));
+            game.setScreen(new NewScoreScreen(game, score, hardCore));
             return;
         }
         // do updates
@@ -250,7 +254,7 @@ public class GameScreen extends RetroScreen {
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("LEVEL: %d", level), 150, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
-        if(!oneLife)
+        if(!game.oneLife)
             font.draw(batch, livesString.toString(), 8, LOWRES_HEIGHT-18);
         font.draw(batch, message, 10, 10);
 
