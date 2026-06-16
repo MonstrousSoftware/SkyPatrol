@@ -363,7 +363,7 @@ public class World implements Disposable {
                 // if the enemy rocket is very close, take damage or die
                 if(r.position.dst(camera.position) < 1.0f){    // is size of hitbox
                     float dot = r.direction.dot(camera.direction);
-                    System.out.println("rocket angle: "+dot);
+                    //System.out.println("rocket angle: "+dot);
                     if(dot < -0.5f) {   // rockets from behind will always miss
                         r.isDead = true;    // delete rocket
                         return helicopter;  // signifies the player was hit
