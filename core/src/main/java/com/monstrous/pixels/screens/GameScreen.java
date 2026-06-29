@@ -42,7 +42,7 @@ public class GameScreen extends RetroScreen {
     private GameObject target;
     private boolean hardCore;
     private FrameRateGadget fpsGadget;
-    private boolean showFPS = false;
+    private boolean showFPS = true;
     private final boolean invincible = true;
 
 
@@ -64,7 +64,7 @@ public class GameScreen extends RetroScreen {
         cam.update();
 
         world = new World();
-        level = 0;
+        level = 200;
         world.populate(level);
 
         inputController = new CamController(cam);

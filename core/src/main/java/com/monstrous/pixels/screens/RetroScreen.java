@@ -38,7 +38,7 @@ public abstract class RetroScreen extends ScreenAdapter {
     public Color borderColor;
     private int pixelScale;
     protected final Main game;
-    protected boolean enableCRTeffect = true;
+    protected boolean enableCRTeffect = false; //true;
 
 
     public RetroScreen(Main game) {
