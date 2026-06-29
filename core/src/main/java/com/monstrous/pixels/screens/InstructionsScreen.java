@@ -50,8 +50,8 @@ public class InstructionsScreen extends RetroScreen {
 
         batch.begin();
         font.setColor(Color.YELLOW);
-        font.draw(batch, text, 10, 200);
-        font.draw(batch, "PRESS 1 TO CONTINUE", 90, 10);
+        font.draw(batch, text, 10, 220);
+        font.draw(batch, "PRESS [1] TO CONTINUE", 90, 10);
         batch.end();
     }
 

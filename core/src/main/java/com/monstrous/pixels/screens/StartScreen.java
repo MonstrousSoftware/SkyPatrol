@@ -101,9 +101,9 @@ public class StartScreen  extends RetroScreen {
 
         batch.begin();
         font.draw(batch, "SKY PATROL", 100, 220);
-        font.draw(batch, "1 TO START", 100, 50);
-        font.draw(batch, "2 FOR INSTRUCTIONS", 100, 40);
-        font.draw(batch, "3 FOR HI SCORES", 100, 30);
+        font.draw(batch, "[1] TO START", 100, 50);
+        font.draw(batch, "[2] FOR INSTRUCTIONS", 100, 40);
+        font.draw(batch, "[3] FOR HI SCORES", 100, 30);
         font.draw(batch, "MONSTROUS SOFTWARE (C) 1980", 40, 10);
 
         batch.end();

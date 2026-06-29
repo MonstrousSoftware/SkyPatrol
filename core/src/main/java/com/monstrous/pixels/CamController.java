@@ -71,11 +71,10 @@ public class CamController extends InputAdapter {
             tilt = -delta * tiltSpeed;
         if (backwardPressed && tiltAngle < tiltMax)
             tilt = delta * tiltSpeed;
-        if(Math.abs(tilt) > 0.1f) {
-            tiltAngle += tilt;
-            tmpV1.set(camera.up).crs(camera.direction);
-            camera.rotate(tmpV1, tilt);
-        }
+
+        tiltAngle += tilt;
+        tmpV1.set(camera.up).crs(camera.direction);
+        camera.rotate(tmpV1, tilt);
         if (autoUpdate) camera.update();
     }
 

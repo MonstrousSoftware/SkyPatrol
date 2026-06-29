@@ -45,7 +45,7 @@ public class HiScoreScreen extends RetroScreen {
             font.draw(batch, line, 80, 180-i*10);
         }
         font.draw(batch, "*: ONE LIFE ONLY", 90, 60);
-        font.draw(batch, "PRESS 1 TO CONTINUE", 90, 10);
+        font.draw(batch, "PRESS [1] TO CONTINUE", 90, 10);
         batch.end();
     }
 

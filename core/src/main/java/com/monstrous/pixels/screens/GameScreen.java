@@ -5,19 +5,16 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
-import com.monstrous.pixels.WireFrameBuilder;
 import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
 import com.monstrous.pixels.world.GameObject;
 import com.monstrous.pixels.world.World;
-import net.mgsx.gltf.loaders.gltf.GLTFLoader;
-import net.mgsx.gltf.scene3d.scene.SceneAsset;
+
 
 
 public class GameScreen extends RetroScreen {
@@ -44,6 +41,9 @@ public class GameScreen extends RetroScreen {
     private float startupTimer;
     private GameObject target;
     private boolean hardCore;
+    private FrameRateGadget fpsGadget;
+    private boolean showFPS = false;
+    private final boolean invincible = true;
 
 
     public GameScreen(Main game) {
@@ -102,6 +102,9 @@ public class GameScreen extends RetroScreen {
         levelUp();
 
         hardCore = game.oneLife;
+
+        fpsGadget = new FrameRateGadget();
+        showFPS = false;
     }
 
     private void setUpDownControls(){
@@ -151,6 +154,11 @@ public class GameScreen extends RetroScreen {
             if(!game.oneLife)       // using health status even a little bit invalidated hard core status for the score.
                 hardCore = false;
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+            showFPS = !showFPS;
+            message = showFPS ? "FPS ON" : "FPS OFF";
+            messageTimer = 1f;
+        }
 
 
         world.update(deltaTime, cam.position);
@@ -173,7 +181,7 @@ public class GameScreen extends RetroScreen {
         if(killed != null){
             soundBoom.play();
 
-            if(killed.type == world.helicopterType){
+            if(!invincible && killed.type == world.helicopterType){
                 gettingHit = true;
                 lives-= game.oneLife ? 5 : 1;
                 livesString.setLength(0);
@@ -262,6 +270,22 @@ public class GameScreen extends RetroScreen {
             font.draw(batch, String.format("LEVEL: %d", level), 100, LOWRES_HEIGHT/2f);
         }
         batch.end();
+
+
+    }
+
+    @Override
+    public void render(float deltaTime) {
+        super.render(deltaTime);
+        fpsGadget.update(deltaTime);
+        if(showFPS)
+            fpsGadget.render();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        fpsGadget.resize(width, height);
     }
 
     private void drawReticule(GameObject target){

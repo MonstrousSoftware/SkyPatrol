@@ -19,6 +19,7 @@ public class Main extends Game {
             initials[i] = 'A';
         hiScores = new HiScores();
         setScreen(new LoadScreen(this));
+        //setScreen(new GameScreen(this));
     }
 
 }
