@@ -21,7 +21,7 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 public class World implements Disposable {
 
     private final Array<GameObject> gameObjects;
-    private final Array<GameObject> enemies;
+    private final Array<GameObject> enemies;            // subset of gameObjects: all enemies
     private final Array<ModelInstance> instances;
     private final Terrain terrain;
     private final Vector3 tmpVec = new Vector3();
@@ -65,15 +65,12 @@ public class World implements Disposable {
         tankType.speed = 3f;
         tankType.turnSpeed = 2f;
         tankType.scorePoints = 100;
-        tankType.isEnemy = true;
         tankTurretType = new GameObjectType("TANKTURRET", tankTurretModel);
         tankTurretType.scorePoints = 0;
-        tankTurretType.isEnemy = true;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
         jetType.turnSpeed = 10f;
         jetType.scorePoints = 500;
-        jetType.isEnemy = true;
         rocketType = new GameObjectType("ROCKET", rocketModel);
         rocketType.speed = 60f;
         rocketType.timeToLive = 7f;
@@ -191,14 +188,12 @@ public class World implements Disposable {
 
     public void addFriendlyRocket(Vector3 position, Vector3 direction, GameObject target){
         GameObject go = new GameObject(rocketType, position, direction);
-        go.isEnemy = false;
         go.target = target;
         gameObjects.add(go);
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 direction){
         GameObject go = new GameObject(enemyRocketType, position, direction);
-        go.isEnemy = true;
         gameObjects.add(go);
     }
 

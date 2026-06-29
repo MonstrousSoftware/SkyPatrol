@@ -42,8 +42,8 @@ public class GameScreen extends RetroScreen {
     private GameObject target;
     private boolean hardCore;
     private FrameRateGadget fpsGadget;
-    private boolean showFPS = true;
-    private final boolean invincible = true;
+    private boolean showFPS = false;
+    private final boolean invincible = false;       // set to true for testing
 
 
     public GameScreen(Main game) {

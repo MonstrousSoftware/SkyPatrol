@@ -49,3 +49,28 @@ Font:
 - `core`: Main module with the application logic shared by all platforms.
 - `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
 - `teavm`: Web backend that supports most JVM languages.
+
+
+## Post game jam
+
+I was wondering if an ECS type approach would be a good fit for this game.  It is really not necessary as the game is
+very simple, but it bugs me a little to have game object type specific code in World.
+
+To compare performance I added a Frame Rate gadget to show FPS in-game.
+It is activated with key 9.
+
+A reference you can change the start level in GameScreen.show().  This will increase the number of enemies.
+You also have to set the boolean `invincible` to true for testing.
+
+| level | frame rate (fps) |
+|-------|------------------|
+| 0 | 2700             |
+| 20 | 800              |
+| 40 | 460              |
+| 60 | 300              |
+| 100 | 200              |
+| 200 | 95               |
+| 500 | 48               |
+| 1000 | 26               |
+
+to be continued...

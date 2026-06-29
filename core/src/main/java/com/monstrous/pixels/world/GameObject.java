@@ -7,19 +7,17 @@ public class GameObject {
     // but it avoids a class hierarchy
     public final GameObjectType type;
     public final Vector3 position;
-    public final Vector3 direction;
-    public final Vector3 forward;
-    //public final Vector3 forward2;
+    public final Vector3 direction;     // direction of travel, normalized velocity vector
+    public final Vector3 forward;       // which way the model is pointing
     public final Vector3 spinAxis;
     public GameObject target;       // for rockets
     public GameObject parent;   // for turret
     public GameObject child;    // turret is child of tank
-    public float speed;
+    public float speed;         // could be combined with direction to be velocity vector
     public float turnSpeed;
     public float timeToLive;
     public float timeToFire;
     public boolean isDead;
-    public boolean isEnemy;
     public boolean isMakingSound;
 
     private final Vector3 tmpVec = new Vector3();
@@ -30,7 +28,6 @@ public class GameObject {
         this.position = new Vector3(position);
         this.direction = new Vector3(direction).nor();
         this.forward = new Vector3(direction).nor();
-        //this.forward2 = new Vector3(direction).nor();
         this.speed = type.speed;
         this.turnSpeed = type.turnSpeed;
         this.timeToLive = type.timeToLive;
@@ -38,7 +35,6 @@ public class GameObject {
         this.spinAxis = new Vector3(type.spinAxis);
         this.target = null;
         this.isDead = false;
-        this.isEnemy = type.isEnemy;
         this.isMakingSound = false;
     }
 
@@ -53,7 +49,6 @@ public class GameObject {
         if(turnSpeed > 0)
             direction.rotate(Vector3.Y, delta * turnSpeed);
 
-
         if(type.gravity > 0)
             direction.y -= delta * type.gravity;
 
@@ -61,7 +56,6 @@ public class GameObject {
             forward.rotate(spinAxis, delta * type.spinSpeed);
         else
             forward.set(direction);
-        //forward2.set(forward);
 
         if(timeToLive >= 0){
             timeToLive -= delta;
