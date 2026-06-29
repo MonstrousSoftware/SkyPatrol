@@ -64,7 +64,7 @@ public class GameScreen extends RetroScreen {
         cam.update();
 
         world = new World();
-        level = 200;
+        level = 0;
         world.populate(level);
 
         inputController = new CamController(cam);
@@ -104,7 +104,6 @@ public class GameScreen extends RetroScreen {
         hardCore = game.oneLife;
 
         fpsGadget = new FrameRateGadget();
-        showFPS = false;
     }
 
     private void setUpDownControls(){

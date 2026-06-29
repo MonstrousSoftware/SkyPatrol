@@ -29,6 +29,7 @@ public class World implements Disposable {
     private float rocketCoolDown = 0;
     private float rocketFireRate = 2f;
     public GameObjectType tankType;
+    public GameObjectType tankTurretType;
     public GameObjectType jetType;
     public GameObjectType buildingType;
     public GameObjectType rocketType;
@@ -60,11 +61,14 @@ public class World implements Disposable {
         Model helicopterModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Helicopter"), Color.WHITE);
         Model watermelonModel = WireFrameBuilder.makeWireFrame(sceneAsset.scene.model.getNode("Watermelon"), Color.GREEN);
 
-        tankType = new GameObjectType("TANK", tankModel, tankTurretModel);
+        tankType = new GameObjectType("TANK", tankModel);
         tankType.speed = 3f;
         tankType.turnSpeed = 2f;
         tankType.scorePoints = 100;
         tankType.isEnemy = true;
+        tankTurretType = new GameObjectType("TANKTURRET", tankTurretModel);
+        tankTurretType.scorePoints = 0;
+        tankTurretType.isEnemy = true;
         jetType = new GameObjectType("JET", jetModel);
         jetType.speed = 30f;
         jetType.turnSpeed = 10f;
@@ -169,9 +173,14 @@ public class World implements Disposable {
     }
 
     public void addTank(Vector3 position, Vector3 direction){
-        GameObject go = new GameObject(tankType, position, direction);
-        gameObjects.add(go);
-        enemies.add(go);
+        GameObject tank = new GameObject(tankType, position, direction);
+        gameObjects.add(tank);
+        enemies.add(tank);
+        GameObject turret = new GameObject(tankTurretType, position, direction);
+        turret.parent = tank;     // attach turret to tank, i.e. follow position
+        tank.child = turret;
+        gameObjects.add(turret);
+        enemies.add(turret);
     }
 
     public void addJet(Vector3 position, Vector3 direction){
@@ -219,12 +228,6 @@ public class World implements Disposable {
             instance = new ModelInstance(go.type.model, go.position);
             instance.transform.rotate(Vector3.Z, go.forward);
             instances.add(instance);
-            // for tank turret
-            if(go.type.model2 != null){
-                instance = new ModelInstance(go.type.model2, go.position);
-                instance.transform.rotate(Vector3.Z, go.forward2);
-                instances.add(instance);
-            }
         }
     }
 
@@ -238,6 +241,7 @@ public class World implements Disposable {
         }
         return false;
     }
+
 
     public void update( float deltaTime, Vector3 cameraPosition ){
         rocketCoolDown -= deltaTime;
@@ -254,37 +258,37 @@ public class World implements Disposable {
 
         for(GameObject go : enemies){
 
-            if(go.type == tankType) {
+            if(go.type == tankTurretType) {
                 // make turret point towards camera (instantly)
-                go.forward2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
+                go.forward.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
 
                 go.timeToFire -= deltaTime;
                 if (go.timeToFire < 0) {
                     go.timeToFire = (float) Math.random() * 10f;
-                    tmpVec2.set(go.forward2);
+                    tmpVec2.set(go.forward);
                     tmpVec2.y += 0.2f;
                     tmpVec2.nor();
                     addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, 1.5f, 0)), tmpVec2);
                 }
             }
-            if(go.type == jetType) {
-                // work out vector to player in the horizontal plane
-                go.forward2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
 
+            if(go.type == jetType) {
                 // if jet is heading more or less towards the player (dot product is close to 1)
                 // and cool down period is expired, then fire a rocket
                 go.timeToFire -= deltaTime;
-                if (go.timeToFire < 0 && go.direction.dot(go.forward2) > 0.9f) {
-                    go.timeToFire = (float) Math.random() * 3f;
-                    tmpVec2.set(go.forward2);
-                    addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
+                if (go.timeToFire < 0) {
+                    // work out vector to player in the horizontal plane
+                    tmpVec2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
+                    if( go.direction.dot(tmpVec2) > 0.9f) {     // jet is heading more or less towards player
+                        go.timeToFire = (float) Math.random() * 3f;
+                        addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
+                    }
                 }
             }
         }
-
-
         generateInstances();
     }
+
 
 
     private void blowUp(GameObject target){
@@ -292,6 +296,11 @@ public class World implements Disposable {
         Vector3 axis = new Vector3();
 
         target.isDead = true;
+        // compound objects, e.g. tank and turret
+        if(target.child != null)
+            target.child.isDead = true;
+        if(target.parent != null)
+            target.parent.isDead = true;
 
         for(int i = 0; i < 12; i++){    // pieces of debris
             float az = (float)Math.random()*360f; // XZ direction
@@ -339,6 +348,9 @@ public class World implements Disposable {
                 for (GameObject t : enemies) {
                     if (r.position.dst(t.position) <  t.type.radius) {
                         r.isDead = true;    // delete rocket
+                        // if you hit a turret, return the parent tank
+                        if(t.parent != null)
+                            t = t.parent;
                         blowUp(t);          // blow up enemy
                         return t;
                     }
