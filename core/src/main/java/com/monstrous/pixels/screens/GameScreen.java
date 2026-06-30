@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
-import com.monstrous.pixels.world.GameObject;
+import com.monstrous.pixels.world.ColliderComponent;
 import com.monstrous.pixels.world.World;
 
 
@@ -39,11 +39,11 @@ public class GameScreen extends RetroScreen {
     private int level;
     private float levelUpTimer;
     private float startupTimer;
-    private GameObject target;
+    private ColliderComponent target;
     private boolean hardCore;
     private FrameRateGadget fpsGadget;
     private boolean showFPS = false;
-    private final boolean invincible = false;       // set to true for testing
+    private final boolean invincible = true;       // todo set to true for testing
 
 
     public GameScreen(Main game) {
@@ -176,7 +176,7 @@ public class GameScreen extends RetroScreen {
         }
 
         gettingHit = false;
-        GameObject killed = world.rocketHits(cam);
+        ColliderComponent killed = world.rocketHits(cam);
         if(killed != null){
             soundBoom.play();
 
@@ -198,6 +198,9 @@ public class GameScreen extends RetroScreen {
                 score += killed.type.scorePoints;
                 message = "DESTROYED " + killed.type.typeName;
                 messageTimer = 1f;
+            }
+            if(killed.type == world.watermelonType){
+                world.rocketFireDelay *= 0.8f; // increase firing rate by some %
             }
         }
         // all enemies defeated? go to next level (after a few seconds)
@@ -251,7 +254,7 @@ public class GameScreen extends RetroScreen {
             modelBatch.render(world.getInstances());
             modelBatch.end();
 
-            drawReticule(target);
+            drawReticule(target != null);
         }
 
         int mm = (int)time / 60;
@@ -287,10 +290,10 @@ public class GameScreen extends RetroScreen {
         fpsGadget.resize(width, height);
     }
 
-    private void drawReticule(GameObject target){
+    private void drawReticule(boolean locked){
         int dx = 30;
         int sdx = 15;
-        int adx = target != null ? 15 : 30;
+        int adx = locked ? 15 : 30;
         int dy = 10;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);

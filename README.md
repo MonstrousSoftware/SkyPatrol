@@ -62,15 +62,15 @@ It is activated with key 9.
 For reference, you can change the start level in GameScreen.show().  This will increase the number of enemies (tanks and jets).
 You also have to set the boolean `invincible` to true for testing to avoid getting killed.
 
-| level | frame rate (fps) |
-|-------|------------------|
-| 0 | 2700             |
-| 20 | 800              |
-| 40 | 460              |
-| 60 | 300              |
-| 100 | 200              |
-| 200 | 95               |
-| 500 | 48               |
-| 1000 | 26               |
+| level | frame rate (fps) | using ECS approach |
+|-------|------------------|--------------------|
+| 0     | 2700             | 2600               |
+| 20    | 800              | 980                |
+| 40    | 460              | 600                |
+| 60    | 300              | 400                |
+| 100 | 200              | 231                |
+| 200   | 95               | 117                |
+| 500   | 48               | 51                 |
+| 1000  | 26               | 30                 |
 
 to be continued...
