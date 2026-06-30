@@ -59,8 +59,8 @@ very simple, but it bugs me a little to have game object type specific code in W
 To compare performance I added a Frame Rate gadget to show FPS in-game.
 It is activated with key 9.
 
-A reference you can change the start level in GameScreen.show().  This will increase the number of enemies.
-You also have to set the boolean `invincible` to true for testing.
+For reference, you can change the start level in GameScreen.show().  This will increase the number of enemies (tanks and jets).
+You also have to set the boolean `invincible` to true for testing to avoid getting killed.
 
 | level | frame rate (fps) |
 |-------|------------------|

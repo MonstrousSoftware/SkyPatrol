@@ -77,14 +77,14 @@ public class World implements Disposable {
         enemyRocketType = new GameObjectType("ROCKET", rocketModel);
         enemyRocketType.speed = 60f;
         enemyRocketType.timeToLive = 5f;
-        enemyRocketType.gravity = 0.1f;
+        enemyRocketType.gravity = 6f;
         buildingType = new GameObjectType("BUILDING", buildingModel);
         towerType = new GameObjectType("TOWER", towerModel);
         debrisType = new GameObjectType("DEBRIS", debrisModel);
         debrisType.speed = 30f;
         debrisType.timeToLive = 8f;
         debrisType.spinSpeed = 150f;
-        debrisType.gravity = 1f;
+        debrisType.gravity = 30f;
         watermelonType = new GameObjectType("LEVITATING WATERMELON", watermelonModel);
         watermelonType.speed = 0f;
         watermelonType.spinSpeed = 150f;
@@ -129,7 +129,7 @@ public class World implements Disposable {
             float x = (MathUtils.random() - 0.5f) * spawnAreaSize;
             float z = (MathUtils.random() - 0.5f) * spawnAreaSize;
             float deg = MathUtils.random(0, 360);
-            addTank(new Vector3(x, 0, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
+            addTank(new Vector3(x, 0, z), new Vector3( MathUtils.sin(deg), 0,  MathUtils.cos(deg)).scl(tankType.speed));
         }
 
         for(int i = 0; i < numJets; i++) {
@@ -137,7 +137,7 @@ public class World implements Disposable {
             float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
             float h = 10f + 30f * MathUtils.random();
             float deg = MathUtils.random(0, 360);
-            addJet(new Vector3(x, h, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)));
+            addJet(new Vector3(x, h, z), new Vector3(MathUtils.sin(deg), 0, MathUtils.cos(deg)).scl(jetType.speed));
         }
 
         for(int i = 0; i < numBuildings; i++) {
@@ -162,43 +162,43 @@ public class World implements Disposable {
     }
 
     public void addBuilding(Vector3 position, Vector3 direction){
-        gameObjects.add(new GameObject(buildingType, position, direction));
+        gameObjects.add(new GameObject(buildingType, position, Vector3.Zero, direction));
     }
 
     public void addTower(Vector3 position, Vector3 direction){
-        gameObjects.add(new GameObject(towerType, position, direction));
+        gameObjects.add(new GameObject(towerType, position, Vector3.Zero, direction));
     }
 
-    public void addTank(Vector3 position, Vector3 direction){
-        GameObject tank = new GameObject(tankType, position, direction);
+    public void addTank(Vector3 position, Vector3 velocity){
+        GameObject tank = new GameObject(tankType, position, velocity);
         gameObjects.add(tank);
         enemies.add(tank);
-        GameObject turret = new GameObject(tankTurretType, position, direction);
+        GameObject turret = new GameObject(tankTurretType, position, Vector3.Zero);
         turret.parent = tank;     // attach turret to tank, i.e. follow position
         tank.child = turret;
         gameObjects.add(turret);
         enemies.add(turret);
     }
 
-    public void addJet(Vector3 position, Vector3 direction){
-        GameObject go = new GameObject(jetType, position, direction);
+    public void addJet(Vector3 position, Vector3 velocity){
+        GameObject go = new GameObject(jetType, position, velocity);
         gameObjects.add(go);
         enemies.add(go);
     }
 
-    public void addFriendlyRocket(Vector3 position, Vector3 direction, GameObject target){
-        GameObject go = new GameObject(rocketType, position, direction);
+    public void addFriendlyRocket(Vector3 position, Vector3 velocity, GameObject target){
+        GameObject go = new GameObject(rocketType, position, velocity);
         go.target = target;
         gameObjects.add(go);
     }
 
-    public void addEnemyRocket(Vector3 position, Vector3 direction){
-        GameObject go = new GameObject(enemyRocketType, position, direction);
+    public void addEnemyRocket(Vector3 position, Vector3 velocity){
+        GameObject go = new GameObject(enemyRocketType, position, velocity);
         gameObjects.add(go);
     }
 
-    public GameObject addDebris(Vector3 position, Vector3 direction){
-        GameObject go = new GameObject(debrisType, position, direction);
+    public GameObject addDebris(Vector3 position, Vector3 velocity){
+        GameObject go = new GameObject(debrisType, position, velocity);
         gameObjects.add(go);
         return go;
     }
@@ -230,7 +230,9 @@ public class World implements Disposable {
      */
     public boolean fireRocket(Camera cam, GameObject target){
         if(rocketCoolDown <= 0) {
-            addFriendlyRocket( tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)), cam.direction, target);
+            tmpVec.set(cam.position).add(new Vector3(0, -0.3f, 0)); // initial position is just below camera position
+            tmpVec2.set(cam.direction).scl(rocketType.speed);    // velocity vector
+            addFriendlyRocket( tmpVec, tmpVec2, target);
             rocketCoolDown = rocketFireRate;
             return true;
         }
@@ -261,8 +263,9 @@ public class World implements Disposable {
                 if (go.timeToFire < 0) {
                     go.timeToFire = (float) Math.random() * 10f;
                     tmpVec2.set(go.forward);
-                    tmpVec2.y += 0.2f;
+                    tmpVec2.y += 0.2f;  // shoot slightly up
                     tmpVec2.nor();
+                    tmpVec2.scl(rocketType.speed);
                     addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, 1.5f, 0)), tmpVec2);
                 }
             }
@@ -272,10 +275,12 @@ public class World implements Disposable {
                 // and cool down period is expired, then fire a rocket
                 go.timeToFire -= deltaTime;
                 if (go.timeToFire < 0) {
-                    // work out vector to player in the horizontal plane
+                    // work out unit vector to player in the horizontal plane
                     tmpVec2.set(cameraPosition).sub(go.position).scl(1, 0, 1).nor();
-                    if( go.direction.dot(tmpVec2) > 0.9f) {     // jet is heading more or less towards player
+                    tmpVec.set(go.velocity).nor();  // normalized velocity
+                    if( tmpVec.dot(tmpVec2) > 0.9f) {     // jet is heading more or less towards player
                         go.timeToFire = (float) Math.random() * 3f;
+                        tmpVec2.scl(rocketType.speed);
                         addEnemyRocket(tmpVec.set(go.position).add(new Vector3(0, -1.5f, 0)), tmpVec2);
                     }
                 }
@@ -301,7 +306,7 @@ public class World implements Disposable {
             float az = (float)Math.random()*360f; // XZ direction
             axis.setToRandomDirection();    // random spin axis
 
-            vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor();
+            vel.set((float)Math.sin(az), 2f + (float)Math.random(), (float)Math.cos(az)).nor().scl(debrisType.speed);
             GameObject go = addDebris(target.position, vel);
             go.spinAxis.setToRandomDirection();
             // make debris model match colour of destroyed object
@@ -337,7 +342,7 @@ public class World implements Disposable {
                 // rocket with a target are "heat seeking". They will follow their target.
                 if(r.target != null){
                     // make rocket point towards target (instantly)
-                    r.direction.set(r.target.position).sub(r.position).nor();
+                    r.velocity.set(r.target.position).sub(r.position).nor().scl(rocketType.speed);
                 }
                 // have we hit an enemy?
                 for (GameObject t : enemies) {
@@ -369,7 +374,7 @@ public class World implements Disposable {
                 }
                 // if the enemy rocket is very close, take damage or die
                 if(r.position.dst(camera.position) < 1.0f){    // is size of hitbox
-                    float dot = r.direction.dot(camera.direction);
+                    float dot = r.velocity.dot(camera.direction);
                     //System.out.println("rocket angle: "+dot);
                     if(dot < -0.5f) {   // rockets from behind will always miss
                         r.isDead = true;    // delete rocket
@@ -388,6 +393,7 @@ public class World implements Disposable {
 
     @Override
     public void dispose() {
+        // todo
 //        tankModel.dispose();
 //        tankTurretModel.dispose();
     }
