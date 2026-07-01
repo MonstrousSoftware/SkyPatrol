@@ -1,8 +1,9 @@
 package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.math.Vector3;
+import com.monstrous.pixels.world.ECS.Component;
 
-public class SpinComponent {
+public class SpinComponent extends Component {
     public final int id;
     public final Vector3 forward;       // which way the model is pointing
     public final Vector3 spinAxis;

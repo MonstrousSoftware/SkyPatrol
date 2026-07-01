@@ -62,6 +62,8 @@ It is activated with key 9.
 For reference, you can change the start level in GameScreen.show().  This will increase the number of enemies (tanks and jets).
 You also have to set the boolean `invincible` to true for testing to avoid getting killed.
 
+Here are the results of a first basic implementation of an ECS system which relies heavily on HashMaps to store Components.
+
 | level | frame rate (fps) | using ECS approach |
 |-------|------------------|--------------------|
 | 0     | 2700             | 2600               |

@@ -1,8 +1,9 @@
 package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.math.Vector3;
+import com.monstrous.pixels.world.ECS.Component;
 
-public class ProjectileComponent {
+public class ProjectileComponent extends Component {
     public final int id;
     public final Vector3 position;  // overlapping with DynamicsComponent
     public DynamicsComponent target;

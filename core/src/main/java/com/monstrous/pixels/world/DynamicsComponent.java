@@ -1,8 +1,9 @@
 package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.math.Vector3;
+import com.monstrous.pixels.world.ECS.Component;
 
-public class DynamicsComponent {
+public class DynamicsComponent extends Component {
     public final int id;
     public final Vector3 position;
     public final Vector3 velocity;     // velocity vector

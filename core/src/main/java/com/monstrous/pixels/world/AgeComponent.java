@@ -1,7 +1,9 @@
 package com.monstrous.pixels.world;
 
 
-public class AgeComponent {
+import com.monstrous.pixels.world.ECS.Component;
+
+public class AgeComponent extends Component {
     public final int id;
     public float timeToLive;
     public boolean isDead;

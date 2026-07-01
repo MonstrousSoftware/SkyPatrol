@@ -1,7 +1,9 @@
 package com.monstrous.pixels.world;
 
 
-public class FiringComponent {
+import com.monstrous.pixels.world.ECS.Component;
+
+public class FiringComponent extends Component {
     public final int id;
     public float timeToFire;
     public GameObjectType type;
