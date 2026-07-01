@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.monstrous.pixels.WireFrameBuilder;
+import com.monstrous.pixels.world.ECS.Engine;
+import com.monstrous.pixels.world.ECS.Entity;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
@@ -44,6 +46,9 @@ public class World implements Disposable {
     private final ColliderComponent helicopterCollider;
     private final Sound soundRocketFlyBy;
     private final Color background = new Color();
+    private final Engine engine;
+    private final M_RenderSystem renderSystem;
+    private final M_SpinSystem spinSystem;
 
 
 
@@ -104,6 +109,13 @@ public class World implements Disposable {
         helicopterCollider = new ColliderComponent(0, Vector3.Zero, 1, Color.GREEN, helicopterType);
 
         soundRocketFlyBy = Gdx.audio.newSound(Gdx.files.internal("sound/rocket-flyby.wav"));
+
+
+        engine = new Engine();
+        renderSystem = new M_RenderSystem(engine);
+        engine.addSystem(renderSystem);
+        spinSystem = new M_SpinSystem(engine);
+        engine.addSystem(spinSystem);
     }
 
 
@@ -112,6 +124,7 @@ public class World implements Disposable {
     }
 
     public void populate(int level){
+
         int seed = level * 1234;        // random but reproducible
         MathUtils.random.setSeed(seed);
         int numTanks = 1 + 3 * (level-1);
@@ -120,7 +133,8 @@ public class World implements Disposable {
         int numTowers = 1;
         float spawnAreaSize = 250f+10*level;
 
-        removeAllEntities();
+        engine.clear();
+        //removeAllEntities();
 
         if(level == 1)
             background.set(0.0f, 0.2f, 0.1f, 1.0f); // greenish
@@ -198,9 +212,15 @@ public class World implements Disposable {
     }
 
     public void addBuilding(Vector3 position, Vector3 direction){
-        int id = getEntityId();
-        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(buildingType.model, position));
-        renderComponentMap.put(id, renderComponent);
+        Entity e = engine.createEntity();
+        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(buildingType.model, position)));
+        engine.commit(e.id);
+        // e.id in RenderComponent is no longer needed
+        System.out.println("Building "+e.id);
+
+//        int id = getEntityId();
+//        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(buildingType.model, position));
+//        renderComponentMap.put(id, renderComponent);
     }
 
     public void addTower(Vector3 position, Vector3 direction){
@@ -257,6 +277,11 @@ public class World implements Disposable {
     }
 
     public void addFriendlyRocket(Vector3 position, Vector3 velocity, ColliderComponent targetCollider){
+        Entity e = engine.createEntity();
+        System.out.println("Rocket "+e.id);
+        engine.removeEntity(e.id);
+
+
         DynamicsComponent target = null;
         if(targetCollider != null)
             target = dynamicsComponentMap.get(targetCollider.id);
@@ -298,11 +323,17 @@ public class World implements Disposable {
     }
 
     public void addWatermelon(Vector3 position){
+        Entity e = engine.createEntity();
+        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
+        engine.addComponent(e.id, SpinComponent.class, new SpinComponent(e.id, Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
+        engine.commit(e.id);
+        System.out.println("Water melon "+e.id);
+
         int id = getEntityId();
-        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(watermelonType.model, position));
-        renderComponentMap.put(id, renderComponent);
-        SpinComponent spinComponent = new SpinComponent(id, Vector3.Z, Vector3.Y, watermelonType.spinSpeed);
-        spinComponentMap.put(id, spinComponent);
+//        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(watermelonType.model, position));
+//        renderComponentMap.put(id, renderComponent);
+//        SpinComponent spinComponent = new SpinComponent(id, Vector3.Z, Vector3.Y, watermelonType.spinSpeed);
+//        spinComponentMap.put(id, spinComponent);
         Material mat = watermelonType.model.materials.get(0);
         Color diffuse = ((ColorAttribute)(mat.get(ColorAttribute.Diffuse))).color;
         ColliderComponent colliderComponent = new ColliderComponent(id, position, watermelonType.radius, diffuse, watermelonType);
@@ -318,9 +349,13 @@ public class World implements Disposable {
     private void generateInstances(){
         instances.clear();
         instances.add(terrain.instance);
+        // old style
         for(Integer id : renderComponentMap.keySet()) {
             RenderSystem.update(renderComponentMap.get(id), dynamicsComponentMap.get(id), spinComponentMap.get(id), instances);
         }
+
+        // new style
+        renderSystem.update(instances);
     }
 
     /**
@@ -343,7 +378,9 @@ public class World implements Disposable {
 
         DynamicsSystem.update(dynamicsComponentMap.values(), ageComponentMap, deltaTime);
         SpinSystem.update(spinComponentMap.values(), deltaTime);
-        AgeSystem.update(ageComponentMap.values(), deltaTime);  // todo reaping
+        AgeSystem.update(ageComponentMap.values(), deltaTime);
+
+        spinSystem.update(deltaTime);
 
         for(Integer id : colliderComponentMap.keySet()) {
             DynamicsComponent dyn = dynamicsComponentMap.get(id);
