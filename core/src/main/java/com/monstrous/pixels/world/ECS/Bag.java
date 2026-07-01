@@ -50,6 +50,18 @@ public class Bag<T> implements Iterable<T> {
         size--;
     }
 
+    public void remove(T e){
+        for(int index = 0; index < size; index++){
+            T t = data[index];
+            if(t == e) {        // identity
+                data[index] = data[size - 1];
+                data[size - 1] = null;
+                size--;
+                return;
+            }
+        }
+    }
+
     public void add(T e){
         if(size == data.length)
             grow(2*data.length);

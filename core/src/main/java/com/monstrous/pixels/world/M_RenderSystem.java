@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.monstrous.pixels.world.ECS.*;
-import com.monstrous.pixels.world.ECS.System;
+import com.monstrous.pixels.world.ECS.EntitySystem;
 
-public class M_RenderSystem extends System {
+public class M_RenderSystem extends EntitySystem {
 
     private final ComponentMapper<RenderComponent> renderMap;
     private final ComponentMapper<DynamicsComponent> dynMap;

@@ -61,4 +61,9 @@ public class ComponentManager {
          flags.clear();
     }
 
+    public void remove(int entityId){
+        for(ComponentMapper mapper : mappers)
+            mapper.remove(entityId);
+    }
+
 }

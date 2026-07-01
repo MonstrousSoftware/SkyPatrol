@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.monstrous.pixels.WireFrameBuilder;
+import com.monstrous.pixels.world.ECS.ComponentMapper;
 import com.monstrous.pixels.world.ECS.Engine;
 import com.monstrous.pixels.world.ECS.Entity;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
@@ -48,9 +49,7 @@ public class World implements Disposable {
     private final Color background = new Color();
     private final Engine engine;
     private final M_RenderSystem renderSystem;
-    private final M_SpinSystem spinSystem;
-
-
+    private final M_ColliderSystem colliderSystem;
 
     public World() {
 
@@ -113,9 +112,13 @@ public class World implements Disposable {
 
         engine = new Engine();
         renderSystem = new M_RenderSystem(engine);
-        engine.addSystem(renderSystem);
-        spinSystem = new M_SpinSystem(engine);
-        engine.addSystem(spinSystem);
+        engine.addSystem(renderSystem, false);
+        engine.addSystem(new M_DynamicsSystem(engine), true);
+        engine.addSystem(new M_SpinSystem(engine), true);
+        engine.addSystem(new M_AgeSystem(engine), true);
+        engine.addSystem(new M_ProjectileSystem(engine), true);
+        colliderSystem = new M_ColliderSystem(engine);
+        engine.addSystem(colliderSystem, true);
     }
 
 
@@ -128,7 +131,7 @@ public class World implements Disposable {
         int seed = level * 1234;        // random but reproducible
         MathUtils.random.setSeed(seed);
         int numTanks = 1 + 3 * (level-1);
-        int numJets =  2 * (level-1);
+        int numJets =  6 + 2 * (level-1);
         int numBuildings = 5 * level;
         int numTowers = 1;
         float spawnAreaSize = 250f+10*level;
@@ -224,10 +227,13 @@ public class World implements Disposable {
     }
 
     public void addTower(Vector3 position, Vector3 direction){
+        Entity e = engine.createEntity();
+        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(towerType.model, position)));
+        engine.commit(e.id);
 
-        int id = getEntityId();
-        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(towerType.model, position));
-        renderComponentMap.put(id, renderComponent);
+//        int id = getEntityId();
+//        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(towerType.model, position));
+//        renderComponentMap.put(id, renderComponent);
     }
 
     public void addTank(Vector3 position, Vector3 velocity){
@@ -261,41 +267,66 @@ public class World implements Disposable {
     }
 
     public void addJet(Vector3 position, Vector3 velocity){
-        int id = getEntityId();
-        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(jetType.model, position));
-        renderComponentMap.put(id, renderComponent);
-        DynamicsComponent dynamicsComponent = new DynamicsComponent(id, position, velocity, jetType.turnSpeed, 0);
-        dynamicsComponentMap.put(id, dynamicsComponent);
-        AgeComponent ageComponent = new AgeComponent(id, Float.MAX_VALUE);
-        ageComponentMap.put(id, ageComponent);
         Material mat = jetType.model.materials.get(0);
         Color diffuse = ((ColorAttribute)(mat.get(ColorAttribute.Diffuse))).color;
-        ColliderComponent colliderComponent = new ColliderComponent(id, position, jetType.radius, diffuse, jetType);
-        colliderComponentMap.put(id, colliderComponent);
-        FiringComponent firingComponent = new FiringComponent(id, jetType);
-        firingComponentMap.put(id, firingComponent);
+
+
+        Entity e = engine.createEntity();
+        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(jetType.model, position)));
+        engine.addComponent(e.id, DynamicsComponent.class, new DynamicsComponent(e.id, position, velocity, jetType.turnSpeed, 0));
+        engine.addComponent(e.id, AgeComponent.class, new AgeComponent(e.id, Float.MAX_VALUE));
+        engine.addComponent(e.id, ColliderComponent.class, new ColliderComponent(e.id, position, jetType.radius, diffuse, jetType));
+        // firing
+        engine.commit(e.id);
+
+
+//        int id = getEntityId();
+//        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(jetType.model, position));
+//        renderComponentMap.put(id, renderComponent);
+//        DynamicsComponent dynamicsComponent = new DynamicsComponent(id, position, velocity, jetType.turnSpeed, 0);
+//        dynamicsComponentMap.put(id, dynamicsComponent);
+//        AgeComponent ageComponent = new AgeComponent(id, Float.MAX_VALUE);
+//        ageComponentMap.put(id, ageComponent);
+//        Material mat = jetType.model.materials.get(0);
+//        Color diffuse = ((ColorAttribute)(mat.get(ColorAttribute.Diffuse))).color;
+//        ColliderComponent colliderComponent = new ColliderComponent(id, position, jetType.radius, diffuse, jetType);
+//        colliderComponentMap.put(id, colliderComponent);
+//        FiringComponent firingComponent = new FiringComponent(id, jetType);
+//        firingComponentMap.put(id, firingComponent);
     }
 
     public void addFriendlyRocket(Vector3 position, Vector3 velocity, ColliderComponent targetCollider){
-        Entity e = engine.createEntity();
-        System.out.println("Rocket "+e.id);
-        engine.removeEntity(e.id);
-
 
         DynamicsComponent target = null;
         if(targetCollider != null)
-            target = dynamicsComponentMap.get(targetCollider.id);
+            target = engine.componentManager.getComponentMapper(DynamicsComponent.class).get(targetCollider.id);
 
-        int id = getEntityId();
-        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(rocketType.model, position));
-        renderComponentMap.put(id, renderComponent);
-        DynamicsComponent dynamicsComponent = new DynamicsComponent(id, position, velocity, 0, rocketType.gravity);
-        dynamicsComponentMap.put(id, dynamicsComponent);
-        AgeComponent ageComponent = new AgeComponent(id, rocketType.timeToLive);
-        ageComponentMap.put(id, ageComponent);
-        ProjectileComponent projectileComponent = new ProjectileComponent(id, position, true);
+        Entity e = engine.createEntity();
+        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(rocketType.model, position)));
+        engine.addComponent(e.id, DynamicsComponent.class, new DynamicsComponent(e.id, position, velocity, 0, rocketType.gravity));
+        engine.addComponent(e.id, AgeComponent.class, new AgeComponent(e.id, rocketType.timeToLive));
+        ProjectileComponent projectileComponent = new ProjectileComponent(e.id, position, true);
         projectileComponent.target = target;
-        projectileComponentMap.put(id, projectileComponent);
+        engine.addComponent(e.id, ProjectileComponent.class, projectileComponent);
+        engine.commit(e.id);
+        System.out.println("Rocket "+e.id);
+
+
+
+//        DynamicsComponent target = null;
+//        if(targetCollider != null)
+//            target = dynamicsComponentMap.get(targetCollider.id);
+//
+//        int id = getEntityId();
+//        RenderComponent renderComponent = new RenderComponent(id, new ModelInstance(rocketType.model, position));
+//        renderComponentMap.put(id, renderComponent);
+//        DynamicsComponent dynamicsComponent = new DynamicsComponent(id, position, velocity, 0, rocketType.gravity);
+//        dynamicsComponentMap.put(id, dynamicsComponent);
+//        AgeComponent ageComponent = new AgeComponent(id, rocketType.timeToLive);
+//        ageComponentMap.put(id, ageComponent);
+//        ProjectileComponent projectileComponent = new ProjectileComponent(id, position, true);
+//        projectileComponent.target = target;
+//        projectileComponentMap.put(id, projectileComponent);
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 velocity){
@@ -380,17 +411,21 @@ public class World implements Disposable {
         SpinSystem.update(spinComponentMap.values(), deltaTime);
         AgeSystem.update(ageComponentMap.values(), deltaTime);
 
-        spinSystem.update(deltaTime);
+//        dynamicsSystem.update(deltaTime);
+//        spinSystem.update(deltaTime);
+//        ageSystem.update(deltaTime);
 
-        for(Integer id : colliderComponentMap.keySet()) {
-            DynamicsComponent dyn = dynamicsComponentMap.get(id);
-            if(dyn != null) // static objects could also have collider
-                ColliderSystem.update(colliderComponentMap.get(id), dyn);
-        }
-        for(Integer id : projectileComponentMap.keySet()) {
-            DynamicsComponent dyn = dynamicsComponentMap.get(id);
-            ProjectileSystem.update(projectileComponentMap.get(id), dyn);
-        }
+        engine.update(deltaTime);
+
+//        for(Integer id : colliderComponentMap.keySet()) {
+//            DynamicsComponent dyn = dynamicsComponentMap.get(id);
+//            if(dyn != null) // static objects could also have collider
+//                ColliderSystem.update(colliderComponentMap.get(id), dyn);
+//        }
+//        for(Integer id : projectileComponentMap.keySet()) {
+//            DynamicsComponent dyn = dynamicsComponentMap.get(id);
+//            ProjectileSystem.update(projectileComponentMap.get(id), dyn);
+//        }
 
         grimReaper();
 
@@ -481,12 +516,16 @@ public class World implements Disposable {
     /** Use ray casting to check if there is an enemy directly in front. Returns null if not */
     public ColliderComponent weaponLocked(Camera cam){
         Ray ray = new Ray(cam.position, cam.direction);
-        for(ColliderComponent colliderComponent: colliderComponentMap.values()){
-            if (Intersector.intersectRaySphere(ray, colliderComponent.position, colliderComponent.radius, intersection)) {
-                return colliderComponent;
-            }
-        }
-        return null;
+
+        ColliderComponent collider = colliderSystem.intersect(ray);
+        return collider;
+
+//        for(ColliderComponent colliderComponent: colliderComponentMap.values()){
+//            if (Intersector.intersectRaySphere(ray, colliderComponent.position, colliderComponent.radius, intersection)) {
+//                return colliderComponent;
+//            }
+//        }
+//        return null;
     }
 
     /** does a rocket hit any enemy? If so return the object that was hit, otherwise null.

@@ -1,12 +1,12 @@
 package com.monstrous.pixels.world.ECS;
 
-public abstract class System {
+public abstract class EntitySystem {
 
     protected Engine engine;
     protected final Bag<Entity> entities; // set of entities relevant for this system
     protected long requiredComponentsBitFlag = 0L;
 
-    public System(Engine engine) {
+    public EntitySystem(Engine engine) {
         this.engine = engine;
         entities = new Bag<>();
     }
@@ -20,18 +20,19 @@ public abstract class System {
         entities.add(e);
     }
 
-    public void removeEntity(int id){
-        entities.remove(id);
+    // note: the bag of entities is not indexed by e.id but only contains the relevant entities so we can iterate quickly
+    // this means removal is a bit slower.
+    public void removeEntity(Entity e){
+        entities.remove(e);
     }
 
     public void clear(){
         entities.clear();
     }
 
-//    public void process();
-//        for(Entity e : entities){
-//            do something
-//        }
+    public void update(float deltaTime){
+        // to override
+    }
 
 
 }

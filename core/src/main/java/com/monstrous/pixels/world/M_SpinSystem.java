@@ -1,10 +1,9 @@
 package com.monstrous.pixels.world;
 
-import com.badlogic.gdx.utils.Bits;
 import com.monstrous.pixels.world.ECS.*;
-import com.monstrous.pixels.world.ECS.System;
+import com.monstrous.pixels.world.ECS.EntitySystem;
 
-public class M_SpinSystem extends System {
+public class M_SpinSystem extends EntitySystem {
 
     private final ComponentMapper<SpinComponent> spinMap;
 
@@ -18,8 +17,8 @@ public class M_SpinSystem extends System {
     public void update(float delta){
         for(Entity e : entities){
             SpinComponent spinComponent = spinMap.get(e.id);
-            if(spinComponent == null)
-                continue; // should be prefiltered!
+//            if(spinComponent == null)
+//                continue; // should be prefiltered!
             spinComponent.forward.rotate(spinComponent.spinAxis, delta * spinComponent.spinSpeed);
         }
     }

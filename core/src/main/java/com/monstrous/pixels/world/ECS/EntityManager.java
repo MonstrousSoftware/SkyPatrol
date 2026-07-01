@@ -17,6 +17,7 @@ public class EntityManager {
             e = pool.get(0);
             pool.remove(0);
             e.id = entities.getSize();
+            System.out.println("Obtained from pool, pool size "+pool.size);
         } else {
             e = new Entity(entities.getSize());
         }
@@ -26,8 +27,11 @@ public class EntityManager {
 
     void removeEntity(int entityId ){
         Entity e = entities.get(entityId);
-        entities.remove(entityId);
-        pool.add(e);
+        if(e != null) {
+            entities.remove(entityId);
+            pool.add(e);
+            System.out.println("Removed entity, pool size " + pool.size);
+        }
     }
 
     public Entity get(int entityId ){

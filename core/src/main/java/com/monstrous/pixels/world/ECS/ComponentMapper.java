@@ -1,7 +1,7 @@
 package com.monstrous.pixels.world.ECS;
 
 public class ComponentMapper<A extends Component> {
-    public Bag<A> components;
+    public Bag<A> components;       // sparse, match up with entity id
 
     public ComponentMapper() {
         components = new Bag<>();
