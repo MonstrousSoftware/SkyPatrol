@@ -1,14 +1,16 @@
 package com.monstrous.pixels.world.ECS;
 
+import com.badlogic.gdx.utils.IntArray;
+
 public abstract class EntitySystem {
 
     protected Engine engine;
-    protected final Bag<Entity> entities; // set of entities relevant for this system
+    protected final IntArray entities; // set of entities relevant for this system
     protected long requiredComponentsBitFlag = 0L;
 
     public EntitySystem(Engine engine) {
         this.engine = engine;
-        entities = new Bag<>();
+        entities = new IntArray();
     }
 
     public long requiredComponentsBitFlag(){
@@ -16,14 +18,12 @@ public abstract class EntitySystem {
     }
 
 
-    public void addEntity(Entity e){
-        entities.add(e);
+    public void addEntity(int entityId){
+        entities.add(entityId);
     }
 
-    // note: the bag of entities is not indexed by e.id but only contains the relevant entities so we can iterate quickly
-    // this means removal is a bit slower.
-    public void removeEntity(Entity e){
-        entities.remove(e);
+    public void removeEntity(int entityId){
+        entities.removeValue(entityId);
     }
 
     public void clear(){
@@ -31,13 +31,22 @@ public abstract class EntitySystem {
     }
 
     public void update(float deltaTime){
-        for(Entity e : entities){
-            update(e.id, deltaTime);
+        for(int i = 0; i < entities.size; i++){
+            update(entities.get(i), deltaTime);
         }
     }
 
     public void update(int entityId, float deltaTime){
 
+    }
+
+    // don't modify this array!
+    public IntArray getEntities(){
+        return entities;
+    }
+
+    public int numEntities(){
+        return entities.size;
     }
 
 

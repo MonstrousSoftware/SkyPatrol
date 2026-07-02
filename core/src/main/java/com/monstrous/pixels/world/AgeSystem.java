@@ -9,8 +9,8 @@ public class AgeSystem {
             component.timeToLive -= delta;
             if(component.timeToLive < 0)
                 component.isDead = true;
-            if(component.isDead && component.partner != null)
-                component.partner.isDead = true;
+//            if(component.isDead && component.partner != null)
+//                component.partner.isDead = true;
         }
     }
 

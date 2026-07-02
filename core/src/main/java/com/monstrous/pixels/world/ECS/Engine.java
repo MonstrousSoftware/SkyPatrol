@@ -35,31 +35,29 @@ public class Engine {
     }
 
 
-    public Entity createEntity(){
+    public int createEntity(){
         return entityManager.createEntity();    // at this point components are not defined yet
-
     }
 
     /** push entity to the systems, always call this after createEntity and related addComponents
      * (would be nice to avoid this) */
     public void commit(int entityId){
         long flags = componentManager.flags.get(entityId);
-        Entity e = entityManager.get(entityId);
         for(EntitySystem system : systems){
             if((system.requiredComponentsBitFlag & flags) == system.requiredComponentsBitFlag) {
-                system.addEntity(e);
-                Gdx.app.log("", "add entity "+e.id+ " to system "+system.toString());
+                system.addEntity(entityId);
+                Gdx.app.log("", "add entity "+entityId+ " to system "+system.toString());
             }
         }
     }
 
     public void removeEntity(int entityId ){
-        Entity e = entityManager.get(entityId);
         entityManager.removeEntity(entityId);
         for(EntitySystem system : systems){
-            system.removeEntity(e);
+            system.removeEntity(entityId);
+            Gdx.app.log("", "remove entity "+entityId+ " from system "+system.toString());
         }
-        //componentManager.remove(entityId);
+        componentManager.remove(entityId);
     }
 
     public void clear(){

@@ -15,25 +15,38 @@ public class M_ColliderSystem extends EntitySystem {
         colliderMap = engine.componentManager.getComponentMapper(ColliderComponent.class);
         dynMap = engine.componentManager.getComponentMapper(DynamicsComponent.class);
 
-        ComponentType componentType = engine.componentManager.getType(DynamicsComponent.class);
-        requiredComponentsBitFlag |= 1L << componentType.getIndex();
-        componentType = engine.componentManager.getType(ColliderComponent.class);
+        ComponentType componentType = engine.componentManager.getType(ColliderComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
     @Override
     public void update(int entityId, float delta){
-        ColliderComponent colliderComponent = colliderMap.get(entityId);
+
         DynamicsComponent dynamics = dynMap.get(entityId);
-        colliderComponent.position.set(dynamics.position);
+        if(dynamics != null) {
+            ColliderComponent colliderComponent = colliderMap.get(entityId);
+            colliderComponent.position.set(dynamics.position);
+        }
     }
 
     private final Vector3 intersection = new Vector3();
 
     public ColliderComponent intersect(Ray ray){
-        for(Entity e : entities){
-            ColliderComponent colliderComponent = colliderMap.get(e.id);
+        for(int index = 0; index < entities.size; index++){
+            int eid = entities.get(index);
+            ColliderComponent colliderComponent = colliderMap.get(eid);
             if (Intersector.intersectRaySphere(ray, colliderComponent.position, colliderComponent.radius, intersection)) {
+                return colliderComponent;
+            }
+        }
+        return null;
+    }
+
+    public ColliderComponent intersectPoint(Vector3 centre){
+        for(int index = 0; index < entities.size; index++){
+            int eid = entities.get(index);
+            ColliderComponent colliderComponent = colliderMap.get(eid);
+            if (centre.dst(colliderComponent.position) < colliderComponent.radius) {
                 return colliderComponent;
             }
         }

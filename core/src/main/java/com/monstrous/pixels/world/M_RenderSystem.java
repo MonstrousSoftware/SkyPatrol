@@ -26,11 +26,12 @@ public class M_RenderSystem extends EntitySystem {
     private final Vector3 dir = new Vector3();
 
     public void update(Array<ModelInstance> instances) {
-        for(Entity e : entities){
-            RenderComponent renderComponent = renderMap.get(e.id);
+        for(int index = 0; index < entities.size; index++){
+            int eid = entities.get(index);
+            RenderComponent renderComponent = renderMap.get(eid);
 
             // update model instance transform if there is a dynamics component
-            DynamicsComponent dynamics = dynMap.get(e.id);
+            DynamicsComponent dynamics = dynMap.get(eid);
             if(dynamics != null) {
 
                 renderComponent.modelInstance.transform.idt();
@@ -41,7 +42,7 @@ public class M_RenderSystem extends EntitySystem {
             }
 
             // add any spin to model instance transform
-            SpinComponent spin = spinMap.get(e.id);
+            SpinComponent spin = spinMap.get(eid);
             if(spin != null) {
                 renderComponent.modelInstance.transform.getTranslation(pos);
                 renderComponent.modelInstance.transform.setToTranslation(pos);

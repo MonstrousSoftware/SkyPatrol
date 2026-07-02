@@ -11,10 +11,12 @@ public class ProjectileComponent extends Component {
     public boolean isMakingSound;   // set to true when close to player
 
 
-    public ProjectileComponent(int id, Vector3 position, boolean friendly) {
+    // target may be null
+    public ProjectileComponent(int id, Vector3 position, boolean friendly, DynamicsComponent target) {
         this.id = id;
         this.position = new Vector3(position);
         this.friendly = friendly;
         this.isMakingSound = false;
+        this.target = target;
     }
 }

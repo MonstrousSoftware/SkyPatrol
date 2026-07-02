@@ -1,17 +1,20 @@
 package com.monstrous.pixels.world.ECS;
 
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ComponentManager {
-    Map<Class<? extends Component>, ComponentType> componentTypes;
-    Bag<ComponentMapper<? extends Component>> mappers;
-    Bag<Long> flags;
+    Map<Class<? extends Component>, ComponentType> componentTypes;  // map type to ComponentType
+    Bag<ComponentMapper<? extends Component>> mappers;      // mapper per type, indexed by ComponentType.index
+    Array<Long> flags;    // component bit flag per entity, indexed by entityId, using a Long caps the max nr of components
 
     public ComponentManager() {
         componentTypes = new HashMap<>();
         mappers = new Bag<>();
-        flags = new Bag<>();
+        flags = new Array<>(1024);
     }
 
 
@@ -50,10 +53,11 @@ public class ComponentManager {
         // add component for the entity
         mapper.set(entityId, component);
 
-        Long flagObj = flags.get(entityId);
-        long flag = 0L;
-        if(flagObj != null)
-            flag = flagObj;
+
+        //    flags.ensureCapacity(entityId+100);
+        while(entityId >= flags.size)    // hmm...inefficient
+            flags.add(0L);
+        long flag = flags.get(entityId);
         flag |= 1L << type.getIndex();
         flags.set(entityId, flag);
     }
@@ -61,12 +65,14 @@ public class ComponentManager {
     public void clear(){
          for(ComponentMapper<? extends Component> mapper : mappers)
             mapper.clear();
-         flags.clear();
+         for(int i = 0; i < flags.size; i++)
+             flags.set(i, 0L);
     }
 
     public void remove(int entityId){
         for(ComponentMapper<? extends Component> mapper : mappers)
             mapper.remove(entityId);
+        flags.set(entityId, 0L);
     }
 
 }

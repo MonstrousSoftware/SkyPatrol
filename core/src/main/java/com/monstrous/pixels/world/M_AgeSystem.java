@@ -2,7 +2,6 @@ package com.monstrous.pixels.world;
 
 import com.monstrous.pixels.world.ECS.*;
 
-import java.util.Collection;
 
 public class M_AgeSystem extends EntitySystem {
 
@@ -23,11 +22,15 @@ public class M_AgeSystem extends EntitySystem {
             ageComponent.isDead = true;
             System.out.println("Entity dies of old age " + entityId);
         }
-        if(ageComponent.isDead && ageComponent.partner != null) {
-            ageComponent.partner.isDead = true;
+        if(ageComponent.isDead && ageComponent.partner >= 0) {
+            if(engine.entityManager.isAlive(ageComponent.partner)) {
+                ageMap.get(ageComponent.partner).isDead = true;
+                System.out.println("Mark partner for removal" + ageComponent.partner);
+            }
         }
         if(ageComponent.isDead){
             engine.removeEntity(entityId);
+            System.out.println("Entity removed " + entityId);
         }
 
     }

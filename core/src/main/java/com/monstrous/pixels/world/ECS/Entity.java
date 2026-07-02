@@ -1,5 +1,6 @@
 package com.monstrous.pixels.world.ECS;
 
+// obsolete
 public class Entity {
     public int id;
 
