@@ -15,21 +15,21 @@ public class M_AgeSystem extends EntitySystem {
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
-    public void update(float delta){
-        for(Entity e : entities){
-            AgeComponent ageComponent = ageMap.get(e.id);
-            ageComponent.timeToLive -= delta;
-            if(ageComponent.timeToLive < 0) {
-                ageComponent.isDead = true;
-                System.out.println("Entity dies of old age " + e.id);
-            }
-            if(ageComponent.isDead && ageComponent.partner != null) {
-                ageComponent.partner.isDead = true;
-            }
-            if(ageComponent.isDead){
-                engine.removeEntity(e.id);
-            }
+    @Override
+    public void update(int entityId, float delta){
+        AgeComponent ageComponent = ageMap.get(entityId);
+        ageComponent.timeToLive -= delta;
+        if(ageComponent.timeToLive < 0) {
+            ageComponent.isDead = true;
+            System.out.println("Entity dies of old age " + entityId);
         }
+        if(ageComponent.isDead && ageComponent.partner != null) {
+            ageComponent.partner.isDead = true;
+        }
+        if(ageComponent.isDead){
+            engine.removeEntity(entityId);
+        }
+
     }
 
 }

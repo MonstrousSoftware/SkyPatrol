@@ -24,9 +24,12 @@ public class ComponentManager {
         return componentType;
     }
 
-    public <C extends Component> ComponentMapper<C> getComponentMapper( Class<C> clazz){
+    public <C extends Component> ComponentMapper<C> getComponentMapper( Class<C> clazz ){
         ComponentType type = getType(clazz);    // get component type
+        return getComponentMapper(type);
+    }
 
+    public <C extends Component> ComponentMapper<C> getComponentMapper( ComponentType type ){
         // look for the relevant component mapper
         @SuppressWarnings("unchecked")
         ComponentMapper<C> mapper = (ComponentMapper<C>) mappers.get(type.getIndex());
@@ -38,15 +41,15 @@ public class ComponentManager {
         return mapper;
     }
 
-    // we need a class parameter in order to select the right component mapper.
-    // perhaps it can be determined from the component object...
-    public <C extends Component> void addComponent(int entityId, Class<C> clazz, C component){
-        ComponentMapper<C> mapper = getComponentMapper(clazz);
+    // this is not pooling friendly as the component is allocated by the caller
+    // alternative: createComponent and then fill it.
+    public void addComponent(int entityId, Component component){
+        ComponentType type = getType(component.getClass());
+        ComponentMapper mapper = getComponentMapper(type);
 
         // add component for the entity
         mapper.set(entityId, component);
 
-        ComponentType type = getType(clazz);    // get component type
         Long flagObj = flags.get(entityId);
         long flag = 0L;
         if(flagObj != null)
@@ -56,13 +59,13 @@ public class ComponentManager {
     }
 
     public void clear(){
-         for(ComponentMapper mapper : mappers)
+         for(ComponentMapper<? extends Component> mapper : mappers)
             mapper.clear();
          flags.clear();
     }
 
     public void remove(int entityId){
-        for(ComponentMapper mapper : mappers)
+        for(ComponentMapper<? extends Component> mapper : mappers)
             mapper.remove(entityId);
     }
 

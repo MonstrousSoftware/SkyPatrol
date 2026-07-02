@@ -71,8 +71,12 @@ public class Engine {
         componentManager.clear();
     }
 
-    public <C extends Component> void addComponent(int entityId, Class<C> clazz, C component){
-        componentManager.addComponent(entityId, clazz, component);
+//    public <C extends Component> void addComponent(int entityId, Class<C> clazz, C component){
+//        componentManager.addComponent(entityId, clazz, component);
+//    }
+
+    public <C extends Component> void addComponent(int entityId, C component){
+        componentManager.addComponent(entityId, component);
     }
 
 

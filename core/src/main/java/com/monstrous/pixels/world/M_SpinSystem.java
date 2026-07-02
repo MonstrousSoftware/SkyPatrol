@@ -14,12 +14,10 @@ public class M_SpinSystem extends EntitySystem {
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
-    public void update(float delta){
-        for(Entity e : entities){
-            SpinComponent spinComponent = spinMap.get(e.id);
-//            if(spinComponent == null)
-//                continue; // should be prefiltered!
+    @Override
+    public void update(int entityId, float delta){
+            SpinComponent spinComponent = spinMap.get(entityId);
             spinComponent.forward.rotate(spinComponent.spinAxis, delta * spinComponent.spinSpeed);
-        }
+
     }
 }

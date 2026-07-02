@@ -31,7 +31,13 @@ public abstract class EntitySystem {
     }
 
     public void update(float deltaTime){
-        // to override
+        for(Entity e : entities){
+            update(e.id, deltaTime);
+        }
+    }
+
+    public void update(int entityId, float deltaTime){
+
     }
 
 

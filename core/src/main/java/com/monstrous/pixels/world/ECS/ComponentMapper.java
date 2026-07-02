@@ -1,5 +1,7 @@
 package com.monstrous.pixels.world.ECS;
 
+import static com.badlogic.gdx.utils.reflect.ClassReflection.newInstance;
+
 public class ComponentMapper<A extends Component> {
     public Bag<A> components;       // sparse, match up with entity id
 
@@ -11,6 +13,13 @@ public class ComponentMapper<A extends Component> {
         return components.get(entityId);
     }
 
+//    public A create(int entityId){
+//        A c = components.get(entityId);
+//        if(c != null)
+//            return c;
+//        c = newInstance(c);
+//    }
+
     public boolean has(int entityId){
         return components.get(entityId) != null;
     }
@@ -18,6 +27,10 @@ public class ComponentMapper<A extends Component> {
     public void set(int entityId, A t){
         components.set(entityId, t);
     }
+
+//    public void set(int entityId, Component t){
+//        components.set(entityId, (A)t);
+//    }
 
     public void remove(int entityId){
         components.remove(entityId);    // todo should use pool

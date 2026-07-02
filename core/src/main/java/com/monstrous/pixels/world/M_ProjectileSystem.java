@@ -17,20 +17,20 @@ public class M_ProjectileSystem extends EntitySystem {
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
-    public void update(float delta){
-        for(Entity e : entities){
-            ProjectileComponent projectileComponent = projMap.get(e.id);
-            DynamicsComponent dynamics = dynMap.get(e.id);
+    @Override
+    public void update(int entityId, float delta){
+        ProjectileComponent projectileComponent = projMap.get(entityId);
+        DynamicsComponent dynamics = dynMap.get(entityId);
 
-            projectileComponent.position.set(dynamics.position);        // perhaps we don't need a copy in projectile Component?
-                                                                        // but we use it for collision detection
+        projectileComponent.position.set(dynamics.position);        // perhaps we don't need a copy in projectile Component?
+                                                                    // but we use it for collision detection
 
-            // rocket with a target are "heat seeking". They will follow their target.
-            if(projectileComponent.target != null){
-                // make rocket point towards target (instantly)
-                float speed = dynamics.velocity.len();
-                dynamics.velocity.set(projectileComponent.target.position).sub(projectileComponent.position).nor().scl(speed);
-            }
+        // rocket with a target are "heat seeking". They will follow their target.
+        if(projectileComponent.target != null){
+            // make rocket point towards target (instantly)
+            float speed = dynamics.velocity.len();
+            dynamics.velocity.set(projectileComponent.target.position).sub(projectileComponent.position).nor().scl(speed);
         }
+
     }
 }

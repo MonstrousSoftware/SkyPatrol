@@ -21,12 +21,11 @@ public class M_ColliderSystem extends EntitySystem {
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
-    public void update(float delta){
-        for(Entity e : entities){
-            ColliderComponent colliderComponent = colliderMap.get(e.id);
-            DynamicsComponent dynamics = dynMap.get(e.id);
-            colliderComponent.position.set(dynamics.position);
-        }
+    @Override
+    public void update(int entityId, float delta){
+        ColliderComponent colliderComponent = colliderMap.get(entityId);
+        DynamicsComponent dynamics = dynMap.get(entityId);
+        colliderComponent.position.set(dynamics.position);
     }
 
     private final Vector3 intersection = new Vector3();

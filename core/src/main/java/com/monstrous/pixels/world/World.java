@@ -216,7 +216,7 @@ public class World implements Disposable {
 
     public void addBuilding(Vector3 position, Vector3 direction){
         Entity e = engine.createEntity();
-        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(buildingType.model, position)));
+        engine.addComponent(e.id, new RenderComponent(e.id, new ModelInstance(buildingType.model, position)));
         engine.commit(e.id);
         // e.id in RenderComponent is no longer needed
         System.out.println("Building "+e.id);
@@ -228,7 +228,7 @@ public class World implements Disposable {
 
     public void addTower(Vector3 position, Vector3 direction){
         Entity e = engine.createEntity();
-        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(towerType.model, position)));
+        engine.addComponent(e.id, new RenderComponent(e.id, new ModelInstance(towerType.model, position)));
         engine.commit(e.id);
 
 //        int id = getEntityId();
@@ -272,10 +272,10 @@ public class World implements Disposable {
 
 
         Entity e = engine.createEntity();
-        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(jetType.model, position)));
-        engine.addComponent(e.id, DynamicsComponent.class, new DynamicsComponent(e.id, position, velocity, jetType.turnSpeed, 0));
-        engine.addComponent(e.id, AgeComponent.class, new AgeComponent(e.id, Float.MAX_VALUE));
-        engine.addComponent(e.id, ColliderComponent.class, new ColliderComponent(e.id, position, jetType.radius, diffuse, jetType));
+        engine.addComponent(e.id, new RenderComponent(e.id, new ModelInstance(jetType.model, position)));
+        engine.addComponent(e.id, new DynamicsComponent(e.id, position, velocity, jetType.turnSpeed, 0));
+        engine.addComponent(e.id, new AgeComponent(e.id, Float.MAX_VALUE));
+        engine.addComponent(e.id, new ColliderComponent(e.id, position, jetType.radius, diffuse, jetType));
         // firing
         engine.commit(e.id);
 
@@ -302,12 +302,12 @@ public class World implements Disposable {
             target = engine.componentManager.getComponentMapper(DynamicsComponent.class).get(targetCollider.id);
 
         Entity e = engine.createEntity();
-        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(rocketType.model, position)));
-        engine.addComponent(e.id, DynamicsComponent.class, new DynamicsComponent(e.id, position, velocity, 0, rocketType.gravity));
-        engine.addComponent(e.id, AgeComponent.class, new AgeComponent(e.id, rocketType.timeToLive));
+        engine.addComponent(e.id, new RenderComponent(e.id, new ModelInstance(rocketType.model, position)));
+        engine.addComponent(e.id, new DynamicsComponent(e.id, position, velocity, 0, rocketType.gravity));
+        engine.addComponent(e.id, new AgeComponent(e.id, rocketType.timeToLive));
         ProjectileComponent projectileComponent = new ProjectileComponent(e.id, position, true);
         projectileComponent.target = target;
-        engine.addComponent(e.id, ProjectileComponent.class, projectileComponent);
+        engine.addComponent(e.id, projectileComponent);
         engine.commit(e.id);
         System.out.println("Rocket "+e.id);
 
@@ -355,8 +355,9 @@ public class World implements Disposable {
 
     public void addWatermelon(Vector3 position){
         Entity e = engine.createEntity();
-        engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
-        engine.addComponent(e.id, SpinComponent.class, new SpinComponent(e.id, Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
+        engine.addComponent(e.id, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
+        //engine.addComponent(e.id, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
+        engine.addComponent(e.id, new SpinComponent(e.id, Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
         engine.commit(e.id);
         System.out.println("Water melon "+e.id);
 
@@ -410,10 +411,6 @@ public class World implements Disposable {
         DynamicsSystem.update(dynamicsComponentMap.values(), ageComponentMap, deltaTime);
         SpinSystem.update(spinComponentMap.values(), deltaTime);
         AgeSystem.update(ageComponentMap.values(), deltaTime);
-
-//        dynamicsSystem.update(deltaTime);
-//        spinSystem.update(deltaTime);
-//        ageSystem.update(deltaTime);
 
         engine.update(deltaTime);
 
