@@ -9,12 +9,14 @@ public class Engine {
     public ComponentManager componentManager;
     public Array<EntitySystem> systems;
     public Array<EntitySystem> updateSystems;   // systems which are automatically updated
+    private Array<Integer> entitiesForRemoval;
 
     public Engine() {
         entityManager = new EntityManager( 1024);
         componentManager = new ComponentManager();
         systems = new Array<>();
         updateSystems = new Array<>();
+        entitiesForRemoval = new Array<>();
     }
 
     public void addSystem(EntitySystem system, boolean autoUpdate){
@@ -31,6 +33,7 @@ public class Engine {
     public void update(float deltaTime){
         for(EntitySystem system : updateSystems) {
             system.update(deltaTime);
+            reaper();
         }
     }
 
@@ -52,12 +55,19 @@ public class Engine {
     }
 
     public void removeEntity(int entityId ){
-        entityManager.removeEntity(entityId);
-        for(EntitySystem system : systems){
-            system.removeEntity(entityId);
-            Gdx.app.log("", "remove entity "+entityId+ " from system "+system.toString());
+          entitiesForRemoval.add(entityId);
+    }
+
+    private void reaper(){
+        for(int entityId : entitiesForRemoval) {
+            entityManager.removeEntity(entityId);
+            for (EntitySystem system : systems) {
+                system.removeEntity(entityId);
+                Gdx.app.log("", "remove entity " + entityId + " from system " + system.toString());
+            }
+            componentManager.remove(entityId);
         }
-        componentManager.remove(entityId);
+        entitiesForRemoval.clear();
     }
 
     public void clear(){

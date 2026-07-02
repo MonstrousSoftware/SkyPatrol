@@ -242,6 +242,7 @@ public class World implements Disposable {
             target = engine.componentManager.getComponentMapper(DynamicsComponent.class).get(targetCollider.id);
 
         int entityId = engine.createEntity();
+        System.out.println("creating Rocket "+entityId);
         engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(rocketType.model, position)));
         engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, rocketType.gravity));
         engine.addComponent(entityId, new AgeComponent(entityId, rocketType.timeToLive));
@@ -251,12 +252,12 @@ public class World implements Disposable {
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 velocity){
-        int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(enemyRocketType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, enemyRocketType.gravity));
-        engine.addComponent(entityId, new AgeComponent(entityId, enemyRocketType.timeToLive));
-        engine.addComponent(entityId, new ProjectileComponent(entityId, position, false, null));
-        engine.commit(entityId);
+//        int entityId = engine.createEntity();
+//        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(enemyRocketType.model, position)));
+//        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, enemyRocketType.gravity));
+//        engine.addComponent(entityId, new AgeComponent(entityId, enemyRocketType.timeToLive));
+//        engine.addComponent(entityId, new ProjectileComponent(entityId, position, false, null));
+//        engine.commit(entityId);
     }
 
     public void addDebris(Vector3 position, Vector3 velocity, Vector3 spinAxis){

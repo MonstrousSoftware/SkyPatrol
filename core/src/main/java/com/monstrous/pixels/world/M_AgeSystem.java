@@ -29,8 +29,9 @@ public class M_AgeSystem extends EntitySystem {
             }
         }
         if(ageComponent.isDead){
+            System.out.println("AgeSystem: Entity that is marked dead is removed " + entityId);
             engine.removeEntity(entityId);
-            System.out.println("Entity removed " + entityId);
+
         }
 
     }

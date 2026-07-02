@@ -76,3 +76,6 @@ Here are the results of a first basic implementation of an ECS system which reli
 | 1000  | 26               | 30                 |
 
 to be continued...
+
+2/7/2026: My ECS system seems to work on the first level.  But on a transition to the next level it crashes.
+Probably due to incorrect reuse of data after engine.clear();

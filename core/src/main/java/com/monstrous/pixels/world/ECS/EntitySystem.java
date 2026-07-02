@@ -19,10 +19,12 @@ public abstract class EntitySystem {
 
 
     public void addEntity(int entityId){
+        System.out.println("System: add entity "+entityId);
         entities.add(entityId);
     }
 
     public void removeEntity(int entityId){
+        System.out.println("System: remove entity "+entityId);
         entities.removeValue(entityId);
     }
 
