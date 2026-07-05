@@ -46,9 +46,9 @@ public class World implements Disposable {
     private final ColliderSystem colliderSystem;
     private final ProjectileSystem projectileSystem;
     private final FiringSystem firingSystem;
-    private ComponentMapper<ProjectileComponent> projMap;
-    private ComponentMapper<AgeComponent> ageMap;
-    private ComponentMapper<DynamicsComponent> dynMap;
+    private final ComponentMapper<ProjectileComponent> projMap;
+    private final ComponentMapper<AgeComponent> ageMap;
+    private final ComponentMapper<DynamicsComponent> dynMap;
     public Vector3 cameraPosition;
 
     public World() {
@@ -262,15 +262,10 @@ public class World implements Disposable {
     }
 
     public void addWatermelon(Vector3 position){
-        Material mat = watermelonType.model.materials.get(0);
-        Color diffuse = ((ColorAttribute)(mat.get(ColorAttribute.Diffuse))).color;
-
-
         int entityId = engine.createEntity();
         engine.addComponent(entityId, new RenderComponent(new ModelInstance(watermelonType.model, position)));
-        //engine.addComponent(entityId, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
-        engine.addComponent(entityId, new SpinComponent(Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
-        engine.addComponent(entityId, new ColliderComponent(entityId, position, watermelonType.radius, diffuse, watermelonType));
+         engine.addComponent(entityId, new SpinComponent(Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
+        engine.addComponent(entityId, new ColliderComponent(entityId, position, watermelonType.radius, Color.GREEN, watermelonType));
         engine.addComponent(entityId, new AgeComponent(Float.MAX_VALUE));
         engine.commit(entityId);
         System.out.println("Water melon "+entityId);
@@ -320,7 +315,6 @@ public class World implements Disposable {
 
         ageMap.get(colliderComponent.id).isDead = true;
         position.set(colliderComponent.position);
-        //engine.removeEntity(colliderComponent.id);
 
         // make debris model match colour of destroyed object
         debrisType.model.materials.get(0).set(ColorAttribute.createDiffuse(colliderComponent.color));
@@ -355,11 +349,6 @@ public class World implements Disposable {
                 if(colliderComponent != null) {
                     ageMap.get(entityId).isDead = true;
                     System.out.println("Rocket hits, mark rocket as dead "+entityId);
-                    //ageComponentMap.get((projectileComponent.id)).isDead = true;
-                    //projectileComponent.isDead = true;    // delete rocket
-                    // if you hit a turret, return the parent tank
-//                        if(t.parent != null)
-//                            t = t.parent;
                     blowUp(colliderComponent);          // blow up enemy
                     return colliderComponent;
               }
