@@ -10,7 +10,7 @@ public abstract class EntitySystem {
 
     public EntitySystem(Engine engine) {
         this.engine = engine;
-        entities = new IntArray();
+        entities = new IntArray(false, 64);
     }
 
     public long requiredComponentsBitFlag(){

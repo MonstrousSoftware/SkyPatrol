@@ -1,16 +1,13 @@
 package com.monstrous.pixels.world;
 
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.monstrous.pixels.world.ECS.ComponentMapper;
 import com.monstrous.pixels.world.ECS.ComponentType;
 import com.monstrous.pixels.world.ECS.Engine;
 import com.monstrous.pixels.world.ECS.EntitySystem;
 
 // Let enemies fire rockets
-public class M_FiringSystem extends EntitySystem {
+public class FiringSystem extends EntitySystem {
 
     private final ComponentMapper<FiringComponent> firingMap;
     private final ComponentMapper<DynamicsComponent> dynMap;
@@ -18,7 +15,7 @@ public class M_FiringSystem extends EntitySystem {
     private final Vector3 tmpVec, tmpVec2;
     private final World world;
 
-    public M_FiringSystem(Engine engine, World world) {
+    public FiringSystem(Engine engine, World world) {
         super(engine);
         this.world = world;
         firingMap = engine.componentManager.getComponentMapper(FiringComponent.class);

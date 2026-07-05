@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.IntArray;
 
 public class EntityManager {
 
-    private int nextId;
+    private int nextId;                     // id for next new entity
     private final IntArray pool;            // entity id's for reuse
     private final Bits alive;               // dead/alive bit map
 

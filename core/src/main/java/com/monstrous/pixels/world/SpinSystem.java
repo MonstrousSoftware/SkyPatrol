@@ -1,24 +1,23 @@
 package com.monstrous.pixels.world;
 
-import com.badlogic.gdx.math.Vector3;
+import com.monstrous.pixels.world.ECS.*;
+import com.monstrous.pixels.world.ECS.EntitySystem;
 
-import java.util.Collection;
+public class SpinSystem extends EntitySystem {
 
-public class SpinSystem {
+    private final ComponentMapper<SpinComponent> spinMap;
 
-    public static void update(Collection<SpinComponent> components, float delta){
-        for(SpinComponent component : components){
-            component.forward.rotate(component.spinAxis, delta * component.spinSpeed);
-        }
+    public SpinSystem(Engine engine) {
+        super(engine);
+        spinMap = engine.componentManager.getComponentMapper(SpinComponent.class);
+        ComponentType componentType = engine.componentManager.getType(SpinComponent.class);
+        requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
 
-    // todo we need instance.transform and position
-    public void update(SpinComponent component, float delta) {
-        if(component.spinSpeed > 0)
-            component.forward.rotate(component.spinAxis, delta * component.spinSpeed);
+    @Override
+    public void update(int entityId, float delta){
+            SpinComponent spinComponent = spinMap.get(entityId);
+            spinComponent.forward.rotate(spinComponent.spinAxis, delta * spinComponent.spinSpeed);
 
-        // todo
-//        else
-//            component.forward.set(velocity).nor();
     }
 }

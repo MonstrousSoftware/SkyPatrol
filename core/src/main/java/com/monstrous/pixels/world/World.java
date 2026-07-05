@@ -42,10 +42,10 @@ public class World implements Disposable {
     private final Sound soundRocketFlyBy;
     private final Color background = new Color();
     private final Engine engine;
-    private final M_RenderSystem renderSystem;
-    private final M_ColliderSystem colliderSystem;
-    private final M_ProjectileSystem projectileSystem;
-    private final M_FiringSystem firingSystem;
+    private final RenderSystem renderSystem;
+    private final ColliderSystem colliderSystem;
+    private final ProjectileSystem projectileSystem;
+    private final FiringSystem firingSystem;
     private ComponentMapper<ProjectileComponent> projMap;
     private ComponentMapper<AgeComponent> ageMap;
     private ComponentMapper<DynamicsComponent> dynMap;
@@ -109,14 +109,14 @@ public class World implements Disposable {
 
         engine = new Engine();
 
-        engine.addSystem(renderSystem = new M_RenderSystem(engine), false);
-        engine.addSystem(new M_DynamicsSystem(engine), true);
-        engine.addSystem(new M_SpinSystem(engine), true);
-        engine.addSystem(new M_AgeSystem(engine), true);
-        firingSystem = new M_FiringSystem(engine, this);
+        engine.addSystem(renderSystem = new RenderSystem(engine), false);
+        engine.addSystem(new DynamicsSystem(engine), true);
+        engine.addSystem(new SpinSystem(engine), true);
+        engine.addSystem(new AgeSystem(engine), true);
+        firingSystem = new FiringSystem(engine, this);
         engine.addSystem(firingSystem, true);
-        engine.addSystem(projectileSystem = new M_ProjectileSystem(engine), true);
-        engine.addSystem(colliderSystem = new M_ColliderSystem(engine), true);
+        engine.addSystem(projectileSystem = new ProjectileSystem(engine), true);
+        engine.addSystem(colliderSystem = new ColliderSystem(engine), true);
 
         projMap = engine.componentManager.getComponentMapper(ProjectileComponent.class);
         ageMap = engine.componentManager.getComponentMapper(AgeComponent.class);

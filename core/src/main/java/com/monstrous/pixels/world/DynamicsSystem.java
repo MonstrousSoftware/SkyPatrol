@@ -1,32 +1,40 @@
 package com.monstrous.pixels.world;
 
 import com.badlogic.gdx.math.Vector3;
+import com.monstrous.pixels.world.ECS.*;
 
-import java.util.Collection;
-import java.util.Map;
+public class DynamicsSystem extends EntitySystem {
 
-public class DynamicsSystem {
+    private final ComponentMapper<DynamicsComponent> dynMap;
+    private final ComponentMapper<AgeComponent> ageMap;
 
+    public DynamicsSystem(Engine engine) {
+        super(engine);
+        dynMap = engine.componentManager.getComponentMapper(DynamicsComponent.class);
+        ageMap = engine.componentManager.getComponentMapper(AgeComponent.class);
 
-    public static void update(Collection<DynamicsComponent> components, Map<Integer, AgeComponent> ageComponentMap, float delta){
-        for(DynamicsComponent component : components){
-            update(component, ageComponentMap, delta);
-        }
+        ComponentType componentType = engine.componentManager.getType(DynamicsComponent.class);
+        requiredComponentsBitFlag |= 1L << componentType.getIndex();
     }
-    public static void update(DynamicsComponent component, Map<Integer, AgeComponent> ageComponentMap, float delta) {
-        if (component.velocity.len2() > 0f) {
+
+    public void update(int entityId, float delta){
+        DynamicsComponent dynComponent = dynMap.get(entityId);
+        if (dynComponent.velocity.len2() > 0f) {
             Vector3 tmpVec = new Vector3();
-            tmpVec.set(component.velocity).scl(delta);
-            component.position.add(tmpVec);
+            tmpVec.set(dynComponent.velocity).scl(delta);
+            dynComponent.position.add(tmpVec);
         }
-        if (component.turnSpeed > 0)
-            component.velocity.rotate(Vector3.Y, delta * component.turnSpeed);
+        if (dynComponent.turnSpeed > 0)
+            dynComponent.velocity.rotate(Vector3.Y, delta * dynComponent.turnSpeed);
 
-        if (component.gravity > 0)
-            component.velocity.y -= delta * component.gravity;
+        if (dynComponent.gravity > 0)
+            dynComponent.velocity.y -= delta * dynComponent.gravity;
 
-        if(component.position.y < 0) {
-            ageComponentMap.get(component.id).isDead = true;
+        // kill any entities that go below ground level (e.g. debris or enemy rockets)
+        if(dynComponent.position.y < 0) {
+            AgeComponent ageComponent = ageMap.get(entityId);
+            if(ageComponent != null)
+                ageComponent.isDead = true;
         }
     }
 }
