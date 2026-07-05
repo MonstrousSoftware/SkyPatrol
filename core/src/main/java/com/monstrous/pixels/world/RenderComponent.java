@@ -5,9 +5,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.monstrous.pixels.world.ECS.Component;
 
 public class RenderComponent extends Component {
-    public final ModelInstance modelInstance;
+    public ModelInstance modelInstance;
+
+    public RenderComponent() {
+        modelInstance = null;
+    }
 
     public RenderComponent(ModelInstance modelInstance) {
+        this.modelInstance = modelInstance;
+    }
+
+    public void set(ModelInstance modelInstance) {
         this.modelInstance = modelInstance;
     }
 }

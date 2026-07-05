@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
 import com.monstrous.pixels.WireFrameBuilder;
 import com.monstrous.pixels.world.ECS.ComponentMapper;
+import com.monstrous.pixels.world.ECS.ComponentType;
 import com.monstrous.pixels.world.ECS.Engine;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
@@ -234,37 +235,46 @@ public class World implements Disposable {
             target = engine.componentManager.getComponentMapper(DynamicsComponent.class).get(targetCollider.id);
 
         int entityId = engine.createEntity();
-        //System.out.println("creating Rocket "+entityId);
-        engine.addComponent(entityId, new RenderComponent(new ModelInstance(rocketType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, rocketType.gravity));
-        engine.addComponent(entityId, new AgeComponent(rocketType.timeToLive));
-        engine.addComponent(entityId, new ProjectileComponent(position, true, target));
+        engine.createComponent(entityId, RenderComponent.class).set(new ModelInstance(rocketType.model, position));
+        engine.createComponent(entityId, DynamicsComponent.class).set(position, velocity, 0, rocketType.gravity);
+        engine.createComponent(entityId, AgeComponent.class).set(rocketType.timeToLive);
+        engine.createComponent(entityId, ProjectileComponent.class).set(position, true, target);
         engine.commit(entityId);
         System.out.println("Rocket "+entityId);
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 velocity){
+
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(new ModelInstance(enemyRocketType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, enemyRocketType.gravity));
-        engine.addComponent(entityId, new AgeComponent(enemyRocketType.timeToLive));
-        engine.addComponent(entityId, new ProjectileComponent(position, false, null));
+        engine.createComponent(entityId, RenderComponent.class).set(new ModelInstance(enemyRocketType.model, position));
+        engine.createComponent(entityId, DynamicsComponent.class).set(position, velocity, 0, enemyRocketType.gravity);
+        engine.createComponent(entityId, AgeComponent.class).set(enemyRocketType.timeToLive);
+        engine.createComponent(entityId, ProjectileComponent.class).set(position, false, null);
+//
+//        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, enemyRocketType.gravity));
+//        engine.addComponent(entityId, new AgeComponent(enemyRocketType.timeToLive));
+//        engine.addComponent(entityId, new ProjectileComponent(position, false, null));
         engine.commit(entityId);
     }
 
     public void addDebris(Vector3 position, Vector3 velocity, Vector3 spinAxis){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(new ModelInstance(debrisType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, debrisType.gravity));
-        engine.addComponent(entityId, new SpinComponent(Vector3.Z, spinAxis, debrisType.spinSpeed));
-        engine.addComponent(entityId, new AgeComponent(debrisType.timeToLive));
+        engine.createComponent(entityId, RenderComponent.class).set(new ModelInstance(debrisType.model, position));
+        engine.createComponent(entityId, DynamicsComponent.class).set(position, velocity, 0, debrisType.gravity);
+        engine.createComponent(entityId, AgeComponent.class).set(debrisType.timeToLive);
+        engine.createComponent(entityId, SpinComponent.class).set(Vector3.Z, spinAxis, debrisType.spinSpeed);
+
+//        engine.addComponent(entityId, new RenderComponent(new ModelInstance(debrisType.model, position)));
+//        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, debrisType.gravity));
+//        engine.addComponent(entityId, new SpinComponent(Vector3.Z, spinAxis, debrisType.spinSpeed));
+//        engine.addComponent(entityId, new AgeComponent(debrisType.timeToLive));
         engine.commit(entityId);
     }
 
     public void addWatermelon(Vector3 position){
         int entityId = engine.createEntity();
         engine.addComponent(entityId, new RenderComponent(new ModelInstance(watermelonType.model, position)));
-         engine.addComponent(entityId, new SpinComponent(Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
+        engine.addComponent(entityId, new SpinComponent(Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
         engine.addComponent(entityId, new ColliderComponent(entityId, position, watermelonType.radius, Color.GREEN, watermelonType));
         engine.addComponent(entityId, new AgeComponent(Float.MAX_VALUE));
         engine.commit(entityId);

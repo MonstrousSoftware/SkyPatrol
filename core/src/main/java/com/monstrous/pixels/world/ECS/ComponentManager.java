@@ -62,6 +62,37 @@ public class ComponentManager {
         flags.set(entityId, flag);
     }
 
+    public <C extends Component> C createComponent(int entityId, Class<C> clazz) {
+        ComponentType type = getType(clazz);
+        ComponentMapper mapper = getComponentMapper(type);
+
+        // add component for the entity
+        C c = (C) mapper.create(entityId, clazz);
+
+        //    flags.ensureCapacity(entityId+100);
+        while(entityId >= flags.size)    // hmm...inefficient
+            flags.add(0L);
+        long flag = flags.get(entityId);
+        flag |= 1L << type.getIndex();
+        flags.set(entityId, flag);
+        return c;
+    }
+
+//    public <C extends Component> C createComponent(int entityId, ComponentType type) {
+//        ComponentMapper mapper = getComponentMapper(type);
+//
+//        // add component for the entity
+//        C c = (C) mapper.create(entityId);
+//
+//        //    flags.ensureCapacity(entityId+100);
+//        while(entityId >= flags.size)    // hmm...inefficient
+//            flags.add(0L);
+//        long flag = flags.get(entityId);
+//        flag |= 1L << type.getIndex();
+//        flags.set(entityId, flag);
+//        return c;
+//    }
+
     public void clear(){
          for(ComponentMapper<? extends Component> mapper : mappers)
             mapper.clear();

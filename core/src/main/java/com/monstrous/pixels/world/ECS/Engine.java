@@ -94,5 +94,20 @@ public class Engine {
         componentManager.addComponent(entityId, component);
     }
 
+//    public <C extends Component> C createComponent(int entityId, C component){
+//        if(!entityManager.isAlive(entityId))
+//            throw new RuntimeException("add Component to dead entity");
+//
+//        return componentManager.createComponent(entityId, component.getClass());
+//    }
+
+    public <C extends Component> C createComponent(int entityId, Class<C> type){
+        if(!entityManager.isAlive(entityId))
+            throw new RuntimeException("add Component to dead entity");
+
+        return componentManager.createComponent(entityId, type);
+    }
+
+
 
 }
