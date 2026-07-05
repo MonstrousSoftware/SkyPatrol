@@ -102,7 +102,7 @@ public class World implements Disposable {
         instances = new Array<>();
 
         //  used to signify the player was hit
-        helicopterCollider = new ColliderComponent(0, Vector3.Zero, 1, Color.GREEN, helicopterType);
+        helicopterCollider = new ColliderComponent(-1, Vector3.Zero, 1, Color.GREEN, helicopterType);
 
         soundRocketFlyBy = Gdx.audio.newSound(Gdx.files.internal("sound/rocket-flyby.wav"));
 
@@ -185,7 +185,7 @@ public class World implements Disposable {
 
     public void addBuilding(Vector3 position, Vector3 direction){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(buildingType.model, position)));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(buildingType.model, position)));
         engine.commit(entityId);
         // e.id in RenderComponent is no longer needed
         //System.out.println("Building "+entityId);
@@ -193,23 +193,23 @@ public class World implements Disposable {
 
     public void addTower(Vector3 position, Vector3 direction){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(towerType.model, position)));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(towerType.model, position)));
         engine.commit(entityId);
     }
 
     public void addTank(Vector3 position, Vector3 velocity){
         int entityId = engine.createEntity();
         int entityId2 = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(tankType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, tankType.turnSpeed, 0));
-        engine.addComponent(entityId, new AgeComponent(entityId, Float.MAX_VALUE, entityId2));
-        engine.addComponent(entityId, new ColliderComponent(entityId, position, tankType.radius, Color.GREEN, tankType));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(tankType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(position, velocity, tankType.turnSpeed, 0));
+        engine.addComponent(entityId, new AgeComponent(Float.MAX_VALUE, entityId2));
+        engine.addComponent(entityId, new ColliderComponent( entityId, position, tankType.radius, Color.GREEN, tankType));
         engine.commit(entityId);
 
-        engine.addComponent(entityId2, new RenderComponent(entityId2, new ModelInstance(tankTurretType.model, position)));
-        engine.addComponent(entityId2, new DynamicsComponent(entityId2, position, velocity, tankType.turnSpeed, 0));
-        engine.addComponent(entityId2, new SpinComponent(entityId2, Vector3.Z, Vector3.Y, 0));
-        engine.addComponent(entityId2, new AgeComponent(entityId2, Float.MAX_VALUE, entityId));
+        engine.addComponent(entityId2, new RenderComponent(new ModelInstance(tankTurretType.model, position)));
+        engine.addComponent(entityId2, new DynamicsComponent( position, velocity, tankType.turnSpeed, 0));
+        engine.addComponent(entityId2, new SpinComponent(Vector3.Z, Vector3.Y, 0));
+        engine.addComponent(entityId2, new AgeComponent(Float.MAX_VALUE, entityId));
         engine.addComponent(entityId2, new ColliderComponent(entityId2, position, tankType.radius, Color.GREEN, tankType));
         engine.addComponent(entityId2, new FiringComponent(tankTurretType));
         engine.commit(entityId2);
@@ -219,9 +219,9 @@ public class World implements Disposable {
 
     public void addJet(Vector3 position, Vector3 velocity){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(jetType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, jetType.turnSpeed, 0));
-        engine.addComponent(entityId, new AgeComponent(entityId, Float.MAX_VALUE));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(jetType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(position, velocity, jetType.turnSpeed, 0));
+        engine.addComponent(entityId, new AgeComponent(Float.MAX_VALUE));
         engine.addComponent(entityId, new ColliderComponent(entityId, position, jetType.radius, Color.CYAN, jetType));
         engine.addComponent(entityId, new FiringComponent(jetType));
         engine.commit(entityId);
@@ -235,29 +235,29 @@ public class World implements Disposable {
 
         int entityId = engine.createEntity();
         //System.out.println("creating Rocket "+entityId);
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(rocketType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, rocketType.gravity));
-        engine.addComponent(entityId, new AgeComponent(entityId, rocketType.timeToLive));
-        engine.addComponent(entityId, new ProjectileComponent(entityId, position, true, target));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(rocketType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, rocketType.gravity));
+        engine.addComponent(entityId, new AgeComponent(rocketType.timeToLive));
+        engine.addComponent(entityId, new ProjectileComponent(position, true, target));
         engine.commit(entityId);
         System.out.println("Rocket "+entityId);
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 velocity){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(enemyRocketType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, enemyRocketType.gravity));
-        engine.addComponent(entityId, new AgeComponent(entityId, enemyRocketType.timeToLive));
-        engine.addComponent(entityId, new ProjectileComponent(entityId, position, false, null));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(enemyRocketType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, enemyRocketType.gravity));
+        engine.addComponent(entityId, new AgeComponent(enemyRocketType.timeToLive));
+        engine.addComponent(entityId, new ProjectileComponent(position, false, null));
         engine.commit(entityId);
     }
 
     public void addDebris(Vector3 position, Vector3 velocity, Vector3 spinAxis){
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(debrisType.model, position)));
-        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, debrisType.gravity));
-        engine.addComponent(entityId, new SpinComponent(entityId,Vector3.Z, spinAxis, debrisType.spinSpeed));
-        engine.addComponent(entityId, new AgeComponent(entityId, debrisType.timeToLive));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(debrisType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, debrisType.gravity));
+        engine.addComponent(entityId, new SpinComponent(Vector3.Z, spinAxis, debrisType.spinSpeed));
+        engine.addComponent(entityId, new AgeComponent(debrisType.timeToLive));
         engine.commit(entityId);
     }
 
@@ -267,11 +267,11 @@ public class World implements Disposable {
 
 
         int entityId = engine.createEntity();
-        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(watermelonType.model, position)));
+        engine.addComponent(entityId, new RenderComponent(new ModelInstance(watermelonType.model, position)));
         //engine.addComponent(entityId, RenderComponent.class, new RenderComponent(e.id, new ModelInstance(watermelonType.model, position)));
-        engine.addComponent(entityId, new SpinComponent(entityId, Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
+        engine.addComponent(entityId, new SpinComponent(Vector3.Z, Vector3.Y, watermelonType.spinSpeed));
         engine.addComponent(entityId, new ColliderComponent(entityId, position, watermelonType.radius, diffuse, watermelonType));
-        engine.addComponent(entityId, new AgeComponent(entityId, Float.MAX_VALUE));
+        engine.addComponent(entityId, new AgeComponent(Float.MAX_VALUE));
         engine.commit(entityId);
         System.out.println("Water melon "+entityId);
     }

@@ -12,8 +12,8 @@ public class ColliderComponent extends Component {
     public GameObjectType type;
 
 
-    public ColliderComponent(int id, Vector3 position, float radius, Color color, GameObjectType type) {
-        this.id = id;
+    public ColliderComponent(int entityId, Vector3 position, float radius, Color color, GameObjectType type) {
+        this.id = entityId;
         this.position = new Vector3(position);
         this.radius = radius;
         this.color = new Color(color);
