@@ -21,7 +21,7 @@ public class EntityManager {
         if(pool.notEmpty()){
             int id = pool.pop();
             e = entities.get(id);
-            System.out.println("Obtained from pool, pool size "+pool.size);
+            //System.out.println("Obtained from pool, pool size "+pool.size);
         } else {
             e = new Entity(entities.getSize());
             entities.add(e);
@@ -35,7 +35,7 @@ public class EntityManager {
         if(alive.get(entityId)) {
             alive.clear(entityId);
             pool.add(entityId);
-            System.out.println("Removed entity, pool size " + pool.size);
+            //System.out.println("Removed entity, pool size " + pool.size);
         }
     }
 
@@ -50,8 +50,10 @@ public class EntityManager {
 //    }
 
     void clear(){
+        // add live entities to the reuse pool (dead entities are already there)
         for(Entity e : entities) {
-            pool.add(e.id);
+            if(isAlive(e.id))
+                pool.add(e.id);
         }
         alive.clear();
     }

@@ -38,6 +38,10 @@ public class M_FiringSystem extends EntitySystem {
     public void update(int entityId, float delta){
 
         FiringComponent firingComponent = firingMap.get(entityId);
+        if(firingComponent == null) {
+            boolean live = engine.entityManager.isAlive(entityId);
+            throw new RuntimeException("Mandatory component missing");
+        }
 
         firingComponent.timeToFire -= delta;    // countdown to next shot
 

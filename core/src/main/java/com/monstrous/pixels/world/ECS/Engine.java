@@ -9,7 +9,7 @@ public class Engine {
     public ComponentManager componentManager;
     public Array<EntitySystem> systems;
     public Array<EntitySystem> updateSystems;   // systems which are automatically updated
-    private Array<Integer> entitiesForRemoval;
+    private final Array<Integer> entitiesForRemoval;
 
     public Engine() {
         entityManager = new EntityManager( 1024);
@@ -49,7 +49,7 @@ public class Engine {
         for(EntitySystem system : systems){
             if((system.requiredComponentsBitFlag & flags) == system.requiredComponentsBitFlag) {
                 system.addEntity(entityId);
-                Gdx.app.log("", "add entity "+entityId+ " to system "+system.toString());
+                //Gdx.app.log("", "add entity "+entityId+ " to system "+system.toString());
             }
         }
     }
@@ -60,10 +60,14 @@ public class Engine {
 
     private void reaper(){
         for(int entityId : entitiesForRemoval) {
+            long flags = componentManager.flags.get(entityId);
             entityManager.removeEntity(entityId);
             for (EntitySystem system : systems) {
-                system.removeEntity(entityId);
-                Gdx.app.log("", "remove entity " + entityId + " from system " + system.toString());
+                if((system.requiredComponentsBitFlag & flags) == system.requiredComponentsBitFlag) {
+
+                    system.removeEntity(entityId);
+                    //Gdx.app.log("", "remove entity " + entityId + " from system " + system.toString());
+                }
             }
             componentManager.remove(entityId);
         }
@@ -84,6 +88,9 @@ public class Engine {
 //    }
 
     public <C extends Component> void addComponent(int entityId, C component){
+        if(!entityManager.isAlive(entityId))
+            throw new RuntimeException("add Component to dead entity");
+
         componentManager.addComponent(entityId, component);
     }
 

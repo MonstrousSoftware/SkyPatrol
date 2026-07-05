@@ -146,14 +146,12 @@ public class World implements Disposable {
         float spawnAreaSize = 250f+10*level;
 
         engine.clear();
-        //removeAllEntities();
 
         if(level == 1)
             background.set(0.0f, 0.2f, 0.1f, 1.0f); // greenish
         else
             background.set(MathUtils.random()*0.3f, MathUtils.random()*0.3f, MathUtils.random()*0.3f, 1.0f);
 
-        //gameObjects.clear();
         for(int i = 0; i < numTanks; i++) {
             float x = (MathUtils.random() - 0.5f) * spawnAreaSize;
             float z = (MathUtils.random() - 0.5f) * spawnAreaSize;
@@ -196,7 +194,7 @@ public class World implements Disposable {
         engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(buildingType.model, position)));
         engine.commit(entityId);
         // e.id in RenderComponent is no longer needed
-        System.out.println("Building "+entityId);
+        //System.out.println("Building "+entityId);
     }
 
     public void addTower(Vector3 position, Vector3 direction){
@@ -242,7 +240,7 @@ public class World implements Disposable {
             target = engine.componentManager.getComponentMapper(DynamicsComponent.class).get(targetCollider.id);
 
         int entityId = engine.createEntity();
-        System.out.println("creating Rocket "+entityId);
+        //System.out.println("creating Rocket "+entityId);
         engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(rocketType.model, position)));
         engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, rocketType.gravity));
         engine.addComponent(entityId, new AgeComponent(entityId, rocketType.timeToLive));

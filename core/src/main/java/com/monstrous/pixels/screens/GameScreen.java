@@ -65,7 +65,7 @@ public class GameScreen extends RetroScreen {
 
         world = new World();
         level = 0;
-        world.populate(level);
+        //world.populate(level);
 
         inputController = new CamController(cam);
         setUpDownControls();
@@ -85,6 +85,11 @@ public class GameScreen extends RetroScreen {
         if(game.enableMusic)
             beep.startMusic();
 
+        livesString = new StringBuilder();
+        hardCore = game.oneLife;
+
+        levelUp();  // init level 1
+
         Renderable renderable = new Renderable();
         ModelInstance instance = world.getInstances().get(1);
         instance.getRenderable(renderable);
@@ -96,12 +101,6 @@ public class GameScreen extends RetroScreen {
                 return wireFrameShader;
             }
         });
-
-        livesString = new StringBuilder();
-
-        levelUp();
-
-        hardCore = game.oneLife;
 
         fpsGadget = new FrameRateGadget();
     }

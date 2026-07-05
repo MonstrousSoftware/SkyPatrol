@@ -29,10 +29,14 @@ public class M_RenderSystem extends EntitySystem {
         for(int index = 0; index < entities.size; index++){
             int eid = entities.get(index);
             RenderComponent renderComponent = renderMap.get(eid);
+            if(renderComponent == null) {
+                boolean live = engine.entityManager.isAlive(eid);
+                throw new RuntimeException("Manadatory component missing");
+            }
 
             // update model instance transform if there is a dynamics component
-            DynamicsComponent dynamics = dynMap.get(eid);
-            if(dynamics != null) {
+            if(dynMap.has(eid)){
+                DynamicsComponent dynamics = dynMap.get(eid);
 
                 renderComponent.modelInstance.transform.idt();
                 renderComponent.modelInstance.transform.trn(dynamics.position);
@@ -42,8 +46,9 @@ public class M_RenderSystem extends EntitySystem {
             }
 
             // add any spin to model instance transform
-            SpinComponent spin = spinMap.get(eid);
-            if(spin != null) {
+            if(spinMap.has(eid)){
+                SpinComponent spin = spinMap.get(eid);
+
                 renderComponent.modelInstance.transform.getTranslation(pos);
                 renderComponent.modelInstance.transform.setToTranslation(pos);
                 renderComponent.modelInstance.transform.rotate(Vector3.Z, spin.forward);

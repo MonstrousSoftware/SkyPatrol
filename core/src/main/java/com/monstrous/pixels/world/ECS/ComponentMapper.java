@@ -25,6 +25,8 @@ public class ComponentMapper<A extends Component> {
 //    }
 
     public boolean has(int entityId){
+        if(entityId >= components.size)
+            return false;
         return components.get(entityId) != null;
     }
 

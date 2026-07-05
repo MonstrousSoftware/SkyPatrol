@@ -20,16 +20,16 @@ public class M_AgeSystem extends EntitySystem {
         ageComponent.timeToLive -= delta;
         if(ageComponent.timeToLive < 0) {
             ageComponent.isDead = true;
-            System.out.println("Entity dies of old age " + entityId);
+            //System.out.println("Entity dies of old age " + entityId);
         }
         if(ageComponent.isDead && ageComponent.partner >= 0) {
             if(engine.entityManager.isAlive(ageComponent.partner)) {
                 ageMap.get(ageComponent.partner).isDead = true;
-                System.out.println("Mark partner for removal" + ageComponent.partner);
+                //System.out.println("Mark partner for removal" + ageComponent.partner);
             }
         }
         if(ageComponent.isDead){
-            System.out.println("AgeSystem: Entity that is marked dead is removed " + entityId);
+            //System.out.println("AgeSystem: Entity that is marked dead is removed " + entityId);
             engine.removeEntity(entityId);
 
         }
