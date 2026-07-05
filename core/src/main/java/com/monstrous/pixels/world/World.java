@@ -8,24 +8,17 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.utils.IntMap;
 import com.monstrous.pixels.WireFrameBuilder;
-import com.monstrous.pixels.world.ECS.Bag;
 import com.monstrous.pixels.world.ECS.ComponentMapper;
 import com.monstrous.pixels.world.ECS.Engine;
-import com.monstrous.pixels.world.ECS.Entity;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class World implements Disposable {
 

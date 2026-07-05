@@ -41,6 +41,8 @@ public class ComponentMapper<A extends Component> {
 //    }
 
     public void remove(int entityId){
+        if(entityId >= components.size)
+            return;
         components.set(entityId, null);    // todo should use pool
     }
 

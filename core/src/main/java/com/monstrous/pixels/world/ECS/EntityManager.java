@@ -6,29 +6,27 @@ import com.badlogic.gdx.utils.IntArray;
 
 public class EntityManager {
 
-    private final Bag<Entity> entities;     // entities are never deleted from this (do we even need it?)
+    private int nextId;
     private final IntArray pool;            // entity id's for reuse
     private final Bits alive;               // dead/alive bit map
 
     public EntityManager(int initialCapacity) {
-        entities = new Bag<>(initialCapacity);
-        pool = new IntArray();
+        nextId = 0;
+        //entities = new IntArray(initialCapacity);
+        pool = new IntArray(false, 64);
         alive = new Bits(initialCapacity);
     }
 
     public int createEntity(){
-        Entity e;
+        int eid;
         if(pool.notEmpty()){
-            int id = pool.pop();
-            e = entities.get(id);
-            //System.out.println("Obtained from pool, pool size "+pool.size);
+            eid = pool.pop();
         } else {
-            e = new Entity(entities.getSize());
-            entities.add(e);
-
+            eid = nextId++;//entities.size;
+            //ntities.add(eid);
         }
-        alive.set(e.id);
-        return e.id;
+        alive.set(eid);
+        return eid;
     }
 
     void removeEntity(int entityId ){
@@ -44,25 +42,19 @@ public class EntityManager {
         return alive.get(entityId);
     }
 
-    // beware: entity could be dead, use isAlive() to check
-//    public Entity get(int entityId ){
-//        return entities.get(entityId);
-//    }
-
-
     public int count(){
-        return entities.size - pool.size;
+        return nextId - pool.size;
     }
 
     public int maxCount(){
-        return entities.size;
+        return nextId;
     }
 
     void clear(){
         // add live entities to the reuse pool (dead entities are already there)
-        for(Entity e : entities) {
-            if(isAlive(e.id))
-                pool.add(e.id);
+        for(int id = 0; id < nextId; id++) {
+            if(isAlive(id))
+                pool.add(id);
         }
         alive.clear();
     }
