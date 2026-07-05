@@ -9,11 +9,10 @@ import static com.badlogic.gdx.utils.reflect.ClassReflection.getConstructor;
 import static com.badlogic.gdx.utils.reflect.ClassReflection.newInstance;
 
 public class ComponentMapper<A extends Component> {
-    public Array<A> components;       // sparse, match up with entity id
-    public Array<A> pool;       // for reuse
+    public final Array<A> components;       // sparse, match up with entity id
+    public final Array<A> pool;       // for reuse
 
     public ComponentMapper() {
-
         components = new Array<>();
         pool = new Array<>(false, 16);
     }
@@ -79,6 +78,13 @@ public class ComponentMapper<A extends Component> {
     }
 
     public void clear(){
-        components.clear();
+        for(int entityId = 0; entityId < components.size; entityId++){
+            A component = components.get(entityId);
+            if(component != null) {
+                pool.add(component);
+                components.set(entityId, null);
+            }
+        }
+        //components.clear();
     }
 }

@@ -53,29 +53,47 @@ public class ComponentManager {
         // add component for the entity
         mapper.set(entityId, component);
 
-
-        //    flags.ensureCapacity(entityId+100);
-        while(entityId >= flags.size)    // hmm...inefficient
-            flags.add(0L);
-        long flag = flags.get(entityId);
-        flag |= 1L << type.getIndex();
-        flags.set(entityId, flag);
+        setFlag(entityId, type);
     }
 
+    /** to save on allocations, use createComponent instead of addComponent.
+     * It returns a component which may be a reused one or a new one.
+     * @param entityId
+     * @param clazz
+     * @return
+     * @param <C>
+     */
     public <C extends Component> C createComponent(int entityId, Class<C> clazz) {
         ComponentType type = getType(clazz);
         ComponentMapper mapper = getComponentMapper(type);
 
-        // add component for the entity
+        // create component for the entity
         C c = (C) mapper.create(entityId, clazz);
 
-        //    flags.ensureCapacity(entityId+100);
-        while(entityId >= flags.size)    // hmm...inefficient
-            flags.add(0L);
+        setFlag(entityId, type);
+        return c;
+    }
+
+    public <C extends Component> void removeComponent(int entityId, Class<C> clazz){
+        ComponentType type = getType(clazz);
+        ComponentMapper mapper = getComponentMapper(type);
+
+        // add component for the entity
+        mapper.remove(entityId);
+
+        long flag = flags.get(entityId);
+        flag ^= (1L << type.getIndex());
+        flags.set(entityId, flag);
+    }
+
+    private void setFlag(int entityId, ComponentType type){
+        if(entityId >= flags.size)
+            flags.setSize(entityId + 100);
+        if(flags.get(entityId) == null)
+            flags.set(entityId, 0L);
         long flag = flags.get(entityId);
         flag |= 1L << type.getIndex();
         flags.set(entityId, flag);
-        return c;
     }
 
 //    public <C extends Component> C createComponent(int entityId, ComponentType type) {
