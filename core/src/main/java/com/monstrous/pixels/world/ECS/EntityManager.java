@@ -49,6 +49,15 @@ public class EntityManager {
 //        return entities.get(entityId);
 //    }
 
+
+    public int count(){
+        return entities.size - pool.size;
+    }
+
+    public int maxCount(){
+        return entities.size;
+    }
+
     void clear(){
         // add live entities to the reuse pool (dead entities are already there)
         for(Entity e : entities) {

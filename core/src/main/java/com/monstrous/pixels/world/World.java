@@ -185,6 +185,7 @@ public class World implements Disposable {
             float z =  (MathUtils.random() - 0.5f) * spawnAreaSize;
             addWatermelon(new Vector3(x, 8, z));   // add height
         }
+        System.out.println("Number of entities: "+engine.entityManager.count());
         generateInstances();
     }
 
@@ -250,12 +251,12 @@ public class World implements Disposable {
     }
 
     public void addEnemyRocket(Vector3 position, Vector3 velocity){
-//        int entityId = engine.createEntity();
-//        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(enemyRocketType.model, position)));
-//        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, enemyRocketType.gravity));
-//        engine.addComponent(entityId, new AgeComponent(entityId, enemyRocketType.timeToLive));
-//        engine.addComponent(entityId, new ProjectileComponent(entityId, position, false, null));
-//        engine.commit(entityId);
+        int entityId = engine.createEntity();
+        engine.addComponent(entityId, new RenderComponent(entityId, new ModelInstance(enemyRocketType.model, position)));
+        engine.addComponent(entityId, new DynamicsComponent(entityId, position, velocity, 0, enemyRocketType.gravity));
+        engine.addComponent(entityId, new AgeComponent(entityId, enemyRocketType.timeToLive));
+        engine.addComponent(entityId, new ProjectileComponent(entityId, position, false, null));
+        engine.commit(entityId);
     }
 
     public void addDebris(Vector3 position, Vector3 velocity, Vector3 spinAxis){

@@ -70,8 +70,10 @@ public class ComponentManager {
     }
 
     public void remove(int entityId){
-        for(ComponentMapper<? extends Component> mapper : mappers)
-            mapper.remove(entityId);
+        for(ComponentMapper<? extends Component> mapper : mappers) {
+            if(mapper.has(entityId))
+                mapper.remove(entityId);
+        }
         flags.set(entityId, 0L);
     }
 

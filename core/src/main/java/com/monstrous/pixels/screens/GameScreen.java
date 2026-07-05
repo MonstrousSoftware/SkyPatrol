@@ -64,7 +64,7 @@ public class GameScreen extends RetroScreen {
         cam.update();
 
         world = new World();
-        level = 0;
+
         //world.populate(level);
 
         inputController = new CamController(cam);
@@ -88,6 +88,7 @@ public class GameScreen extends RetroScreen {
         livesString = new StringBuilder();
         hardCore = game.oneLife;
 
+        level = 0;
         levelUp();  // init level 1
 
         Renderable renderable = new Renderable();
