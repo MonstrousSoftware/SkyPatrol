@@ -33,7 +33,6 @@ public class EntityManager {
         if(alive.get(entityId)) {
             alive.clear(entityId);
             pool.add(entityId);
-            //System.out.println("Removed entity, pool size " + pool.size);
         }
     }
 

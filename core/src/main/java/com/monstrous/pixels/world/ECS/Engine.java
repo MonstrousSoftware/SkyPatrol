@@ -53,8 +53,7 @@ public class Engine {
         for(EntitySystem system : systems){
             if((system.requiredComponentsBitFlag & flags) == system.requiredComponentsBitFlag) {
                 system.addEntity(entityId);
-                //Gdx.app.log("", "add entity "+entityId+ " to system "+system.toString());
-            }
+             }
         }
     }
 
@@ -87,10 +86,6 @@ public class Engine {
         componentManager.clear();
     }
 
-//    public <C extends Component> void addComponent(int entityId, Class<C> clazz, C component){
-//        componentManager.addComponent(entityId, clazz, component);
-//    }
-
     public <C extends Component> void addComponent(int entityId, C component){
         if(!entityManager.isAlive(entityId))
             throw new RuntimeException("add Component to dead entity");
@@ -98,20 +93,10 @@ public class Engine {
         componentManager.addComponent(entityId, component);
     }
 
-//    public <C extends Component> C createComponent(int entityId, C component){
-//        if(!entityManager.isAlive(entityId))
-//            throw new RuntimeException("add Component to dead entity");
-//
-//        return componentManager.createComponent(entityId, component.getClass());
-//    }
-
     public <C extends Component> C createComponent(int entityId, Class<C> type){
         if(!entityManager.isAlive(entityId))
             throw new RuntimeException("add Component to dead entity");
 
         return componentManager.createComponent(entityId, type);
     }
-
-
-
 }

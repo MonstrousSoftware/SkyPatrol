@@ -1,8 +1,6 @@
 package com.monstrous.pixels.world.ECS;
 
 import com.badlogic.gdx.utils.Array;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,20 +90,6 @@ public class ComponentManager {
         flags.set(entityId, flag);
     }
 
-//    public <C extends Component> C createComponent(int entityId, ComponentType type) {
-//        ComponentMapper mapper = getComponentMapper(type);
-//
-//        // add component for the entity
-//        C c = (C) mapper.create(entityId);
-//
-//        //    flags.ensureCapacity(entityId+100);
-//        while(entityId >= flags.size)    // hmm...inefficient
-//            flags.add(0L);
-//        long flag = flags.get(entityId);
-//        flag |= 1L << type.getIndex();
-//        flags.set(entityId, flag);
-//        return c;
-//    }
 
     public void clear(){
          for(ComponentMapper<? extends Component> mapper : mappers)

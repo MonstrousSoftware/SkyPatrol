@@ -24,20 +24,15 @@ public abstract class EntitySystem {
     }
 
     public void addEntity(int entityId){
-//        System.out.println("System: add entity "+entityId);
-//        System.out.println("before: "+entities.contains(entityId));
         if(entities.contains(entityId))
             throw new RuntimeException("Entity already in this system");
         entities.add(entityId);
     }
 
     public void removeEntity(int entityId){
-//        System.out.println("System: remove entity "+entityId);
-//        System.out.println("before: "+entities.contains(entityId));
         boolean done = entities.removeValue(entityId);
         if(!done)
             System.out.println("removeEntity: failed for "+entityId);
-//        System.out.println("after: "+done+" "+entities.contains(entityId));
     }
 
     public void clear(){

@@ -46,13 +46,6 @@ public class ComponentMapper<A extends Component> {
         return component;
     }
 
-//    public A create(int entityId){
-//        A c = components.get(entityId);
-//        if(c != null)
-//            return c;
-//        c = newInstance(c);
-//    }
-
     public boolean has(int entityId){
         if(entityId >= components.size)
             return false;
@@ -64,10 +57,6 @@ public class ComponentMapper<A extends Component> {
             components.setSize(entityId+100);
         components.set(entityId, t);
     }
-
-//    public void set(int entityId, Component t){
-//        components.set(entityId, (A)t);
-//    }
 
     public void remove(int entityId){
         if(entityId >= components.size)
@@ -85,6 +74,5 @@ public class ComponentMapper<A extends Component> {
                 components.set(entityId, null);
             }
         }
-        //components.clear();
     }
 }
