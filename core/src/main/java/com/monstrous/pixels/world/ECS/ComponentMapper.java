@@ -36,7 +36,7 @@ public class ComponentMapper<A extends Component> {
             else {
                 try {
                     component = ClassReflection.newInstance(type);
-                    System.out.println("New component "+type);
+                    //System.out.println("New component "+type);
                 } catch (ReflectionException e) {
                     throw new RuntimeException("Unable to instantiate component.", e);
                 }

@@ -1,7 +1,8 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.monstrous.pixels.world.ECS.*;
 import com.monstrous.pixels.world.ECS.EntitySystem;
+import com.monstrous.pixels.world.components.SpinComponent;
 
 public class SpinSystem extends EntitySystem {
 
@@ -19,6 +20,5 @@ public class SpinSystem extends EntitySystem {
     public void update(int entityId, float delta){
             SpinComponent spinComponent = spinMap.get(entityId);
             spinComponent.forward.rotate(spinComponent.spinAxis, delta * spinComponent.spinSpeed);
-
     }
 }

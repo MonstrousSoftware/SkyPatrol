@@ -1,6 +1,8 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.monstrous.pixels.world.ECS.*;
+import com.monstrous.pixels.world.components.DynamicsComponent;
+import com.monstrous.pixels.world.components.ProjectileComponent;
 
 public class ProjectileSystem extends EntitySystem {
 

@@ -79,3 +79,25 @@ to be continued...
 
 2/7/2026: My ECS system seems to work on the first level.  But on a transition to the next level it crashes.
 Probably due to incorrect reuse of data after engine.clear();
+
+I reworked the ECS system, removing the HashMaps and taking some ideas from Artemis.
+
+There is no Entity class, entities only exist as integer numbers starting from zero.  When entities
+are destroyed their identifier can be reused for a new entity. This helps to keep the number values as
+low as possible since we use them as array indices in the component mappers.
+
+The class Component is an abstract class from which to subclass the application specific component classes.
+
+For each type of Component there is a ComponentMapper that is used to find the Component for an Entity.
+There are two ways to define a component: addComponent or createComponent.  The latter uses a pool of 
+destroyed components for reuse and is recommended for components of short-lived entities. 
+
+Each EntitySystem defines a list of required components and based on this maintains a list of related
+entities.  Whenever an entity is created or destroyed the list is updated.
+
+Whenever engine.update() is called, all EntitySystems which are marked for autoUpdate are updated.
+This means update is called for each entity that is related to the EntitySystem.
+
+
+
+

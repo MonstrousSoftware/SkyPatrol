@@ -8,12 +8,12 @@ import java.util.Map;
 
 public class ComponentManager {
     Map<Class<? extends Component>, ComponentType> componentTypes;  // map type to ComponentType
-    Bag<ComponentMapper<? extends Component>> mappers;      // mapper per type, indexed by ComponentType.index
+    Array<ComponentMapper<? extends Component>> mappers;      // mapper per type, indexed by ComponentType.index
     Array<Long> flags;    // component bit flag per entity, indexed by entityId, using a Long caps the max nr of components
 
     public ComponentManager() {
         componentTypes = new HashMap<>();
-        mappers = new Bag<>();
+        mappers = new Array<>(64);
         flags = new Array<>(1024);
     }
 
@@ -21,8 +21,12 @@ public class ComponentManager {
     public <C extends Component> ComponentType getType(Class<C> type){
         ComponentType componentType = componentTypes.get(type);
         if(componentType == null){
+            // add a new type
             componentType = new ComponentType(type, componentTypes.size());
             componentTypes.put(type, componentType);
+            // create mapper for the new type
+            ComponentMapper<C> mapper = new ComponentMapper<C>();
+            mappers.add(mapper);
         }
         return componentType;
     }
@@ -33,15 +37,7 @@ public class ComponentManager {
     }
 
     public <C extends Component> ComponentMapper<C> getComponentMapper( ComponentType type ){
-        // look for the relevant component mapper
-        @SuppressWarnings("unchecked")
-        ComponentMapper<C> mapper = (ComponentMapper<C>) mappers.get(type.getIndex());
-        if(mapper == null){
-            // create mapper if needed
-            mapper = new ComponentMapper<C>();
-            mappers.set(type.getIndex(), mapper);
-        }
-        return mapper;
+        return (ComponentMapper<C>) mappers.get(type.getIndex());
     }
 
     // this is not pooling friendly as the component is allocated by the caller

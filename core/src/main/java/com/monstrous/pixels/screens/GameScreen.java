@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.CamController;
 import com.monstrous.pixels.WireFrameShader;
 import com.monstrous.pixels.sound.Beep;
-import com.monstrous.pixels.world.ColliderComponent;
+import com.monstrous.pixels.world.components.ColliderComponent;
 import com.monstrous.pixels.world.World;
 
 
@@ -94,7 +94,7 @@ public class GameScreen extends RetroScreen {
         world.update(0.0f, cam);
 
         Renderable renderable = new Renderable();
-        ModelInstance instance = world.getInstances().get(1);
+        ModelInstance instance = new ModelInstance(world.buildingType.model);
         instance.getRenderable(renderable);
         wireFrameShader = new WireFrameShader(renderable);
 

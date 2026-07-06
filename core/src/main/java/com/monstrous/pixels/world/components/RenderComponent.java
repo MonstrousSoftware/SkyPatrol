@@ -1,4 +1,4 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.components;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.monstrous.pixels.world.ECS.Component;

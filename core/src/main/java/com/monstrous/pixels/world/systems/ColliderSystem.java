@@ -1,9 +1,11 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.monstrous.pixels.world.ECS.*;
+import com.monstrous.pixels.world.components.ColliderComponent;
+import com.monstrous.pixels.world.components.DynamicsComponent;
 
 public class ColliderSystem extends EntitySystem {
 

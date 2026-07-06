@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -16,8 +15,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
 import com.monstrous.pixels.WireFrameBuilder;
 import com.monstrous.pixels.world.ECS.ComponentMapper;
-import com.monstrous.pixels.world.ECS.ComponentType;
 import com.monstrous.pixels.world.ECS.Engine;
+import com.monstrous.pixels.world.components.*;
+import com.monstrous.pixels.world.systems.*;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 

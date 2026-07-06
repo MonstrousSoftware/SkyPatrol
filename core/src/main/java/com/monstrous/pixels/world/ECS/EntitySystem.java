@@ -51,7 +51,7 @@ public abstract class EntitySystem {
     }
 
     public void update(int entityId, float deltaTime){
-
+        // override this
     }
 
     // don't modify this array!

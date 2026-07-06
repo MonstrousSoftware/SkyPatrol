@@ -1,8 +1,9 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.monstrous.pixels.world.ECS.Component;
+import com.monstrous.pixels.world.GameObjectType;
 
 public class ColliderComponent extends Component {
     public final int id;

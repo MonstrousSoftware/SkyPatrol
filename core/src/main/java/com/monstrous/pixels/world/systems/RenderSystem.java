@@ -1,4 +1,4 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.monstrous.pixels.world.ECS.*;
 import com.monstrous.pixels.world.ECS.EntitySystem;
+import com.monstrous.pixels.world.components.DynamicsComponent;
+import com.monstrous.pixels.world.components.RenderComponent;
+import com.monstrous.pixels.world.components.SpinComponent;
 
 public class RenderSystem extends EntitySystem {
     private final ComponentMapper<RenderComponent> renderMap;

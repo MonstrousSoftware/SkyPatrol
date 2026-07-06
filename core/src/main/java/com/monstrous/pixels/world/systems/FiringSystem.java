@@ -1,10 +1,14 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.badlogic.gdx.math.Vector3;
 import com.monstrous.pixels.world.ECS.ComponentMapper;
 import com.monstrous.pixels.world.ECS.ComponentType;
 import com.monstrous.pixels.world.ECS.Engine;
 import com.monstrous.pixels.world.ECS.EntitySystem;
+import com.monstrous.pixels.world.World;
+import com.monstrous.pixels.world.components.DynamicsComponent;
+import com.monstrous.pixels.world.components.FiringComponent;
+import com.monstrous.pixels.world.components.SpinComponent;
 
 // Let enemies fire rockets
 public class FiringSystem extends EntitySystem {

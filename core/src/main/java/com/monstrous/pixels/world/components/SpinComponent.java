@@ -1,4 +1,4 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.components;
 
 import com.badlogic.gdx.math.Vector3;
 import com.monstrous.pixels.world.ECS.Component;

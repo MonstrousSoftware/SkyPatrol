@@ -1,6 +1,7 @@
-package com.monstrous.pixels.world;
+package com.monstrous.pixels.world.systems;
 
 import com.monstrous.pixels.world.ECS.*;
+import com.monstrous.pixels.world.components.AgeComponent;
 
 
 public class AgeSystem extends EntitySystem {
