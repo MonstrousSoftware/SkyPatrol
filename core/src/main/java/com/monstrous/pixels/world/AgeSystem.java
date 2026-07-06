@@ -12,6 +12,7 @@ public class AgeSystem extends EntitySystem {
         ageMap = engine.componentManager.getComponentMapper(AgeComponent.class);
         ComponentType componentType = engine.componentManager.getType(AgeComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "AgeSystem";
     }
 
     @Override

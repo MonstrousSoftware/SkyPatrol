@@ -17,6 +17,7 @@ public class ColliderSystem extends EntitySystem {
 
         ComponentType componentType = engine.componentManager.getType(ColliderComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "ColliderSystem";
     }
 
     @Override

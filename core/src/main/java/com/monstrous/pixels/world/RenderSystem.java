@@ -1,5 +1,6 @@
 package com.monstrous.pixels.world;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -7,7 +8,6 @@ import com.monstrous.pixels.world.ECS.*;
 import com.monstrous.pixels.world.ECS.EntitySystem;
 
 public class RenderSystem extends EntitySystem {
-
     private final ComponentMapper<RenderComponent> renderMap;
     private final ComponentMapper<DynamicsComponent> dynMap;
     private final ComponentMapper<SpinComponent> spinMap;
@@ -20,18 +20,20 @@ public class RenderSystem extends EntitySystem {
 
         ComponentType componentType = engine.componentManager.getType(RenderComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "RenderSystem";
     }
+
 
     private final Vector3 pos = new Vector3();
     private final Vector3 dir = new Vector3();
 
-    public void update(Array<ModelInstance> instances) {
+    public void update(Camera camera, Array<ModelInstance> instances) {
         for(int index = 0; index < entities.size; index++){
             int eid = entities.get(index);
             RenderComponent renderComponent = renderMap.get(eid);
             if(renderComponent == null) {
                 boolean live = engine.entityManager.isAlive(eid);
-                throw new RuntimeException("Manadatory component missing");
+                throw new RuntimeException("Mandatory component missing");
             }
 
             // update model instance transform if there is a dynamics component
@@ -53,8 +55,11 @@ public class RenderSystem extends EntitySystem {
                 renderComponent.modelInstance.transform.setToTranslation(pos);
                 renderComponent.modelInstance.transform.rotate(Vector3.Z, spin.forward);
             }
-
-            instances.add(renderComponent.modelInstance);
+            // frustum culling
+            // (increases frame rate about 4 times)
+            renderComponent.modelInstance.transform.getTranslation(pos);
+            if(camera.frustum.sphereInFrustum(pos, renderComponent.radius))
+                instances.add(renderComponent.modelInstance);
         }
     }
 

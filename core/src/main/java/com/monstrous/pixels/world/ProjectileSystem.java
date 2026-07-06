@@ -15,6 +15,7 @@ public class ProjectileSystem extends EntitySystem {
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
         componentType = engine.componentManager.getType(ProjectileComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "ProjectileSystem";
     }
 
     @Override

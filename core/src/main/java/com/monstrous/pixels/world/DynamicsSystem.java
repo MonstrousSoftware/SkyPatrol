@@ -15,6 +15,7 @@ public class DynamicsSystem extends EntitySystem {
 
         ComponentType componentType = engine.componentManager.getType(DynamicsComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "DynamicsSystem";
     }
 
     public void update(int entityId, float delta){

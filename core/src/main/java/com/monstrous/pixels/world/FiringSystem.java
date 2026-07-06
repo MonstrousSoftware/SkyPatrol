@@ -29,6 +29,7 @@ public class FiringSystem extends EntitySystem {
 
         tmpVec = new Vector3();
         tmpVec2 = new Vector3();
+        label = "FiringSystem";
     }
 
     @Override

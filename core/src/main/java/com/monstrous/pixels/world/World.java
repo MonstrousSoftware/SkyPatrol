@@ -42,7 +42,7 @@ public class World implements Disposable {
     private final ColliderComponent helicopterCollider;
     private final Sound soundRocketFlyBy;
     private final Color background = new Color();
-    private final Engine engine;
+    public final Engine engine;
     private final RenderSystem renderSystem;
     private final ColliderSystem colliderSystem;
     private final ProjectileSystem projectileSystem;
@@ -180,7 +180,7 @@ public class World implements Disposable {
             addWatermelon(new Vector3(x, 8, z));   // add height
         }
         System.out.println("Number of entities: "+engine.entityManager.count());
-        generateInstances();
+        //generateInstances(camera);
     }
 
 
@@ -285,10 +285,10 @@ public class World implements Disposable {
         return firingSystem.numEntities();   // number of shooters
     }
 
-    private void generateInstances(){
+    private void generateInstances(Camera camera){
         instances.clear();
         instances.add(terrain.instance);
-        renderSystem.update(instances);
+        renderSystem.update(camera, instances);
     }
 
     /**
@@ -306,12 +306,12 @@ public class World implements Disposable {
     }
 
 
-    public void update( float deltaTime, Vector3 cameraPosition ){
-        this.cameraPosition = cameraPosition;       // used by firing system
+    public void update( float deltaTime, Camera camera ){
+        this.cameraPosition = camera.position;       // used by firing system
 
         rocketCoolDown -= deltaTime;
         engine.update(deltaTime);
-        generateInstances();
+        generateInstances(camera);
     }
 
     Vector3 vel = new Vector3();

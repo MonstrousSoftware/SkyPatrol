@@ -42,6 +42,7 @@ public class GameScreen extends RetroScreen {
     private ColliderComponent target;
     private boolean hardCore;
     private FrameRateGadget fpsGadget;
+    private StatsGadget statsGadget;
     private boolean showFPS = false;
     private final boolean invincible = true;       // todo set to true for testing
 
@@ -88,8 +89,9 @@ public class GameScreen extends RetroScreen {
         livesString = new StringBuilder();
         hardCore = game.oneLife;
 
-        level = 0;
+        level = 1000;
         levelUp();  // init level 1
+        world.update(0.0f, cam);
 
         Renderable renderable = new Renderable();
         ModelInstance instance = world.getInstances().get(1);
@@ -104,6 +106,7 @@ public class GameScreen extends RetroScreen {
         });
 
         fpsGadget = new FrameRateGadget();
+        statsGadget = new StatsGadget(world.engine);
     }
 
     private void setUpDownControls(){
@@ -160,7 +163,7 @@ public class GameScreen extends RetroScreen {
         }
 
 
-        world.update(deltaTime, cam.position);
+        world.update(deltaTime, cam);
         if(messageTimer > 0){
             messageTimer -= deltaTime;
             if(messageTimer <= 0)
@@ -279,15 +282,19 @@ public class GameScreen extends RetroScreen {
     @Override
     public void render(float deltaTime) {
         super.render(deltaTime);
-        fpsGadget.update(deltaTime);
-        if(showFPS)
+        if(showFPS) {
+            fpsGadget.update(deltaTime);
+            statsGadget.update(deltaTime);
             fpsGadget.render();
+            statsGadget.render();
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
         fpsGadget.resize(width, height);
+        statsGadget.resize(width, height);
     }
 
     private void drawReticule(boolean locked){

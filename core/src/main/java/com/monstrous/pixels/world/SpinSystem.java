@@ -12,6 +12,7 @@ public class SpinSystem extends EntitySystem {
         spinMap = engine.componentManager.getComponentMapper(SpinComponent.class);
         ComponentType componentType = engine.componentManager.getType(SpinComponent.class);
         requiredComponentsBitFlag |= 1L << componentType.getIndex();
+        label = "SpinSystem";
     }
 
     @Override

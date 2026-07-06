@@ -30,6 +30,10 @@ public class Engine {
         updateSystems.removeValue(system, true);
     }
 
+    public Array<EntitySystem> getSystems(){
+        return systems;
+    }
+
     public void update(float deltaTime){
         for(EntitySystem system : updateSystems) {
             system.update(deltaTime);

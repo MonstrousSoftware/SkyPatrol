@@ -7,16 +7,21 @@ public abstract class EntitySystem {
     protected Engine engine;
     protected final IntArray entities; // set of entities relevant for this system
     protected long requiredComponentsBitFlag = 0L;
+    protected String label;     // for debug info
 
     public EntitySystem(Engine engine) {
         this.engine = engine;
         entities = new IntArray(false, 64);
+        label = "EntitySystem";
     }
 
     public long requiredComponentsBitFlag(){
         return requiredComponentsBitFlag;
     }
 
+    public String getLabel(){
+        return label;
+    }
 
     public void addEntity(int entityId){
 //        System.out.println("System: add entity "+entityId);
