@@ -18,8 +18,8 @@ public class Main extends Game {
         for(int i = 0;i < 3; i++)
             initials[i] = 'A';
         hiScores = new HiScores();
-        //setScreen(new LoadScreen(this));
-        setScreen(new GameScreen(this));
+        setScreen(new LoadScreen(this));
+        //setScreen(new GameScreen(this));
     }
 
 }

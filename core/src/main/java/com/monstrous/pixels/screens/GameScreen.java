@@ -44,7 +44,7 @@ public class GameScreen extends RetroScreen {
     private FrameRateGadget fpsGadget;
     private StatsGadget statsGadget;
     private boolean showFPS = false;
-    private final boolean invincible = true;       // todo set to true for testing
+    private final boolean invincible = false;       // todo set to true for testing
 
 
     public GameScreen(Main game) {
@@ -55,7 +55,6 @@ public class GameScreen extends RetroScreen {
     @Override
     public void show() {
         super.show();
-
 
         cam = new PerspectiveCamera(67, LOWRES_WIDTH, LOWRES_HEIGHT);
         cam.position.set(0f, 10f, 10f);
