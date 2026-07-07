@@ -110,7 +110,8 @@ Here are the results of a first basic implementation (v1) of an ECS system which
 | 1000  | 26               | 30                 |
 
 
-2/7/2026: 
+
+## Updated ECS
 
 I reworked the ECS system, removing the HashMaps and taking some ideas from Artemis-odb.
 
@@ -131,6 +132,24 @@ destroyed components for reuse and is recommended for components of short-lived 
 The main class for the ECS is Engine. Whenever Engine#update() is called, all EntitySystems which are marked for autoUpdate are updated.
 This means update is called for each entity that is related to the EntitySystem.
 
+## Frustum culling
+An important speedup takes place in the RenderSystem with the following code: 
+```            
+    if(camera.frustum.sphereInFrustum(pos, renderComponent.radius))
+       instances.add(renderComponent.modelInstance);
+```
+This increase the frame rate by about a factor 4 as it only puts items in the render list that are visible from the camera.
 
+
+| level  | frame rate (fps) | using ECS approach v1 | using ECS approach v2 | 
+|--------|------------------|--------------------|-----------------------|
+| 0      | 2700             | 2600               | 2660                  |
+| 20     | 800              | 980                | 2200                  |
+| 40     | 460              | 600                | 1600                  |
+| 60     | 300              | 400                | 1200                  |
+| 100    | 200              | 231                | 900                   |
+| 200    | 95               | 117                | 480                   |
+| 500    | 48               | 51                 | 320                   |
+| 1000   | 26               | 30                 | 170                  |
 
 

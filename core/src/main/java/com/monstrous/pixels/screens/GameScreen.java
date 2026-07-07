@@ -89,7 +89,8 @@ public class GameScreen extends RetroScreen {
         livesString = new StringBuilder();
         hardCore = game.oneLife;
 
-        level = 1000;
+        level = 0;
+
         levelUp();  // init level 1
         world.update(0.0f, cam);
 
@@ -264,6 +265,7 @@ public class GameScreen extends RetroScreen {
         int ss = (int)time - 60*mm;
 
         batch.begin();
+        // note: String.format does allocations and causes GC
         font.draw(batch, String.format("SCORE: %05d", score), 8, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("LEVEL: %d", level), 150, LOWRES_HEIGHT-8);
         font.draw(batch, String.format("%02d:%02d", mm, ss), 270, LOWRES_HEIGHT-8);
@@ -275,8 +277,6 @@ public class GameScreen extends RetroScreen {
             font.draw(batch, String.format("LEVEL: %d", level), 100, LOWRES_HEIGHT/2f);
         }
         batch.end();
-
-
     }
 
     @Override

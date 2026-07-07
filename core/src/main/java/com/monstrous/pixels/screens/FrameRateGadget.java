@@ -47,7 +47,7 @@ public class FrameRateGadget {
         updateTimer -= delta;
         if(updateTimer < 0) {
             float avgFPS = sampleCount/sampleSum;
-            fps = "FPS: "+ Math.round(avgFPS);
+            fps = "FPS: "+ Math.round(avgFPS); // + " frame: "+Math.round(1000000f/avgFPS)+" us";
             scale = GRAPH_HEIGHT / (sampleSum/sampleCount);
             sampleSum = 0;
             sampleCount = 0;

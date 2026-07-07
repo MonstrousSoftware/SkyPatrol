@@ -48,6 +48,7 @@ public class RenderSystem extends EntitySystem {
                 // point the model in the direction of travel (can be overruled by spin later)
                 dir.set(dynamics.velocity).nor();
                 renderComponent.modelInstance.transform.rotate(Vector3.Z, dir);
+                //renderComponent.modelInstance.transform.rotateTowardDirection(dir, Vector3.Y);    // faster?
             }
 
             // add any spin to model instance transform
@@ -57,6 +58,7 @@ public class RenderSystem extends EntitySystem {
                 renderComponent.modelInstance.transform.getTranslation(pos);
                 renderComponent.modelInstance.transform.setToTranslation(pos);
                 renderComponent.modelInstance.transform.rotate(Vector3.Z, spin.forward);
+                //renderComponent.modelInstance.transform.rotateTowardDirection(spin.forward, Vector3.Y);
             }
             // frustum culling
             // (increases frame rate about 4 times)

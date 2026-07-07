@@ -263,11 +263,6 @@ public class World implements Disposable {
         engine.createComponent(entityId, DynamicsComponent.class).set(position, velocity, 0, debrisType.gravity);
         engine.createComponent(entityId, AgeComponent.class).set(debrisType.timeToLive);
         engine.createComponent(entityId, SpinComponent.class).set(Vector3.Z, spinAxis, debrisType.spinSpeed);
-
-//        engine.addComponent(entityId, new RenderComponent(new ModelInstance(debrisType.model, position)));
-//        engine.addComponent(entityId, new DynamicsComponent(position, velocity, 0, debrisType.gravity));
-//        engine.addComponent(entityId, new SpinComponent(Vector3.Z, spinAxis, debrisType.spinSpeed));
-//        engine.addComponent(entityId, new AgeComponent(debrisType.timeToLive));
         engine.commit(entityId);
     }
 

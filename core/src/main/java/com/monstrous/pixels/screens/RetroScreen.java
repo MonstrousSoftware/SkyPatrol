@@ -2,21 +2,14 @@ package com.monstrous.pixels.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.monstrous.pixels.filters.PostProcessor;
-import com.monstrous.pixels.sound.Beep;
-import com.monstrous.pixels.world.World;
 
 
 /** Shared screen adapter that will expand a low resolution frame to the full screen and apply visual effects.
@@ -85,26 +78,31 @@ public abstract class RetroScreen extends ScreenAdapter {
 
         // place the low resolution frame centrally on the screen, surrounded by a border
         fbo.begin();
+            Sprite frameSprite = new Sprite(fboSmall.getColorBufferTexture());  // mem alloc
+            frameSprite.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            frameSprite.flip(false, true); // coordinate system in buffer differs from screen
+
+            int w = pixelScale * (int) frameSprite.getWidth();
+            int h = pixelScale * (int) frameSprite.getHeight();
+            int x = (Gdx.graphics.getWidth() - w)/2;
+            int y = (Gdx.graphics.getHeight() - h)/2;
+
             ScreenUtils.clear(borderColor, true);    // border
             batch.getProjectionMatrix().setToOrtho2D(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             batch.begin();
-            Sprite s = new Sprite(fboSmall.getColorBufferTexture());
-            s.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-            s.flip(false, true); // coordinate system in buffer differs from screen
-            int w = pixelScale * (int)s.getWidth();
-            int h = pixelScale * (int)s.getHeight();
-            int x = (Gdx.graphics.getWidth() - w)/2;
-            int y = (Gdx.graphics.getHeight() - h)/2;
-            batch.draw(s, x, y, w, h);
+
+
+            batch.draw(frameSprite, x, y, w, h);
             batch.end();
         fbo.end();
 
         // post-processing for visual effects
         if(!enableCRTeffect) {
             Sprite s2 = new Sprite(fbo.getColorBufferTexture());
-            s2.flip(false, true);   // flip Y
+            s2.flip(false, true);
             batch.begin();
             batch.draw(s2, 0, 0);
+            //batch.draw(fbo.getColorBufferTexture(), 0, 0, fbo.getWidth(), fbo.getHeight(), 0,0, 1, 1);
             batch.end();
         } else {
             postProcessor.render(fbo);    // retro effect
