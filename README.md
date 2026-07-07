@@ -83,8 +83,9 @@ Font:
 
 
 ## Post game jam
-The version that was submitted to the game jam is that of June.
-Afterwards, I used this code as a platform to try some code refactoring.
+The version that was submitted to the game jam is that of June 17, which you can find in the commit history.
+
+After the jam, I used this code as a platform to try some code refactoring.
 
 In particular, I was wondering if an ECS type approach would be a good fit for this game.  It is really not necessary for performance as the game is
 very simple, but it bugs me a little to have game object type specific code in World.
